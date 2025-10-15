@@ -12,5 +12,6 @@ export default defineConfig({
         },
         sourcemap: true,
     },
+    optimizeDeps: { exclude: ["@oxc-parser/binding-wasm32-wasi"] },
     plugins: [],
 });

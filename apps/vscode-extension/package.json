@@ -1,6 +1,6 @@
 {
     "name": "regex-radar",
-    "displayName": "RegexRadar",
+    "displayName": "Regex Radar",
     "publisher": "Kevin Ramharak",
     "description": "A Regex Intelligence Tooling extension",
     "version": "0.1.0",
@@ -22,18 +22,19 @@
         "color": "#133b55",
         "theme": "dark"
     },
-    "activationEvents": [
-        "onLanguage:typescript",
-        "onLanguage:javascript",
-        "onLanguage:typescriptreact",
-        "onLanguage:javascriptreact",
-        "onLanguage:astro",
-        "onLanguage:svelte",
-        "onLanguage:vue",
-        "onLanguage:mdx",
-        "onLanguage:glimmer-js",
-        "onLanguage:glimmer-ts"
-    ],
+    "activationEvents": [],
+    "contributes": {
+        "views": {
+            "explorer": [
+                {
+                    "id": "regex-radar",
+                    "name": "Regex Radar",
+                    "icon": "",
+                    "visibility": "collapsed"
+                }
+            ]
+        }
+    },
     "main": "./dist/extension.js",
     "browser": "./dist/extension.js",
     "files": [
@@ -42,11 +43,12 @@
         "LICENSE"
     ],
     "scripts": {
-        "build": "vite build",
-        "dev": "vite dev",
+        "build": "vite build --mode development",
+        "dev": "vite build --mode development --watch",
         "package": "vite build --mode production"
     },
     "devDependencies": {
+        "@types/node": "^22.18.10",
         "@types/vscode": "^1.105.0",
         "vite": "^7.1.9",
         "vitest": "^3.2.4"

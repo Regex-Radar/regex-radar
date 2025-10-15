@@ -6,7 +6,10 @@
             "type": "extensionHost",
             "request": "launch",
             "cwd": "${workspaceFolder}/apps/vscode-extension",
-            "args": ["--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"],
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension",
+                "${workspaceFolder}/examples"
+            ],
             "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"]
         },
         {
@@ -16,7 +19,8 @@
             "cwd": "${workspaceFolder}/apps/vscode-extension",
             "args": [
                 "--disable-extensions",
-                "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension"
+                "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension",
+                "${workspaceFolder}/examples"
             ],
             "outFiles": ["${workspaceFolder}/apps/vscode-extension/dist/**/*.js"]
         },
