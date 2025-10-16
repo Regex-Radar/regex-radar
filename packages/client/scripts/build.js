@@ -16,7 +16,7 @@ async function main() {
         sourcemap: true,
         sourcesContent: false,
         platform: "node",
-        outfile: "dist/index.js",
+        outfile: "dist/index.cjs",
         external: ["vscode", "oxc-parser"],
         logLevel: "silent",
         plugins: [esbuildProblemMatcherPlugin, workspacePackagesPlugin],

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Element, RegexRadarTreeDataProvider } from "./RegexRadarTreeDataProvider";
-import { RegexRadarLanguageClient } from "../client";
+import { RegexRadarLanguageClient } from "@regex-radar/client";
 
 export function registerTreeView(
     client: RegexRadarLanguageClient,

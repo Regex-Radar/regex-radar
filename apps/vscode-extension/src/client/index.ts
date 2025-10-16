@@ -12,7 +12,7 @@ import { RegexRadarLanguageClient } from "@regex-radar/client";
 
 let client: RegexRadarLanguageClient | null = null;
 
-export function registerLanguageClient(context: vscode.ExtensionContext): LanguageClient {
+export function registerLanguageClient(context: vscode.ExtensionContext): RegexRadarLanguageClient {
     if (client) {
         return client;
     }
@@ -28,7 +28,7 @@ export function registerLanguageClient(context: vscode.ExtensionContext): Langua
 function createLanguageClient(context: vscode.ExtensionContext): RegexRadarLanguageClient {
     // TODO: figure out how to bundle the server, as part of the extension
     const serverModule = context.asAbsolutePath(
-        path.join("..", "..", "packages", "server", "dist", "index.js")
+        path.join("..", "..", "packages", "server", "dist", "index.cjs")
     );
     const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
     const serverOptions: ServerOptions = {

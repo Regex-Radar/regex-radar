@@ -7,7 +7,7 @@ import { createFileEntry, FileEntry } from "./file-entry";
 import { createRegexEntry, RegexEntry } from "./regex-entry";
 
 import * as logger from "../logger";
-import { RegexRadarLanguageClient } from "../client";
+import { RegexRadarLanguageClient } from "@regex-radar/client";
 
 export type Element = WorkspaceEntry | DirectoryEntry | FileEntry | RegexEntry;
 
@@ -37,7 +37,7 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Eleme
             case EntryType.Workspace:
             case EntryType.Directory:
             case EntryType.File: {
-                const response: any = await this.client.getTreeViewChildren(uri, element.type);
+                const response: any = await this.client.getTreeViewChildren(uri.toString(), element.type);
                 return response.children.map((entry: any) => {
                     const uri = vscode.Uri.parse(entry.uri);
                     switch (entry.type) {
