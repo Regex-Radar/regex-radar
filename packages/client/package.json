@@ -1,15 +1,15 @@
 {
-    "name": "@regex-radar/server",
+    "name": "@regex-radar/client",
     "private": true,
-    "displayName": "Regex Radar Language Server",
+    "displayName": "Regex Radar Language Server Client",
     "publisher": "Kevin Ramharak",
-    "description": "The Language Server for Regex Radar",
+    "description": "The Language Server Client for Regex Radar",
     "version": "0.1.0",
     "type": "module",
     "repository": {
         "type": "git",
         "url": "https://github.com/kevinramharak/regex-radar",
-        "directory": "packages/server"
+        "directory": "packages/client"
     },
     "homepage": "https://github.com/kevinramharak/regex-radar",
     "scripts": {
@@ -18,12 +18,7 @@
         "package": "node scripts/build.js --production",
         "tsc": "tsc -p ."
     },
-    "dependencies": {
-        "oxc-parser": "^0.95.0",
-        "vscode-languageserver": "^9.0.1",
-        "vscode-languageserver-textdocument": "^1.0.12",
-        "vscode-uri": "^3.1.0"
-    },
+    "dependencies": {},
     "devDependencies": {
         "esbuild": "^0.25.11"
     }

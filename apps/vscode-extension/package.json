@@ -1,10 +1,11 @@
 {
-    "name": "regex-radar",
+    "name": "@regex-radar/vscode-extension",
     "private": true,
     "displayName": "Regex Radar",
     "publisher": "Kevin Ramharak",
     "description": "The Regex Radar extension for vscode",
     "version": "0.1.0",
+    "type": "module",
     "icon": "assets/icon.png",
     "repository": {
         "type": "git",
@@ -19,10 +20,6 @@
         "dependencies": false
     },
     "categories": [],
-    "galleryBanner": {
-        "color": "#133b55",
-        "theme": "dark"
-    },
     "activationEvents": [],
     "contributes": {
         "views": {
@@ -36,8 +33,8 @@
             ]
         }
     },
-    "main": "./dist/extension.js",
-    "browser": "./dist/extension.js",
+    "main": "./dist/extension.cjs",
+    "browser": "./dist/extension.cjs",
     "files": [
         "dist/**/*",
         "assets/**/*",
@@ -46,7 +43,8 @@
     "scripts": {
         "build": "node scripts/build.js",
         "dev": "node scripts/build.js --watch",
-        "package": "node scripts/build.js --production"
+        "package": "node scripts/build.js --production",
+        "tsc": "tsc -p ."
     },
     "devDependencies": {
         "@types/node": "^22.18.10",
@@ -54,6 +52,7 @@
         "esbuild": "^0.25.11"
     },
     "dependencies": {
-        "vscode-languageclient": "^9.0.1"
+        "vscode-languageclient": "^9.0.1",
+        "@regex-radar/client": "*"
     }
 }

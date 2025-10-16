@@ -1,8 +1,9 @@
 {
-    "name": "regex-radar-monorepo",
+    "name": "@regex-radar/monorepo",
     "private": true,
     "packageManager": "npm@11.3.0",
     "license": "MIT",
+    "type": "module",
     "workspaces": [
         "apps/*",
         "packages/*"
@@ -11,6 +12,7 @@
         "build": "turbo run build",
         "dev": "turbo run dev",
         "lint": "turbo run lint",
+        "tsc": "turbo run tsc",
         "format": "prettier --write \"**/*.{ts,tsx,md}\""
     },
     "devDependencies": {

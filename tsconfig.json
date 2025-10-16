@@ -6,6 +6,12 @@
         { "path": "apps/vscode-extension" },
         {
             "path": "packages/server"
+        },
+        {
+            "path": "packages/client"
+        },
+        {
+            "path": "packages/lsp-types"
         }
     ]
 }

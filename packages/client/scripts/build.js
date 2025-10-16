@@ -9,15 +9,15 @@ const watch = process.argv.includes("--watch");
 
 async function main() {
     const ctx = await context({
-        entryPoints: ["src/extension.ts"],
+        entryPoints: ["src/index.ts"],
         bundle: true,
         format: "cjs",
         minify: production,
         sourcemap: true,
         sourcesContent: false,
         platform: "node",
-        outfile: "dist/extension.cjs",
-        external: ["vscode"],
+        outfile: "dist/index.js",
+        external: ["vscode", "oxc-parser"],
         logLevel: "silent",
         plugins: [esbuildProblemMatcherPlugin, workspacePackagesPlugin],
     });

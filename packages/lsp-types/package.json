@@ -1,15 +1,15 @@
 {
-    "name": "@regex-radar/server",
+    "name": "@regex-radar/lsp-types",
     "private": true,
-    "displayName": "Regex Radar Language Server",
+    "displayName": "Regex Radar Language Server Protocol types",
     "publisher": "Kevin Ramharak",
-    "description": "The Language Server for Regex Radar",
+    "description": "The Language Server Protocol Types for Regex Radar",
     "version": "0.1.0",
     "type": "module",
     "repository": {
         "type": "git",
         "url": "https://github.com/kevinramharak/regex-radar",
-        "directory": "packages/server"
+        "directory": "packages/lsp-types"
     },
     "homepage": "https://github.com/kevinramharak/regex-radar",
     "scripts": {

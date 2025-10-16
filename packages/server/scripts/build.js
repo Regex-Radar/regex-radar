@@ -1,27 +1,11 @@
-const { context } = require("esbuild");
+// @ts-check
+
+import { context } from "esbuild";
+import { esbuildProblemMatcherPlugin } from "../../../plugins/esbuild/problem-matcher-plugin.js";
+import { workspacePackagesPlugin } from "../../../plugins/esbuild/workspace-packages-plugin.js";
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
-
-/**
- * @type {import('esbuild').Plugin}
- */
-const esbuildProblemMatcherPlugin = {
-    name: "esbuild-problem-matcher",
-
-    setup(build) {
-        build.onStart(() => {
-            console.log("[watch] build started");
-        });
-        build.onEnd((result) => {
-            result.errors.forEach(({ text, location }) => {
-                console.error(`✘ [ERROR] ${text}`);
-                console.error(`    ${location.file}:${location.line}:${location.column}:`);
-            });
-            console.log("[watch] build finished");
-        });
-    },
-};
 
 async function main() {
     const ctx = await context({
@@ -32,13 +16,10 @@ async function main() {
         sourcemap: true,
         sourcesContent: false,
         platform: "node",
-        outfile: "dist/server.js",
+        outfile: "dist/index.js",
         external: ["vscode", "oxc-parser"],
         logLevel: "silent",
-        plugins: [
-            /* add to the end of plugins array */
-            esbuildProblemMatcherPlugin,
-        ],
+        plugins: [esbuildProblemMatcherPlugin, workspacePackagesPlugin],
     });
     if (watch) {
         await ctx.watch();

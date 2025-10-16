@@ -7,7 +7,8 @@ import {
     URI,
 } from "vscode-languageclient/node";
 import * as path from "path";
-import { RegexRadarLanguageClient } from "./RegexRadarLanguageClient";
+
+import { RegexRadarLanguageClient } from "@regex-radar/client";
 
 let client: RegexRadarLanguageClient | null = null;
 
@@ -27,7 +28,7 @@ export function registerLanguageClient(context: vscode.ExtensionContext): Langua
 function createLanguageClient(context: vscode.ExtensionContext): RegexRadarLanguageClient {
     // TODO: figure out how to bundle the server, as part of the extension
     const serverModule = context.asAbsolutePath(
-        path.join("..", "..", "packages", "server", "dist", "server.js")
+        path.join("..", "..", "packages", "server", "dist", "index.js")
     );
     const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
     const serverOptions: ServerOptions = {
@@ -45,5 +46,3 @@ function createLanguageClient(context: vscode.ExtensionContext): RegexRadarLangu
     const clientOptions: LanguageClientOptions = {};
     return new RegexRadarLanguageClient(serverOptions, clientOptions);
 }
-
-export { RegexRadarLanguageClient };
