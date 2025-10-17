@@ -10,6 +10,8 @@
             "cache": false,
             "persistent": true
         },
-        "tsc": {}
+        "tsc": {
+            "cache": false
+        }
     }
 }

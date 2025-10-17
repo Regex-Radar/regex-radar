@@ -2,7 +2,13 @@
     "extends": "../../tsconfig.base.json",
     "compilerOptions": {
         "target": "es2024",
-        "resolveJsonModule": true
+        "resolveJsonModule": true,
+        "rootDir": "src",
+        "outDir": "dist"
     },
-    "include": ["src/**/*.ts", "test/**/*.ts"]
+    "include": ["src/**/*.ts", "test/**/*.ts", "package.json"],
+    "paths": {
+        "@regex-radar/client": ["../client/src"],
+        "@regex-radar/lsp-types": ["../lsp-types/src"]
+    }
 }

@@ -34,7 +34,8 @@
         }
     },
     "main": "./dist/extension.cjs",
-    "browser": "./dist/extension.cjs",
+    "browser": "./dist/extension.browser.cjs",
+    "types": "./dist/extension.d.ts",
     "files": [
         "dist/**/*",
         "assets/**/*",

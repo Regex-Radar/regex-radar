@@ -6,6 +6,9 @@
     "description": "The Language Server for Regex Radar",
     "version": "0.1.0",
     "type": "module",
+    "main": "./dist/index.cjs",
+    "browser": "./dist/index.browser.cjs",
+    "types": "./dist/index.d.ts",
     "repository": {
         "type": "git",
         "url": "https://github.com/kevinramharak/regex-radar",

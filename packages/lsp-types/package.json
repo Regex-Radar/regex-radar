@@ -6,6 +6,9 @@
     "description": "The Language Server Protocol Types for Regex Radar",
     "version": "0.1.0",
     "type": "module",
+    "main": "./dist/index.cjs",
+    "browser": "./dist/index.browser.cjs",
+    "types": "./dist/index.d.ts",
     "repository": {
         "type": "git",
         "url": "https://github.com/kevinramharak/regex-radar",
@@ -19,10 +22,7 @@
         "tsc": "tsc -p ."
     },
     "dependencies": {
-        "oxc-parser": "^0.95.0",
-        "vscode-languageserver": "^9.0.1",
-        "vscode-languageserver-textdocument": "^1.0.12",
-        "vscode-uri": "^3.1.0"
+        "vscode-languageserver-types": "^3.17.5"
     },
     "devDependencies": {
         "esbuild": "^0.25.11"

@@ -1,6 +1,7 @@
 
 # build intermediate files
 .turbo
+tsconfig.tsbuildinfo
 
 # dependencies
 node_modules
