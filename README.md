@@ -115,3 +115,7 @@ Client UI (TreeView, Hover, Commands)
 | Testing         | `vscode-test`, `jest`                     |
 | Packaging       | `vsce`                                    |
 ```
+
+## Notes:
+
+- https://code.visualstudio.com/docs/getstarted/userinterface#_advanced-tree-navigation for filtering / search
