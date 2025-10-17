@@ -17,7 +17,7 @@ A Regex Intelligence Tooling extension — a VS Code + Language Server combo tha
 - Use AST parsing (e.g., via @babel/parser for JS/TS, tree-sitter for multi-language).
 - The language server returns a list of regex locations + metadata (pattern, flags, file, line, etc.).
 
-2. Regex Explorer View
+2. Regex Explorer View -> Currently a tree-view inside the explorer
 
 - VS Code TreeView panel titled “Regex Explorer.”
 - Lists regexes grouped by file.

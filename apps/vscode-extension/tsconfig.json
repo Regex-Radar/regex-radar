@@ -1,10 +1,9 @@
 {
-    "extends": "../../tsconfig.base.json",
+    "extends": "../../tsconfig.json",
     "compilerOptions": {
         "moduleResolution": "node10",
         "target": "es2024",
         "resolveJsonModule": true,
-        "rootDir": "src",
         "outDir": "dist",
         "paths": {
             "@regex-radar/client": ["../../packages/client/src"],

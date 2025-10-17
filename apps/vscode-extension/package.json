@@ -25,7 +25,7 @@
         "views": {
             "explorer": [
                 {
-                    "id": "regex-radar",
+                    "id": "regex-radar-tree-view",
                     "name": "Regex Radar",
                     "icon": "",
                     "visibility": "collapsed"

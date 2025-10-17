@@ -1,9 +1,13 @@
 {
     "$schema": "https://json.schemastore.org/tsconfig",
-    "extends": "./tsconfig.base.json",
+    "extends": "@tsconfig/recommended/tsconfig.json",
+    "exclude": ["dist", "node_modules"],
     "files": [],
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "composite": true,
     "compilerOptions": {
-        "noEmit": true
+        // "rootDirs": ["apps/vscode-extension", "packages/server", "packages/client", "packages/lsp-types"]
     },
     "references": [
         { "path": "apps/vscode-extension" },

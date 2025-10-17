@@ -1,32 +1,32 @@
-import { Connection, TextDocuments } from "vscode-languageserver";
+import { Connection, Location, TextDocuments } from "vscode-languageserver";
 import { URI } from "vscode-uri";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { parseJs } from "../parse/parseJs";
 import { uriToDocument } from "../documents";
-
-enum EntryType {
-    Uknown,
-    Workspace,
-    Directory,
-    File,
-    Regex,
-}
+import {
+    Entry,
+    EntryType,
+    DirectoryEntry,
+    FileEntry,
+    RegexEntry,
+    WorkspaceEntry,
+} from "@regex-radar/lsp-types";
 
 export function registerTreeViewHandlers(connection: Connection, documents: TextDocuments<TextDocument>) {
     connection.onRequest(
         "regexRadar/getTreeViewChildren",
-        async ({ uri, type }: { uri: string; type: EntryType }) => {
+        async ({ uri, type }: { uri: string; type: EntryType }): Promise<Entry[]> => {
             switch (type) {
                 case EntryType.Workspace: {
-                    return buildTreeFromWorkspace(uri, documents);
+                    return [await buildTreeFromWorkspace(uri, documents)];
                 }
                 case EntryType.Directory: {
-                    return buildTreeFromDirectory(uri, documents);
+                    return [await buildTreeFromDirectory(uri, documents)];
                 }
                 case EntryType.File: {
-                    return buildTreeFromFile(uri, documents);
+                    return [await buildTreeFromFile(uri, documents)];
                 }
                 default: {
                     return [];
@@ -35,35 +35,6 @@ export function registerTreeViewHandlers(connection: Connection, documents: Text
         }
     );
 }
-
-type TreeEntry = DirectoryEntry | FileEntry;
-
-type WorkspaceEntry = {
-    uri: string;
-    type: EntryType.Workspace;
-    children: TreeEntry[];
-};
-
-type DirectoryEntry = {
-    uri: string;
-    type: EntryType.Directory;
-    children: TreeEntry[];
-};
-
-type FileEntry = {
-    uri: string;
-    type: EntryType.File;
-    children: RegexEntry[];
-};
-
-type RegexEntry = {
-    uri: string;
-    type: EntryType.Regex;
-    pattern: string;
-    flags: string;
-};
-
-const cache = new Map<string, TreeEntry>();
 
 async function buildTreeFromWorkspace(
     uri: string | URI,
@@ -109,20 +80,20 @@ async function buildTreeFromFile(
     uri: string | URI,
     documents: TextDocuments<TextDocument>
 ): Promise<FileEntry> {
+    uri = typeof uri === "string" ? URI.parse(uri) : uri;
     const document = await uriToDocument(uri.toString(), documents);
     const parseResult = parseJs(document);
     return {
         uri: uri.toString(),
         type: EntryType.File,
-        children: parseResult.regexes.map((entry) => {
-            uri = typeof uri === "string" ? URI.parse(uri) : uri;
-            uri = uri.with({ fragment: `${entry.node.range.start},${entry.node.range.end}` });
+        children: parseResult.regexes.map((entry): RegexEntry => {
             return {
-                uri: uri.toString(),
                 type: EntryType.Regex,
-                pattern: entry.pattern,
-                flags: entry.flags,
-                range: entry.node.range,
+                location: Location.create(uri.toString(), entry.node.range),
+                info: {
+                    pattern: entry.pattern,
+                    flags: entry.flags,
+                },
             };
         }),
     };

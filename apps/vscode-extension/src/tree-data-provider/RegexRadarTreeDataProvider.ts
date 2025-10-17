@@ -1,74 +1,73 @@
 import * as vscode from "vscode";
-
-import { EntryType } from "./EntryType";
-import { createWorkspaceEntry, WorkspaceEntry } from "./workspace-entry";
-import { createDirectoryEntry, DirectoryEntry } from "./directory-entry";
-import { createFileEntry, FileEntry } from "./file-entry";
-import { createRegexEntry, RegexEntry } from "./regex-entry";
-
-import * as logger from "../logger";
+import { EntryType, Entry, WorkspaceEntry } from "@regex-radar/lsp-types";
 import { RegexRadarLanguageClient } from "@regex-radar/client";
-
-export type Element = WorkspaceEntry | DirectoryEntry | FileEntry | RegexEntry;
 
 /**
  * @see https://code.visualstudio.com/api/extension-guides/tree-view
  */
-export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Element> {
+export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry> {
     constructor(
         private readonly client: RegexRadarLanguageClient,
         private readonly workspaceFolders: readonly vscode.WorkspaceFolder[]
     ) {}
 
-    getTreeItem(element: Element): Element {
-        return element;
+    getTreeItem(entry: Entry): vscode.TreeItem {
+        return createTreeItem(entry);
     }
 
-    async getChildren(element?: Element): Promise<Element[]> {
-        if (!element) {
+    async getChildren(entry?: Entry): Promise<Entry[]> {
+        if (!entry) {
             return this.getRoot();
         }
-        const uri = element.resourceUri;
-        if (!uri) {
-            return [];
-        }
-
-        switch (element.type) {
+        switch (entry.type) {
             case EntryType.Workspace:
             case EntryType.Directory:
             case EntryType.File: {
-                const response: any = await this.client.getTreeViewChildren(uri.toString(), element.type);
-                return response.children.map((entry: any) => {
-                    const uri = vscode.Uri.parse(entry.uri);
-                    switch (entry.type) {
-                        case EntryType.Workspace: {
-                            return createWorkspaceEntry(uri);
-                        }
-                        case EntryType.Directory: {
-                            return createDirectoryEntry(uri);
-                        }
-                        case EntryType.File: {
-                            return createFileEntry(uri);
-                        }
-                        case EntryType.Regex: {
-                            return createRegexEntry(`/${entry.pattern}/${entry.flags}`, uri);
-                        }
-                    }
-                });
+                const response = await this.client.getTreeViewChildren(entry.uri, entry.type);
+                return response;
+            }
+            case EntryType.Regex:
+            default: {
+                return [];
             }
         }
-
-        return [];
     }
 
-    async getRoot(): Promise<Element[]> {
-        const elements = this.workspaceFolders.map((workspaceFolder) =>
-            createWorkspaceEntry(workspaceFolder.uri)
-        );
+    async getRoot(): Promise<Entry[]> {
         // if there is only 1 workspace, use it as root to skip 1 nesting level
-        if (elements.length === 1) {
-            return this.getChildren(elements[0]);
+        const workspaces = this.workspaceFolders.map((workspace): WorkspaceEntry => {
+            return {
+                type: EntryType.Workspace,
+                uri: workspace.uri.toString(),
+                children: [],
+            };
+        });
+        if (workspaces.length === 1) {
+            return this.getChildren(workspaces[0]);
         }
-        return Promise.resolve(elements);
+        return workspaces;
+    }
+}
+
+const ThemeIcon = {
+    Regex: new vscode.ThemeIcon("regex"),
+};
+
+function createTreeItem(entry: Entry): vscode.TreeItem {
+    switch (entry.type) {
+        case EntryType.Workspace:
+        case EntryType.Directory:
+        case EntryType.File: {
+            return {
+                resourceUri: vscode.Uri.parse(entry.uri),
+                collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+            };
+        }
+        case EntryType.Regex: {
+            return {
+                label: `/${entry.info.pattern}/${entry.info.flags}`,
+                iconPath: ThemeIcon.Regex,
+            };
+        }
     }
 }
