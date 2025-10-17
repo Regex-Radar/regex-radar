@@ -23,10 +23,34 @@ A Regex Intelligence Tooling extension — a VS Code + Language Server combo tha
 - Lists regexes grouped by file.
 - Click → navigates to definition in the editor.
 
-3. Open in Regexr
+3. Open in Regexr, Regex101 & (maybe) https://regex-generator.olafneumann.org
 
 - Right-click command: “Open in Regexr” → opens browser tab pre-filled with that pattern.
 - Just URL encode and append to https://regexr.com/?expression=....
+
+```js
+// RegExr source
+let params = Utils.getUrlParams();
+if (Utils.isLocal && params.id) {
+    Server.load(params.id).then((o) => (this.state = o));
+    params = {};
+}
+if (params.engine) {
+    this.flavor.value = params.engine;
+}
+if (params.expression) {
+    this.expression.value = params.expression;
+}
+if (params.text) {
+    this.text.value = params.text;
+}
+if (params.tool) {
+    this.tools.value = { id: params.tool, input: params.input };
+}
+```
+
+- see https://github.com/firasdib/Regex101/wiki/FAQ#how-to-prefill-the-fields-on-the-interface-via-url
+- https://regex101.com/?regex=<regex>&testString=<text>&flags=<flags>&subst=<replacement>&delimiter=<delimiter>
 
 4. ReDoS Detection
 

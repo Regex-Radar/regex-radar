@@ -26,12 +26,12 @@ connection.onInitialize((params) => {
                 save: true,
                 willSave: true,
             },
-            diagnosticProvider: {
-                identifier: "regex-radar",
-                documentSelector: [{ language: "typescript" }, { language: "javascript" }],
-                interFileDependencies: false,
-                workspaceDiagnostics: true,
-            },
+            // diagnosticProvider: {
+            //     identifier: "regex-radar",
+            //     documentSelector: [{ language: "typescript" }, { language: "javascript" }],
+            //     interFileDependencies: false,
+            //     workspaceDiagnostics: true,
+            // },
         },
         serverInfo: {
             name: packageJson.name,

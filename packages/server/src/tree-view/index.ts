@@ -13,43 +13,48 @@ import {
     RegexEntry,
     WorkspaceEntry,
 } from "@regex-radar/lsp-types";
+import { ParseResult } from "../parse/ParseResult";
 
-// let c!: Connection;
+const cache = new Map<Uri, Exclude<Entry, RegexEntry>>();
 
 export function registerTreeViewHandlers(connection: Connection, documents: TextDocuments<TextDocument>) {
-    // c = connection;
     connection.onRequest(
         "regexRadar/getTreeViewChildren",
-        async ({ uri, type }: { uri: Uri; type: EntryType }): Promise<Entry[]> => {
-            if (isUriIgnored(uri)) {
+        async ({ entry }: { entry: Entry }): Promise<Entry[]> => {
+            if (entry.type === EntryType.Regex) {
                 return [];
             }
-            switch (type) {
+            if (isUriIgnored(entry.uri)) {
+                return [];
+            }
+            switch (entry.type) {
                 case EntryType.Workspace: {
-                    return (await buildTreeFromWorkspace(uri, documents)).children.filter((child) =>
-                        deeplyContainsRegexEntry(child)
-                    );
+                    const tree = await buildTreeFromWorkspace(entry.uri, documents);
+                    return tree.children.filter((child) => deeplyContainsRegexEntry(child));
                 }
                 case EntryType.Directory: {
-                    return (await buildTreeFromDirectory(uri, documents)).children.filter((child) =>
-                        deeplyContainsRegexEntry(child)
-                    );
+                    const tree = await buildTreeFromDirectory(entry.uri, documents);
+                    return tree.children.filter((child) => deeplyContainsRegexEntry(child));
                 }
                 case EntryType.File: {
-                    if (!isUriSupported(uri)) {
+                    if (!isUriSupported(entry.uri)) {
                         return [];
                     }
-                    return (await buildTreeFromFile(uri, documents)).children;
+                    const tree = await buildTreeFromFile(entry.uri, documents);
+                    return tree.children;
                 }
                 default: {
-                    return [];
+                    throw new Error("unreachable");
                 }
             }
         }
     );
 }
 
-function deeplyContainsRegexEntry(entry: WorkspaceEntry | DirectoryEntry | FileEntry): boolean {
+function deeplyContainsRegexEntry(entry: Entry): boolean {
+    if (entry.type === EntryType.Regex) {
+        return false;
+    }
     if (entry.type === EntryType.File) {
         return entry.children.length > 0;
     }
@@ -102,10 +107,16 @@ function isFsPathSupported(fsPath: string): boolean {
 }
 
 async function buildTreeFromWorkspace(
-    uri: string | URI,
+    uri: string,
     documents: TextDocuments<TextDocument>
 ): Promise<WorkspaceEntry> {
+    const uriAsString = uri.toString();
+    const memo = cache.get(uriAsString);
+    if (memo && memo.type === EntryType.Workspace) {
+        return memo;
+    }
     const result = await buildTreeFromDirectory(uri, documents);
+    cache.set(uriAsString, result);
     return {
         ...result,
         type: EntryType.Workspace,
@@ -116,6 +127,11 @@ async function buildTreeFromDirectory(
     uri: string | URI,
     documents: TextDocuments<TextDocument>
 ): Promise<DirectoryEntry> {
+    const uriAsString = uri.toString();
+    const memo = cache.get(uriAsString);
+    if (memo && memo.type === EntryType.Directory) {
+        return memo;
+    }
     uri = typeof uri === "string" ? URI.parse(uri) : uri;
     const fsPath = uri.fsPath;
     const entries = await fs.readdir(fsPath, { withFileTypes: true });
@@ -128,7 +144,7 @@ async function buildTreeFromDirectory(
                         return;
                     }
                     const uri = URI.file(entryPath);
-                    return buildTreeFromFile(uri, documents);
+                    return buildTreeFromFile(uri.toString(), documents);
                 } else if (entry.isDirectory()) {
                     const entryPath = path.join(fsPath, entry.name);
                     if (isFsPathIgnored(entryPath)) {
@@ -140,36 +156,42 @@ async function buildTreeFromDirectory(
             })
         )
     ).filter((child) => !!child);
-    return {
+    const result: DirectoryEntry = {
         uri: uri.toString(),
         type: EntryType.Directory,
         children,
     };
+    cache.set(uriAsString, result);
+    return result;
 }
 
 /**
  * Should only be called on paths that are supported
  * @see isUriSupported
  */
-async function buildTreeFromFile(
-    uri: string | URI,
-    documents: TextDocuments<TextDocument>
-): Promise<FileEntry> {
-    uri = typeof uri === "string" ? URI.parse(uri) : uri;
-    const document = await uriToDocument(uri.toString(), documents);
+async function buildTreeFromFile(uri: string, documents: TextDocuments<TextDocument>): Promise<FileEntry> {
+    const memo = cache.get(uri);
+    if (memo && memo.type === EntryType.File) {
+        return memo;
+    }
+    const document = await uriToDocument(uri, documents);
     const parseResult = parseJs(document);
-    return {
+    const result: FileEntry = {
         uri: uri.toString(),
         type: EntryType.File,
-        children: parseResult.regexes.map((entry): RegexEntry => {
-            return {
-                type: EntryType.Regex,
-                location: Location.create(uri.toString(), entry.node.range),
-                info: {
-                    pattern: entry.pattern,
-                    flags: entry.flags,
-                },
-            };
-        }),
+        children: parseResult.regexes.map((regex) => createRegexEntry(regex, uri)),
+    };
+    cache.set(uri, result);
+    return result;
+}
+
+function createRegexEntry(regex: ParseResult["regexes"][number], uri: string): RegexEntry {
+    return {
+        type: EntryType.Regex,
+        location: Location.create(uri, regex.node.range),
+        info: {
+            pattern: regex.pattern,
+            flags: regex.flags,
+        },
     };
 }

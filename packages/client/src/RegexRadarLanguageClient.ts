@@ -7,7 +7,7 @@ export class RegexRadarLanguageClient extends LanguageClient {
         super(name, displayName, serverOptions, clientOptions);
     }
 
-    async getTreeViewChildren(uri: string, type: EntryType): Promise<Entry[]> {
-        return await this.sendRequest("regexRadar/getTreeViewChildren", { uri: uri, type });
+    async getTreeViewChildren(entry: Entry): Promise<Entry[]> {
+        return await this.sendRequest("regexRadar/getTreeViewChildren", { entry });
     }
 }

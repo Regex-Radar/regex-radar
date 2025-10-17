@@ -1,7 +1,7 @@
 import * as lsp from "vscode-languageserver-types";
 
 export enum EntryType {
-    Uknown,
+    Unknown,
     Workspace,
     Directory,
     File,
@@ -34,5 +34,6 @@ export type RegexEntry = {
     info: {
         pattern: string;
         flags: string;
+        isDynamic?: boolean;
     };
 };

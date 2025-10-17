@@ -13,6 +13,9 @@
         "directory": "apps/vscode-extension"
     },
     "homepage": "https://github.com/kevinramharak/regex-radar",
+    "regex-radar.trace.server": {
+        "default": "verbose"
+    },
     "engines": {
         "vscode": "^1.105.0"
     },
@@ -31,11 +34,29 @@
                 }
             ]
         },
+        "configuration": {
+            "type": "object",
+            "title": "Regex Radar",
+            "properties": {
+                "@regex-radar/client.trace.server": {
+                    "scope": "window",
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "messages",
+                        "verbose"
+                    ],
+                    "default": "off",
+                    "description": "Traces the communication between VS Code and the language server.",
+                    "ignoreSync": true
+                }
+            }
+        },
         "views": {
             "explorer": [
                 {
                     "id": "regex-radar.explorer.tree-view",
-                    "name": "Regex Radar",
+                    "name": "Regex Explorer",
                     "icon": "regex",
                     "visibility": "collapsed"
                 }
@@ -43,7 +64,7 @@
             "regex-radar__regex-explorer": [
                 {
                     "id": "regex-radar.regex-explorer.tree-view",
-                    "name": "Regex Radar",
+                    "name": "Regex Explorer",
                     "icon": "regex",
                     "visibility": "visible"
                 }
@@ -56,6 +77,16 @@
                     "when": "view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view",
                     "group": "navigation"
                 }
+            ],
+            "view/item/context": [
+                {
+                    "command": "regex-radar.tree-data-provider.openInRegExr",
+                    "when": "(view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view) && viewItem == regex"
+                },
+                {
+                    "command": "regex-radar.tree-data-provider.openInRegex101",
+                    "when": "(view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view) && viewItem == regex"
+                }
             ]
         },
         "commands": [
@@ -64,6 +95,18 @@
                 "enablement": "view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible",
                 "icon": "$(refresh)",
                 "title": "Refresh"
+            },
+            {
+                "command": "regex-radar.tree-data-provider.openInRegExr",
+                "enablement": "view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible",
+                "icon": "$(globe)",
+                "title": "Open in RegexR"
+            },
+            {
+                "command": "regex-radar.tree-data-provider.openInRegex101",
+                "enablement": "view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible",
+                "icon": "$(globe)",
+                "title": "Open in Regex101"
             }
         ]
     },

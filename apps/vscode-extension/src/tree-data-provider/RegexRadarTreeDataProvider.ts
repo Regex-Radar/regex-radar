@@ -1,5 +1,12 @@
 import * as vscode from "vscode";
-import { EntryType, Entry, WorkspaceEntry } from "@regex-radar/lsp-types";
+import {
+    EntryType,
+    Entry,
+    WorkspaceEntry,
+    DirectoryEntry,
+    FileEntry,
+    RegexEntry,
+} from "@regex-radar/lsp-types";
 import { RegexRadarLanguageClient } from "@regex-radar/client";
 
 /**
@@ -19,9 +26,7 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
     ) {}
 
     // TODO: implement this for `reveal` action
-    // getParent(element: Entry): vscode.ProviderResult<Entry> {
-
-    // }
+    // getParent(element: Entry): vscode.ProviderResult<Entry> {}
 
     getTreeItem(entry: Entry): vscode.TreeItem {
         return createTreeItem(entry);
@@ -33,10 +38,13 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
         }
         switch (entry.type) {
             case EntryType.Workspace:
-            case EntryType.Directory:
+            case EntryType.Directory: {
+                const children = await this.client.getTreeViewChildren(entry);
+                return children;
+            }
             case EntryType.File: {
-                const response = await this.client.getTreeViewChildren(entry.uri, entry.type);
-                return response;
+                const children = await this.client.getTreeViewChildren(entry);
+                return children;
             }
             case EntryType.Regex:
             default: {
@@ -62,7 +70,7 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
 }
 
 const ThemeIcon: Record<EntryType, vscode.ThemeIcon> = {
-    [EntryType.Uknown]: new vscode.ThemeIcon("circle-filled"),
+    [EntryType.Unknown]: new vscode.ThemeIcon("circle-filled"),
     [EntryType.Workspace]: new vscode.ThemeIcon("root-folder"),
     [EntryType.Directory]: vscode.ThemeIcon.Folder,
     [EntryType.File]: vscode.ThemeIcon.File,
@@ -70,38 +78,15 @@ const ThemeIcon: Record<EntryType, vscode.ThemeIcon> = {
 };
 
 function createTreeItem(entry: Entry): vscode.TreeItem {
-    const iconPath = ThemeIcon[entry.type] || ThemeIcon[EntryType.Uknown];
+    const iconPath = ThemeIcon[entry.type] || ThemeIcon[EntryType.Unknown];
     switch (entry.type) {
         case EntryType.Workspace:
         case EntryType.Directory:
         case EntryType.File: {
-            return {
-                resourceUri: vscode.Uri.parse(entry.uri),
-                collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-                iconPath,
-            };
+            return createUriEntry(entry, iconPath);
         }
         case EntryType.Regex: {
-            const args: [string, vscode.TextDocumentShowOptions] = [
-                entry.location.uri,
-                {
-                    selection: new vscode.Range(
-                        entry.location.range.start.line,
-                        entry.location.range.start.character,
-                        entry.location.range.end.line,
-                        entry.location.range.end.character
-                    ),
-                },
-            ];
-            return {
-                label: `/${entry.info.pattern}/${entry.info.flags}`,
-                iconPath,
-                command: {
-                    command: "vscode.open",
-                    title: "Open",
-                    arguments: args,
-                },
-            };
+            return createRegexEntry(entry, iconPath);
         }
         default: {
             return {
@@ -110,4 +95,38 @@ function createTreeItem(entry: Entry): vscode.TreeItem {
             };
         }
     }
+}
+function createRegexEntry(entry: RegexEntry, iconPath: vscode.ThemeIcon) {
+    const args: [string, vscode.TextDocumentShowOptions] = [
+        entry.location.uri,
+        {
+            selection: new vscode.Range(
+                entry.location.range.start.line,
+                entry.location.range.start.character,
+                entry.location.range.end.line,
+                entry.location.range.end.character
+            ),
+        },
+    ];
+    return {
+        label: `/${entry.info.pattern}/${entry.info.flags}`,
+        iconPath,
+        contextValue: "regex",
+        command: {
+            command: "vscode.open",
+            title: "Open",
+            arguments: args,
+        },
+    };
+}
+
+function createUriEntry(
+    entry: WorkspaceEntry | DirectoryEntry | FileEntry,
+    iconPath: vscode.ThemeIcon
+): vscode.TreeItem {
+    return {
+        resourceUri: vscode.Uri.parse(entry.uri),
+        collapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
+        iconPath,
+    };
 }
