@@ -1,29 +1,23 @@
 import * as vscode from "vscode";
 import { RegexRadarTreeDataProvider } from "./RegexRadarTreeDataProvider";
 import { RegexRadarLanguageClient } from "@regex-radar/client";
+import { Entry } from "@regex-radar/lsp-types";
 
 export function registerTreeView(client: RegexRadarLanguageClient, context: vscode.ExtensionContext) {
     const workspaceFolders = vscode.workspace.workspaceFolders ?? [];
-    const treeView = vscode.window.createTreeView("regex-radar-tree-view", {
-        treeDataProvider: new RegexRadarTreeDataProvider(client, workspaceFolders),
+    const treeDataProvider = new RegexRadarTreeDataProvider(client, workspaceFolders);
+    const options: vscode.TreeViewOptions<Entry> = {
+        treeDataProvider,
         showCollapseAll: true,
-    });
-    context.subscriptions.push(treeView);
+    };
+    context.subscriptions.push(
+        vscode.window.createTreeView("regex-radar.explorer.tree-view", options),
+        vscode.window.createTreeView("regex-radar.regex-explorer.tree-view", options)
+    );
 
-    // treeView.onDidChangeSelection((event) => {
-    //     const selection = event.selection;
-    //     if (selection.length === 1) {
-    //         const entry = selection[0];
-    //         if (entry.type === EntryType.Regex) {
-    //             const [start, end] = entry
-    //                 .resourceUri!.fragment.split(",")
-    //                 .map((part) => part.split(":").map((part) => Number.parseInt(part)));
-    //             vscode.window.showTextDocument(entry.resourceUri!, {
-    //                 selection: new vscode.Range(start[0], start[1], end[0], end[1]),
-    //             });
-    //         }
-    //     }
-    // });
+    vscode.commands.registerCommand("regex-radar.tree-data-provider.refresh", () =>
+        treeDataProvider.refresh()
+    );
 
     context.subscriptions.push(
         vscode.workspace.onDidChangeWorkspaceFolders((event) => {

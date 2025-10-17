@@ -22,16 +22,50 @@
     "categories": [],
     "activationEvents": [],
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "regex-radar__view-container",
+                    "title": "Regex Explorer",
+                    "icon": "$(regex)"
+                }
+            ]
+        },
         "views": {
             "explorer": [
                 {
-                    "id": "regex-radar-tree-view",
+                    "id": "regex-radar.explorer.tree-view",
                     "name": "Regex Radar",
-                    "icon": "",
+                    "icon": "regex",
                     "visibility": "collapsed"
                 }
+            ],
+            "regex-radar__regex-explorer": [
+                {
+                    "id": "regex-radar.regex-explorer.tree-view",
+                    "name": "Regex Radar",
+                    "icon": "regex",
+                    "visibility": "visible"
+                }
             ]
-        }
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "regex-radar.tree-data-provider.refresh",
+                    "when": "view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view",
+                    "group": "navigation"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "regex-radar.tree-data-provider.refresh",
+                "enablement": "view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible",
+                "icon": "$(refresh)",
+                "title": "Refresh"
+            }
+        ]
     },
     "main": "./dist/extension.cjs",
     "browser": "./dist/extension.browser.cjs",

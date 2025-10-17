@@ -1,11 +1,5 @@
 import * as vscode from "vscode";
-import {
-    LanguageClient,
-    LanguageClientOptions,
-    ServerOptions,
-    TransportKind,
-    URI,
-} from "vscode-languageclient/node";
+import { LanguageClientOptions, ServerOptions, TransportKind } from "vscode-languageclient/node";
 import * as path from "path";
 
 import { RegexRadarLanguageClient } from "@regex-radar/client";

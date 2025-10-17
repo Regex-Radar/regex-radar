@@ -27,7 +27,7 @@ connection.onInitialize((params) => {
                 willSave: true,
             },
             diagnosticProvider: {
-                identifier: "Regex Radar",
+                identifier: "regex-radar",
                 documentSelector: [{ language: "typescript" }, { language: "javascript" }],
                 interFileDependencies: false,
                 workspaceDiagnostics: true,
