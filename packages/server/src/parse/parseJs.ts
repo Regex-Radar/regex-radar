@@ -1,17 +1,22 @@
-import { NewExpression, Node, parseSync, Program, RegExpLiteral, Visitor } from "oxc-parser";
+import { CallExpression, NewExpression, Node, parseSync, Program, RegExpLiteral, Visitor } from "oxc-parser";
 import { Range, URI } from "vscode-languageserver";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { ParseResult } from "./ParseResult";
 
 const cache = new Map<URI, ParseResult>();
 
-type RegexNode = RegExpLiteral | NewExpression;
+type RegexNode = RegExpLiteral | NewExpression | CallExpression;
 
 function findRegexes(program: Program): RegexNode[] {
     const nodes: RegexNode[] = [];
     const visitor = new Visitor({
         Literal: (node) => {
             if ("regex" in node) {
+                nodes.push(node);
+            }
+        },
+        CallExpression(node) {
+            if (node.callee.type === "Identifier" && node.callee.name === "RegExp") {
                 nodes.push(node);
             }
         },
@@ -55,6 +60,7 @@ const DYNAMIC_INDICATOR = "<dynamic>";
 
 function parsePattern(node: RegexNode): string {
     switch (node.type) {
+        case "CallExpression":
         case "NewExpression": {
             const firstArg = node.arguments[0];
             if (firstArg && firstArg.type === "Literal" && typeof firstArg.value === "string") {
@@ -70,6 +76,7 @@ function parsePattern(node: RegexNode): string {
 
 function parseFlags(node: RegexNode): string {
     switch (node.type) {
+        case "CallExpression":
         case "NewExpression": {
             const secondArg = node.arguments[1];
             if (secondArg) {

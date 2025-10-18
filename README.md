@@ -14,6 +14,7 @@ A Regex Intelligence Tooling extension — a VS Code + Language Server combo tha
 1. Regex Detection
 
 - Detect regex literals (/pattern/flags) and new RegExp("pattern", "flags") calls.
+- Detect regex implicit conversions like [`String.prototype.match`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match)
 - Use AST parsing (e.g., via @babel/parser for JS/TS, tree-sitter for multi-language).
 - The language server returns a list of regex locations + metadata (pattern, flags, file, line, etc.).
 

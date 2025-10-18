@@ -8,6 +8,9 @@ import {
     RegexEntry,
 } from "@regex-radar/lsp-types";
 import { RegexRadarLanguageClient } from "@regex-radar/client";
+import * as logger from "../logger";
+
+const lookup = new Map<string, Exclude<Entry, WorkspaceEntry | RegexEntry>>();
 
 /**
  * @see https://code.visualstudio.com/api/extension-guides/tree-view
@@ -17,6 +20,8 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
     readonly onDidChangeTreeData: vscode.Event<void> = this._onDidChangeTreeData.event;
 
     refresh(): void {
+        lookup.clear();
+        // TODO: signal to Language Server to clear cache?
         this._onDidChangeTreeData.fire();
     }
 
@@ -25,10 +30,34 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
         private readonly workspaceFolders: readonly vscode.WorkspaceFolder[]
     ) {}
 
-    // TODO: implement this for `reveal` action
-    // getParent(element: Entry): vscode.ProviderResult<Entry> {}
+    getParent(entry: Entry): vscode.ProviderResult<Entry> {
+        switch (entry.type) {
+            case EntryType.Workspace: {
+                return;
+            }
+            case EntryType.Directory:
+            case EntryType.File: {
+                if (!entry.parentUri) {
+                    return;
+                }
+                return lookup.get(entry.parentUri);
+            }
+            case EntryType.Regex: {
+                return lookup.get(entry.location.uri);
+            }
+        }
+    }
 
     getTreeItem(entry: Entry): vscode.TreeItem {
+        switch (entry.type) {
+            case EntryType.Directory:
+            case EntryType.File: {
+                if (entry.parentUri) {
+                    lookup.set(entry.uri, entry);
+                }
+                break;
+            }
+        }
         return createTreeItem(entry);
     }
 

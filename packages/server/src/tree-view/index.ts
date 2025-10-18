@@ -125,7 +125,8 @@ async function buildTreeFromWorkspace(
 
 async function buildTreeFromDirectory(
     uri: string | URI,
-    documents: TextDocuments<TextDocument>
+    documents: TextDocuments<TextDocument>,
+    parentUri?: string
 ): Promise<DirectoryEntry> {
     const uriAsString = uri.toString();
     const memo = cache.get(uriAsString);
@@ -144,20 +145,21 @@ async function buildTreeFromDirectory(
                         return;
                     }
                     const uri = URI.file(entryPath);
-                    return buildTreeFromFile(uri.toString(), documents);
+                    return buildTreeFromFile(uri.toString(), documents, uriAsString);
                 } else if (entry.isDirectory()) {
                     const entryPath = path.join(fsPath, entry.name);
                     if (isFsPathIgnored(entryPath)) {
                         return;
                     }
                     const uri = URI.file(entryPath);
-                    return buildTreeFromDirectory(uri, documents);
+                    return buildTreeFromDirectory(uri, documents, uriAsString);
                 }
             })
         )
     ).filter((child) => !!child);
     const result: DirectoryEntry = {
         uri: uri.toString(),
+        parentUri,
         type: EntryType.Directory,
         children,
     };
@@ -169,7 +171,11 @@ async function buildTreeFromDirectory(
  * Should only be called on paths that are supported
  * @see isUriSupported
  */
-async function buildTreeFromFile(uri: string, documents: TextDocuments<TextDocument>): Promise<FileEntry> {
+async function buildTreeFromFile(
+    uri: string,
+    documents: TextDocuments<TextDocument>,
+    parentUri?: string
+): Promise<FileEntry> {
     const memo = cache.get(uri);
     if (memo && memo.type === EntryType.File) {
         return memo;
@@ -178,6 +184,7 @@ async function buildTreeFromFile(uri: string, documents: TextDocuments<TextDocum
     const parseResult = parseJs(document);
     const result: FileEntry = {
         uri: uri.toString(),
+        parentUri,
         type: EntryType.File,
         children: parseResult.regexes.map((regex) => createRegexEntry(regex, uri)),
     };
@@ -192,6 +199,8 @@ function createRegexEntry(regex: ParseResult["regexes"][number], uri: string): R
         info: {
             pattern: regex.pattern,
             flags: regex.flags,
+            // TODO: model this properly
+            isDynamic: regex.pattern === "<dynamic>",
         },
     };
 }

@@ -3,6 +3,7 @@
 const digits = /\d+/; // basic number matcher
 const email = /^[\w.-]+@[\w.-]+\.[A-Za-z]{2,}$/; // typical email pattern
 const whitespace = new RegExp("\\s+", "g"); // RegExp constructor style
+const nonWhitespace = RegExp("[^\\s]+", "g"); // RegExp function call style
 const hexColor = /^#(?:[A-Fa-f0-9]{3}){1,2}$/; // 3- or 6-digit hex colors
 
 // --- Patterns with flags ---

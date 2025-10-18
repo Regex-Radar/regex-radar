@@ -19,12 +19,14 @@ export type WorkspaceEntry = {
 export type DirectoryEntry = {
     type: EntryType.Directory;
     uri: lsp.URI;
+    parentUri?: lsp.URI;
     children: (DirectoryEntry | FileEntry)[];
 };
 
 export type FileEntry = {
     type: EntryType.File;
     uri: lsp.URI;
+    parentUri?: lsp.URI;
     children: RegexEntry[];
 };
 

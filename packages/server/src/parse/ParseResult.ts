@@ -2,7 +2,7 @@ import { Range, URI } from "vscode-languageserver";
 
 export interface ParseResult {
     uri: URI;
-    regexes: RegexEntry[];
+    regexes: RegexMatch[];
 }
 
 /**
@@ -14,7 +14,7 @@ interface AstNode<Node = unknown> {
     node: Node;
 }
 
-export interface RegexEntry {
+export interface RegexMatch {
     pattern: string;
     flags: string;
     node: AstNode;

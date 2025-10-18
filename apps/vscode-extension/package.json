@@ -22,7 +22,15 @@
     "vsce": {
         "dependencies": false
     },
-    "categories": [],
+    "categories": [
+        "Linters",
+        "Visualization",
+        "Testing",
+        "Education",
+        "Programming Languages",
+        "Other",
+        "Debuggers"
+    ],
     "activationEvents": [],
     "contributes": {
         "viewsContainers": {
@@ -86,27 +94,48 @@
                 {
                     "command": "regex-radar.tree-data-provider.openInRegex101",
                     "when": "(view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view) && viewItem == regex"
+                },
+                {
+                    "command": "regex-radar.test",
+                    "when": "(view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view) && viewItem == regex"
                 }
             ]
         },
         "commands": [
             {
+                "command": "regex-radar.test",
+                "enablement": "isDevelopment",
+                "icon": "$(code)",
+                "title": "Test Command",
+                "category": "Regex Radar"
+            },
+            {
                 "command": "regex-radar.tree-data-provider.refresh",
-                "enablement": "view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible",
+                "enablement": "(view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible)",
                 "icon": "$(refresh)",
-                "title": "Refresh"
+                "title": "Refresh",
+                "category": "Regex Radar"
             },
             {
                 "command": "regex-radar.tree-data-provider.openInRegExr",
-                "enablement": "view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible",
+                "enablement": "!inCommandsPicker && (view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible)",
                 "icon": "$(globe)",
-                "title": "Open in RegexR"
+                "title": "Open in RegexR",
+                "category": "Regex Radar"
             },
             {
                 "command": "regex-radar.tree-data-provider.openInRegex101",
-                "enablement": "view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible",
+                "enablement": "!inCommandsPicker && (view.regex-radar.regex-explorer.tree-view.visible || view.regex-radar.explorer.tree-view.visible)",
                 "icon": "$(globe)",
-                "title": "Open in Regex101"
+                "title": "Open in Regex101",
+                "category": "Regex Radar"
+            },
+            {
+                "command": "regex-radar.tree-data-provider.reveal",
+                "enablement": "!inCommandsPicker && (view.regex-radar.regex-explorer.tree-view.active || view.regex-radar.explorer.tree-view.active)",
+                "icon": "$(link)",
+                "title": "Reveal in the Regex Explorer",
+                "category": "Regex Radar"
             }
         ]
     },
