@@ -1,10 +1,10 @@
-import { Connection, Location, TextDocuments, URI as Uri } from "vscode-languageserver";
-import { URI } from "vscode-uri";
-import { TextDocument } from "vscode-languageserver-textdocument";
 import * as fs from "fs/promises";
 import * as path from "path";
-import { parseJs } from "../parse/parseJs";
-import { uriToDocument } from "../documents";
+
+import { URI } from "vscode-uri";
+import { TextDocuments, URI as Uri, Location } from "vscode-languageserver";
+import { TextDocument } from "vscode-languageserver-textdocument";
+
 import {
     Entry,
     EntryType,
@@ -13,53 +13,12 @@ import {
     RegexEntry,
     WorkspaceEntry,
 } from "@regex-radar/lsp-types";
+
+import { parseJs } from "../parse/parseJs";
+import { uriToDocument } from "../documents";
 import { ParseResult } from "../parse/ParseResult";
 
 const cache = new Map<Uri, Exclude<Entry, RegexEntry>>();
-
-export function registerTreeViewHandlers(connection: Connection, documents: TextDocuments<TextDocument>) {
-    connection.onRequest(
-        "regexRadar/getTreeViewChildren",
-        async ({ entry }: { entry: Entry }): Promise<Entry[]> => {
-            if (entry.type === EntryType.Regex) {
-                return [];
-            }
-            if (isUriIgnored(entry.uri)) {
-                return [];
-            }
-            switch (entry.type) {
-                case EntryType.Workspace: {
-                    const tree = await buildTreeFromWorkspace(entry.uri, documents);
-                    return tree.children.filter((child) => deeplyContainsRegexEntry(child));
-                }
-                case EntryType.Directory: {
-                    const tree = await buildTreeFromDirectory(entry.uri, documents);
-                    return tree.children.filter((child) => deeplyContainsRegexEntry(child));
-                }
-                case EntryType.File: {
-                    if (!isUriSupported(entry.uri)) {
-                        return [];
-                    }
-                    const tree = await buildTreeFromFile(entry.uri, documents);
-                    return tree.children;
-                }
-                default: {
-                    throw new Error("unreachable");
-                }
-            }
-        }
-    );
-}
-
-function deeplyContainsRegexEntry(entry: Entry): boolean {
-    if (entry.type === EntryType.Regex) {
-        return false;
-    }
-    if (entry.type === EntryType.File) {
-        return entry.children.length > 0;
-    }
-    return !!entry.children.find((child) => deeplyContainsRegexEntry(child));
-}
 
 // TODO: implement this with some kind of .ignore configuration
 const ALWAYS_IGNORE = ["node_modules", ".git", ".github", ".turbo", ".vscode", ".vscode-test", "dist", "out"];
@@ -67,7 +26,7 @@ const ALWAYS_IGNORE = ["node_modules", ".git", ".github", ".turbo", ".vscode", "
 /**
  * Returns `true` if the given `uri` is ignored.
  */
-function isUriIgnored(uri: Uri): boolean {
+export function isUriIgnored(uri: Uri): boolean {
     const fsPath = URI.parse(uri).fsPath;
     return isFsPathIgnored(fsPath);
 }
@@ -92,7 +51,7 @@ const SUPPORTED_EXTENSIONS = [".ts", ".tsx", ".js", ".jsx"];
 /**
  * Returns `true` if the given `uri` can be parsed for regexes, `false` if otherwise.
  */
-function isUriSupported(uri: Uri): boolean {
+export function isUriSupported(uri: Uri): boolean {
     const fsPath = URI.parse(uri).fsPath;
     return isFsPathSupported(fsPath);
 }
@@ -104,6 +63,39 @@ function isFsPathSupported(fsPath: string): boolean {
     const extension = path.extname(fsPath);
     const result = SUPPORTED_EXTENSIONS.includes(extension);
     return result;
+}
+
+export async function buildTreeFromUri(
+    uri: Uri,
+    documents: TextDocuments<TextDocument>,
+    hint?: EntryType
+): Promise<Entry | null> {
+    const memo = cache.get(uri);
+    if (memo) {
+        if (!hint || hint === memo.type) {
+            return memo;
+        }
+    }
+    if (hint) {
+        switch (hint) {
+            case EntryType.Workspace:
+                return buildTreeFromWorkspace(uri, documents);
+            case EntryType.Directory:
+                return buildTreeFromDirectory(uri, documents);
+            case EntryType.File:
+                return buildTreeFromFile(uri, documents);
+            case EntryType.Regex:
+                return null;
+        }
+    }
+    const fsPath = URI.parse(uri).fsPath;
+    const stat = await fs.stat(fsPath);
+    if (stat.isFile()) {
+        return buildTreeFromFile(uri, documents);
+    } else if (stat.isDirectory()) {
+        return buildTreeFromDirectory(uri, documents);
+    }
+    return null;
 }
 
 async function buildTreeFromWorkspace(
@@ -142,21 +134,21 @@ async function buildTreeFromDirectory(
                 if (entry.isFile()) {
                     const entryPath = path.join(fsPath, entry.name);
                     if (isFsPathIgnored(entryPath) || !isFsPathSupported(entryPath)) {
-                        return;
+                        return null;
                     }
                     const uri = URI.file(entryPath);
                     return buildTreeFromFile(uri.toString(), documents, uriAsString);
                 } else if (entry.isDirectory()) {
                     const entryPath = path.join(fsPath, entry.name);
                     if (isFsPathIgnored(entryPath)) {
-                        return;
+                        return null;
                     }
                     const uri = URI.file(entryPath);
                     return buildTreeFromDirectory(uri, documents, uriAsString);
                 }
             })
         )
-    ).filter((child) => !!child);
+    ).filter((child) => child != null);
     const result: DirectoryEntry = {
         uri: uri.toString(),
         parentUri,
@@ -203,4 +195,14 @@ function createRegexEntry(regex: ParseResult["regexes"][number], uri: string): R
             isDynamic: regex.pattern === "<dynamic>",
         },
     };
+}
+
+function deeplyContainsRegexEntry(entry: Entry): boolean {
+    if (entry.type === EntryType.Regex) {
+        return false;
+    }
+    if (entry.type === EntryType.File) {
+        return entry.children.length > 0;
+    }
+    return !!entry.children.find((child) => deeplyContainsRegexEntry(child));
 }

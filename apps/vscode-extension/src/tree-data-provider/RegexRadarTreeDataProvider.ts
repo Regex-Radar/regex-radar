@@ -10,14 +10,18 @@ import {
 import { RegexRadarLanguageClient } from "@regex-radar/client";
 import * as logger from "../logger";
 
+// TODO: maybe `parentLookup`, where `Map<Child, Parent>` ?
 const lookup = new Map<string, Exclude<Entry, WorkspaceEntry | RegexEntry>>();
+
+type OnDidChangeTreeDataEventParams = Entry | undefined | null | void;
 
 /**
  * @see https://code.visualstudio.com/api/extension-guides/tree-view
  */
 export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry> {
-    private _onDidChangeTreeData = new vscode.EventEmitter<void>();
-    readonly onDidChangeTreeData: vscode.Event<void> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData = new vscode.EventEmitter<OnDidChangeTreeDataEventParams>();
+    readonly onDidChangeTreeData: vscode.Event<OnDidChangeTreeDataEventParams> =
+        this._onDidChangeTreeData.event;
 
     refresh(): void {
         lookup.clear();
@@ -65,21 +69,14 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
         if (!entry) {
             return this.getRoot();
         }
-        switch (entry.type) {
-            case EntryType.Workspace:
-            case EntryType.Directory: {
-                const children = await this.client.getTreeViewChildren(entry);
-                return children;
-            }
-            case EntryType.File: {
-                const children = await this.client.getTreeViewChildren(entry);
-                return children;
-            }
-            case EntryType.Regex:
-            default: {
-                return [];
-            }
+        if (entry.type === EntryType.Regex) {
+            return [];
         }
+        const serverEntry = await this.client.discovery(entry.uri, entry.type);
+        if (serverEntry === null || serverEntry.type === EntryType.Regex) {
+            return [];
+        }
+        return serverEntry.children;
     }
 
     async getRoot(): Promise<Entry[]> {

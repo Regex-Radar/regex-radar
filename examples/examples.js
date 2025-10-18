@@ -63,6 +63,11 @@ const tricky = /[a-zA-Z0-9_\-\\[\]]+/;
 
 const catastrophicURL = /(https?:\/\/(w{3}\.)?)+[a-zA-Z0-9\-]+\.[a-z]+(\/[^\s]*)*/;
 
-const result = "some_string".replace(/str/, "");
+// --- Forcing a regex discovery with a comment directive ---
+/**
+ * @regex
+ */
+const treatAsRegex = "/some_regex_pattern_string/";
+const alsoTreatAsRegx = /** @regex */ "/some_regex_pattern_string/";
 
 export {};

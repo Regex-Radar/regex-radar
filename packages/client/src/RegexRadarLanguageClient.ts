@@ -1,4 +1,9 @@
-import { LanguageClient, type LanguageClientOptions, type ServerOptions } from "vscode-languageclient/node";
+import {
+    LanguageClient,
+    URI as Uri,
+    type LanguageClientOptions,
+    type ServerOptions,
+} from "vscode-languageclient/node";
 import { displayName, name } from "../package.json";
 import { Entry, EntryType } from "@regex-radar/lsp-types";
 
@@ -7,7 +12,7 @@ export class RegexRadarLanguageClient extends LanguageClient {
         super(name, displayName, serverOptions, clientOptions);
     }
 
-    async getTreeViewChildren(entry: Entry): Promise<Entry[]> {
-        return await this.sendRequest("regexRadar/getTreeViewChildren", { entry });
+    async discovery(uri: Uri, hint?: EntryType): Promise<Entry | null> {
+        return await this.sendRequest("regexRadar/discovery", { uri, hint });
     }
 }

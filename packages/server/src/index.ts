@@ -10,7 +10,7 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 import packageJson from "../package.json";
 import { registerDiagnosticsHandlers } from "./diagnostics";
 import { registerDocumentsHandlers } from "./documents";
-import { registerTreeViewHandlers } from "./tree-view";
+import { registerDiscoveryCommands } from "./discovery";
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -53,6 +53,6 @@ registerDocumentsHandlers(connection, documents);
 registerDiagnosticsHandlers(connection);
 
 // Custom Requests
-registerTreeViewHandlers(connection, documents);
+registerDiscoveryCommands(connection, documents);
 
 connection.listen();

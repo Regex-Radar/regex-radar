@@ -1,5 +1,5 @@
 import { RegexRadarLanguageClient } from "@regex-radar/client";
-import { EntryType, RegexEntry } from "@regex-radar/lsp-types";
+import { EntryType, FileEntry, RegexEntry } from "@regex-radar/lsp-types";
 import * as vscode from "vscode";
 
 export class RegexRadarCodeLensProvider implements vscode.CodeLensProvider {
@@ -9,12 +9,14 @@ export class RegexRadarCodeLensProvider implements vscode.CodeLensProvider {
         document: vscode.TextDocument,
         token: vscode.CancellationToken
     ): Promise<vscode.CodeLens[]> {
-        const regexes = (await this.client.getTreeViewChildren({
-            type: EntryType.File,
-            uri: document.uri.toString(),
-            children: [],
-        })) as RegexEntry[];
-        return regexes.map((entry) => {
+        const entry = (await this.client.discovery(
+            document.uri.toString(),
+            EntryType.File
+        )) as FileEntry | null;
+        if (!entry) {
+            return [];
+        }
+        return entry.children.map((entry) => {
             return {
                 isResolved: true,
                 range: this.client.protocol2CodeConverter.asRange(entry.location.range),
