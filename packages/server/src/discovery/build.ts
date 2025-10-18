@@ -15,8 +15,8 @@ import {
 } from "@regex-radar/lsp-types";
 
 import { parseJs } from "../parse/parseJs";
-import { uriToDocument } from "../documents";
 import { ParseResult } from "../parse/ParseResult";
+import { IDocumentsService } from "../documents";
 
 const cache = new Map<Uri, Exclude<Entry, RegexEntry>>();
 
@@ -67,7 +67,7 @@ function isFsPathSupported(fsPath: string): boolean {
 
 export async function buildTreeFromUri(
     uri: Uri,
-    documents: TextDocuments<TextDocument>,
+    documents: IDocumentsService,
     hint?: EntryType
 ): Promise<Entry | null> {
     const memo = cache.get(uri);
@@ -98,10 +98,7 @@ export async function buildTreeFromUri(
     return null;
 }
 
-async function buildTreeFromWorkspace(
-    uri: string,
-    documents: TextDocuments<TextDocument>
-): Promise<WorkspaceEntry> {
+async function buildTreeFromWorkspace(uri: string, documents: IDocumentsService): Promise<WorkspaceEntry> {
     const uriAsString = uri.toString();
     const memo = cache.get(uriAsString);
     if (memo && memo.type === EntryType.Workspace) {
@@ -117,7 +114,7 @@ async function buildTreeFromWorkspace(
 
 async function buildTreeFromDirectory(
     uri: string | URI,
-    documents: TextDocuments<TextDocument>,
+    documents: IDocumentsService,
     parentUri?: string
 ): Promise<DirectoryEntry> {
     const uriAsString = uri.toString();
@@ -165,14 +162,14 @@ async function buildTreeFromDirectory(
  */
 async function buildTreeFromFile(
     uri: string,
-    documents: TextDocuments<TextDocument>,
+    documents: IDocumentsService,
     parentUri?: string
 ): Promise<FileEntry> {
     const memo = cache.get(uri);
     if (memo && memo.type === EntryType.File) {
         return memo;
     }
-    const document = await uriToDocument(uri, documents);
+    const document = await documents.get(uri);
     const parseResult = parseJs(document);
     const result: FileEntry = {
         uri: uri.toString(),

@@ -1,58 +1,26 @@
-import {
-    createConnection,
-    TextDocuments,
-    ProposedFeatures,
-    TextDocumentSyncKind,
-    InitializeResult,
-} from "vscode-languageserver/node";
+import { createConnection, TextDocuments, ProposedFeatures } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
-import packageJson from "../package.json";
-import { registerDiagnosticsHandlers } from "./diagnostics";
-import { registerDocumentsHandlers } from "./documents";
-import { registerDiscoveryCommands } from "./discovery";
+import { DiscoveryService } from "./discovery";
+
+import { IMessageHandler, MessageHandler } from "./message-handler";
+import { buildServiceProvider, createServiceCollection } from "./di";
+import { DocumentsService } from "./documents";
 
 const connection = createConnection(ProposedFeatures.all);
-const documents = new TextDocuments(TextDocument);
+const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-connection.onInitialize((params) => {
-    const capabilities = params.capabilities;
-
-    const result: InitializeResult = {
-        capabilities: {
-            textDocumentSync: {
-                change: TextDocumentSyncKind.Incremental,
-                openClose: true,
-                save: true,
-                willSave: true,
-            },
-            // diagnosticProvider: {
-            //     identifier: "regex-radar",
-            //     documentSelector: [{ language: "typescript" }, { language: "javascript" }],
-            //     interFileDependencies: false,
-            //     workspaceDiagnostics: true,
-            // },
-        },
-        serverInfo: {
-            name: packageJson.name,
-            version: packageJson.version,
-        },
-    };
-    if (capabilities.workspace?.workspaceFolders) {
-        result.capabilities.workspace = {
-            workspaceFolders: {
-                supported: true,
-            },
-        };
-    }
-    return result;
+const collection = createServiceCollection({
+    connection,
+    documents,
+});
+const provider = buildServiceProvider(collection, {
+    constructors: [MessageHandler, DiscoveryService, DocumentsService],
 });
 
-// VSCode API
-registerDocumentsHandlers(connection, documents);
-registerDiagnosticsHandlers(connection);
+// The message handler will register all message/lifecycle handlers that are registered with the service collection
+const messageHandler = provider.getRequiredService(IMessageHandler);
+messageHandler.register();
 
-// Custom Requests
-registerDiscoveryCommands(connection, documents);
-
+// Listen on the connection
 connection.listen();

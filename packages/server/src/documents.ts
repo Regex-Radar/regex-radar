@@ -1,28 +1,52 @@
-import { readFile } from "fs/promises";
-import { Connection, TextDocuments } from "vscode-languageserver";
-import { TextDocument } from "vscode-languageserver-textdocument";
+import { TextDocument, DocumentUri } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
 
-export function registerDocumentsHandlers(connection: Connection, documents: TextDocuments<TextDocument>) {
-    documents.onDidChangeContent(async (event) => {
-        connection.console.info(`onDidChangeContent for: ${event.document.uri}`);
-    });
+import * as path from "path";
+import * as fs from "fs/promises";
 
-    documents.onDidOpen(async (event) => {
-        connection.console.info(`onDidOpen for: ${event.document.uri}`);
-    });
+import { createInterfaceId, Disposable, Implements, Service, ServiceLifetime } from "@gitlab/needle";
 
-    documents.listen(connection);
+import { LsConnection, LsTextDocuments } from "./di";
+import { IRequestMessageHandler } from "./message-handler";
+import { fileExtensionToLanguageId } from "./language-identifiers";
+
+export interface IDocumentsService extends IRequestMessageHandler {
+    get(uri: DocumentUri): Promise<TextDocument>;
 }
 
-export async function uriToDocument(
-    uri: string,
-    documents: TextDocuments<TextDocument>
-): Promise<TextDocument> {
-    let document = documents.get(uri);
-    if (!document) {
-        const contents = await readFile(URI.parse(uri).fsPath, { encoding: "utf8" });
-        document = TextDocument.create(uri, "ts", 0, contents);
+export const IDocumentsService = createInterfaceId<IDocumentsService>("IDocumentsService");
+
+@Implements(IRequestMessageHandler)
+@Implements(IDocumentsService)
+@Service({
+    dependencies: [LsTextDocuments],
+    lifetime: ServiceLifetime.Singleton,
+})
+export class DocumentsService implements IDocumentsService, Disposable {
+    private disposables: Disposable[] = [];
+
+    constructor(private documents: LsTextDocuments) {}
+
+    register(connection: LsConnection): void {
+        this.disposables.push(this.documents.listen(connection));
     }
-    return document;
+
+    dispose(): void {}
+
+    async get(uri: DocumentUri): Promise<TextDocument> {
+        let document = this.documents.get(uri);
+
+        if (!document) {
+            const fsPath = URI.parse(uri).fsPath;
+            // TODO: add a FileSystemService
+            const contents = await fs.readFile(fsPath, { encoding: "utf-8" });
+            const extension = path.extname(fsPath);
+            const languageId = fileExtensionToLanguageId[extension] || "plaintext";
+            // TODO: cache this document instance?
+            //       this could be cached, as long as there is no didOpen event, and the file disk is being watched for changes
+            document = TextDocument.create(uri, languageId, 0, contents);
+        }
+
+        return document;
+    }
 }
