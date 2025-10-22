@@ -1,7 +1,7 @@
 export {
-    IOnTextDocumentDidChange,
+    IOnTextDocumentDidChangeHandler,
     IOnTextDocumentDidCloseHandler,
-    IOnTextDocumentDidOpen,
+    IOnTextDocumentDidOpenHandler,
     IOnTextDocumentDidSaveHandler,
     IOnTextDocumentWillSaveHandler,
     IOnTextDocumentWillSaveWaitUntilHandler,

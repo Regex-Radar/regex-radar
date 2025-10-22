@@ -22,6 +22,7 @@
 - https://marketplace.visualstudio.com/items?itemName=StevenCyb.vsregex
 - https://marketplace.visualstudio.com/items?itemName=nodeGarden.randexp
 - https://github.com/babobski/JS-Regex-Tester
+- todo tree extension, has good tree implementation
 
 ## ⚙️ Core Concept
 

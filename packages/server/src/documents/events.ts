@@ -18,21 +18,24 @@ type ExtractEventHandler<Type extends RequestEventType> = Parameters<LsTextDocum
 /**
  * @see https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_didOpen
  */
-export interface IOnTextDocumentDidOpen {
+export interface IOnTextDocumentDidOpenHandler {
     onTextDocumentDidOpen(event: ExtractEventType<"onDidOpen">): void;
 }
 
-export const IOnTextDocumentDidOpen = createInterfaceId<IOnTextDocumentDidOpen>("IOnTextDocumentDidOpen");
+export const IOnTextDocumentDidOpenHandler = createInterfaceId<IOnTextDocumentDidOpenHandler>(
+    "IOnTextDocumentDidOpenHandler"
+);
 
 /**
  * @see https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_didChange
  */
-export interface IOnTextDocumentDidChange {
+export interface IOnTextDocumentDidChangeHandler {
     onTextDocumentDidChange(event: ExtractEventType<"onDidChangeContent">): void;
 }
 
-export const IOnTextDocumentDidChange =
-    createInterfaceId<IOnTextDocumentDidChange>("IOnTextDocumentDidChange");
+export const IOnTextDocumentDidChangeHandler = createInterfaceId<IOnTextDocumentDidChangeHandler>(
+    "IOnTextDocumentDidChangeHandler"
+);
 
 /**
  * @see https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_willSave

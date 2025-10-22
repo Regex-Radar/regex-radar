@@ -1,4 +1,6 @@
-import * as lsp from "vscode-languageserver-types";
+import type * as lsp from "vscode-languageserver-types";
+
+export { lsp };
 
 export type DiscoveryParams = {
     uri: lsp.URI;
@@ -6,6 +8,10 @@ export type DiscoveryParams = {
 };
 
 export type DiscoveryResult = Entry | null;
+
+export type DiscoveryDidChangeParams = {
+    uri: lsp.URI;
+};
 
 export enum EntryType {
     Unknown,

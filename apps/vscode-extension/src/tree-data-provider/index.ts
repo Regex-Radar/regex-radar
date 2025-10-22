@@ -5,8 +5,7 @@ import { Entry, RegexEntry } from "@regex-radar/lsp-types";
 import * as logger from "../logger";
 
 export function registerTreeView(client: RegexRadarLanguageClient, context: vscode.ExtensionContext) {
-    const workspaceFolders = vscode.workspace.workspaceFolders ?? [];
-    const treeDataProvider = new RegexRadarTreeDataProvider(client, workspaceFolders);
+    const treeDataProvider = new RegexRadarTreeDataProvider(client);
     const options: vscode.TreeViewOptions<Entry> = {
         treeDataProvider,
         showCollapseAll: true,
@@ -60,8 +59,7 @@ export function registerTreeView(client: RegexRadarLanguageClient, context: vsco
 
     context.subscriptions.push(
         vscode.workspace.onDidChangeWorkspaceFolders((event) => {
-            // TODO: refresh treeView with new workspace folders
-            // @see https://github.com/microsoft/vscode/wiki/Adopting-Multi-Root-Workspace-APIs
+            treeDataProvider.refresh();
         })
     );
 }

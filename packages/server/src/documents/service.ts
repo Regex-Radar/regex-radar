@@ -26,15 +26,15 @@ import { fileExtensionToLanguageId } from "../language-identifiers";
 import {
     IOnTextDocumentDidCloseHandler,
     IOnTextDocumentDidSaveHandler,
-    IOnTextDocumentDidChange,
-    IOnTextDocumentDidOpen,
+    IOnTextDocumentDidChangeHandler,
+    IOnTextDocumentDidOpenHandler,
     IOnTextDocumentWillSaveHandler,
     IOnTextDocumentWillSaveWaitUntilHandler,
 } from "./events";
 import { IOnInitialized, IOnInitialize } from "../lifecycle";
 
 export interface IDocumentsService {
-    get(uri: DocumentUri): Promise<TextDocument>;
+    getOrCreate(uri: DocumentUri): Promise<TextDocument>;
 }
 
 export const IDocumentsService = createInterfaceId<IDocumentsService>("IDocumentsService");
@@ -71,7 +71,9 @@ export class DocumentsService implements IDocumentsService, IOnInitialized, Disp
     }
 
     onInitialized(params: InitializedParams): void | Promise<void> {
-        const onDidChangeContentHandlers = this.provider.getServices(collection(IOnTextDocumentDidChange));
+        const onDidChangeContentHandlers = this.provider.getServices(
+            collection(IOnTextDocumentDidChangeHandler)
+        );
         this.disposables.push(
             ...onDidChangeContentHandlers.map((handler) => {
                 return this.documents.onDidChangeContent((event) => handler.onTextDocumentDidChange(event));
@@ -89,7 +91,7 @@ export class DocumentsService implements IDocumentsService, IOnInitialized, Disp
                 return this.documents.onDidSave((event) => handler.onTextDocumentDidSave(event));
             })
         );
-        const onDidOpenHandlers = this.provider.getServices(collection(IOnTextDocumentDidOpen));
+        const onDidOpenHandlers = this.provider.getServices(collection(IOnTextDocumentDidOpenHandler));
         this.disposables.push(
             ...onDidOpenHandlers.map((handler) => {
                 return this.documents.onDidOpen((event) => handler.onTextDocumentDidOpen(event));
@@ -121,12 +123,20 @@ export class DocumentsService implements IDocumentsService, IOnInitialized, Disp
         this.disposables.push(this.documents.listen(this.connection));
     }
 
-    async get(uri: DocumentUri): Promise<TextDocument> {
+    get(uri: DocumentUri): TextDocument | null {
+        return this.documents.get(uri) ?? null;
+    }
+
+    /**
+     * Get the `TextDocument` for `uri`.
+     * If the document is **not** a managed document the contents will be read from the uri location and a document will be created.
+     */
+    async getOrCreate(uri: DocumentUri): Promise<TextDocument> {
         let document = this.documents.get(uri);
 
         if (!document) {
             const fsPath = URI.parse(uri).fsPath;
-            // TODO: add a FileSystemService
+            // TODO: add a FileSystemService / URI fetcher service
             const contents = await fs.readFile(fsPath, { encoding: "utf-8" });
             const extension = path.extname(fsPath);
             const languageId = fileExtensionToLanguageId[extension] || "plaintext";
@@ -136,5 +146,12 @@ export class DocumentsService implements IDocumentsService, IOnInitialized, Disp
         }
 
         return document;
+    }
+
+    /**
+     * Returns `true` if the given `uri` is being managed by this instance, `false` otherwise.
+     */
+    isManaged(uri: DocumentUri): boolean {
+        return this.documents.keys().includes(uri);
     }
 }

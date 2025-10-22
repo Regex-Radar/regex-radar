@@ -24,17 +24,15 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
 
     refresh(): void {
         this.entries.clear();
-        // TODO: signal to Language Server to clear cache?
         this._onDidChangeTreeData.fire();
     }
 
-    constructor(
-        private readonly client: RegexRadarLanguageClient,
-        private readonly workspaceFolders: readonly vscode.WorkspaceFolder[]
-    ) {
-        // TODO: move to method on RegexRadarLanguageClient
-        client.onNotification("regexRadar/discovery/didChange", ({ uri }: { uri: string }) => {
+    constructor(private readonly client: RegexRadarLanguageClient) {
+        client.onDiscoveryDidChange(({ uri }: { uri: string }) => {
             const entry = this.entries.get(uri);
+            if (!entry) {
+                return;
+            }
             this.entries.delete(uri);
             this._onDidChangeTreeData.fire(entry);
         });
@@ -85,18 +83,30 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
     }
 
     async getRoot(): Promise<Entry[]> {
-        // if there is only 1 workspace, use it as root to skip 1 nesting level
-        const workspaces = this.workspaceFolders.map((workspace): WorkspaceEntry => {
+        const workspaces = this.getWorkspaceURIs();
+        const workspaceEntries = workspaces.map((uri): WorkspaceEntry => {
             return {
                 type: EntryType.Workspace,
-                uri: workspace.uri.toString(),
+                uri,
                 children: [],
             };
         });
-        if (workspaces.length === 1) {
-            return this.getChildren(workspaces[0]);
+        if (workspaceEntries.length === 1) {
+            // skip 1 level if there is only 1 workspace active
+            return this.getChildren(workspaceEntries[0]);
         }
-        return workspaces;
+        return workspaceEntries;
+    }
+
+    getWorkspaceURIs(): string[] {
+        if (vscode.workspace.workspaceFolders) {
+            return vscode.workspace.workspaceFolders.map((workspaceFolder) => workspaceFolder.uri.toString());
+        }
+        // fallback on deprecated `rootPath`
+        if (vscode.workspace.rootPath) {
+            return [vscode.workspace.rootPath];
+        }
+        return [];
     }
 }
 

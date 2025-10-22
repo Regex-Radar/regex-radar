@@ -1,7 +1,7 @@
 import { createConnection, TextDocuments, ProposedFeatures } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
-import { DiscoveryService } from "./discovery";
+import { DiscoveryMessageHandler } from "./discovery";
 
 import { buildServiceProvider, createServiceCollection } from "./di";
 import { IMessageHandler, MessageHandler } from "./message-handler";
@@ -17,7 +17,7 @@ const collection = createServiceCollection({
     documents,
 });
 const provider = buildServiceProvider(collection, {
-    constructors: [LifecycleHandler, MessageHandler, DiscoveryService, DocumentsService, Logger],
+    constructors: [LifecycleHandler, MessageHandler, DiscoveryMessageHandler, DocumentsService, Logger],
 });
 
 // TODO: move this to a Connection wrapper class, that knows about registries and calls them, before calling connection.listen
