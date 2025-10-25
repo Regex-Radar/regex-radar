@@ -1,31 +1,34 @@
 import { createConnection, TextDocuments, ProposedFeatures } from "vscode-languageserver/node";
 import { TextDocument } from "vscode-languageserver-textdocument";
 
-import { DiscoveryMessageHandler } from "./discovery";
+import { DiscoveryService } from "./discovery";
 
 import { buildServiceProvider, createServiceCollection } from "./di";
-import { IMessageHandler, MessageHandler } from "./message-handler";
-import { ILifecycleHandler, LifecycleHandler } from "./lifecycle";
+import { MessageHandler } from "./message-handler";
+import { LifecycleHandler } from "./lifecycle";
 import { DocumentsService } from "./documents";
 import { Logger } from "./logger";
-
-const connection = createConnection(ProposedFeatures.all);
-const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
+import { Connection, IConnection } from "./connection";
+import { ParserProvider } from "./parsers";
 
 const collection = createServiceCollection({
-    connection,
-    documents,
+    connection: createConnection(ProposedFeatures.all),
+    documents: new TextDocuments(TextDocument),
 });
 const provider = buildServiceProvider(collection, {
-    constructors: [LifecycleHandler, MessageHandler, DiscoveryMessageHandler, DocumentsService, Logger],
+    constructors: [
+        Connection,
+        LifecycleHandler,
+        MessageHandler,
+        Logger,
+        DiscoveryService,
+        DocumentsService,
+        ParserProvider,
+    ],
 });
 
-// TODO: move this to a Connection wrapper class, that knows about registries and calls them, before calling connection.listen
-// The message handler will register all message/lifecycle handlers that are registered with the service collection
-const lifecycleHandler = provider.getRequiredService(ILifecycleHandler);
-lifecycleHandler.register();
-const messageHandler = provider.getRequiredService(IMessageHandler);
-messageHandler.register();
-
-// Listen on the connection
+/**
+ *`connection` is considered the root of the server application, calling `.listen()` will bootstrap and start the server.
+ */
+const connection = provider.getRequiredService(IConnection);
 connection.listen();

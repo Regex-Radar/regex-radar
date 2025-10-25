@@ -23,15 +23,13 @@ import { LsConnection } from "../di/external-interfaces";
 import { IDocumentsService } from "../documents";
 import { IOnTextDocumentDidChangeHandler, IOnTextDocumentDidCloseHandler } from "../documents/events";
 import { ILogger } from "../logger";
-import { parseJs } from "../parse/parseJs";
-import type { RegexMatch } from "../parse/ParseResult";
+import { IParserProvider, type ParseResult, type RegexMatch } from "../parsers";
 
-interface IDiscoveryMessageHandler {
+interface IDiscoveryService {
     discover(uri: DiscoveryParams): Promise<DiscoveryResult>;
 }
 
-export const IDiscoveryMessageHandler =
-    createInterfaceId<IDiscoveryMessageHandler>("IDiscoveryMessageHandler");
+export const IDiscoveryService = createInterfaceId<IDiscoveryService>("IDiscoveryService");
 
 type CachableEntry<T extends EntryType = EntryType> = Exclude<Entry, RegexEntry> & { type: T };
 
@@ -45,10 +43,10 @@ type GetTreeParams = {
 @Implements(IRequestMessageHandler)
 @Implements(IOnTextDocumentDidChangeHandler)
 @Implements(IOnTextDocumentDidCloseHandler)
-@Injectable(IDiscoveryMessageHandler, [IDocumentsService, LsConnection, ILogger])
-export class DiscoveryMessageHandler
+@Injectable(IDiscoveryService, [IDocumentsService, LsConnection, ILogger, IParserProvider])
+export class DiscoveryService
     implements
-        IDiscoveryMessageHandler,
+        IDiscoveryService,
         IRequestMessageHandler,
         IOnTextDocumentDidChangeHandler,
         IOnTextDocumentDidCloseHandler,
@@ -79,7 +77,8 @@ export class DiscoveryMessageHandler
     constructor(
         private documentService: IDocumentsService,
         private connection: LsConnection,
-        private logger: ILogger
+        private logger: ILogger,
+        private parsers: IParserProvider
     ) {}
 
     register(connection: LsConnection): void {
@@ -144,7 +143,7 @@ export class DiscoveryMessageHandler
                 return this.isFsPathIgnored(fsPath);
             }
         }
-        return false;
+        return true;
     }
 
     /**
@@ -154,21 +153,19 @@ export class DiscoveryMessageHandler
         const { dir, base, ext } = path.parse(fsPath);
         // If no file extension, treat it as a directory and do a fast check
         if (!ext) {
-            if (DiscoveryMessageHandler.ALWAYS_IGNORE_DIRECTORIES.includes(base)) {
+            if (DiscoveryService.ALWAYS_IGNORE_DIRECTORIES.includes(base)) {
                 return true;
             }
         }
         // check if any other part of the file path (besides the base) is part of the ignore list
         const parts = dir.split(path.sep);
-        const result = !!parts.find((part) =>
-            DiscoveryMessageHandler.ALWAYS_IGNORE_DIRECTORIES.includes(part)
-        );
+        const result = !!parts.find((part) => DiscoveryService.ALWAYS_IGNORE_DIRECTORIES.includes(part));
         return result;
     }
 
     private isFsPathSupported(fsPath: string): boolean {
         const extension = path.extname(fsPath);
-        return DiscoveryMessageHandler.SUPPORTED_FILE_EXTENSIONS.includes(extension);
+        return DiscoveryService.SUPPORTED_FILE_EXTENSIONS.includes(extension);
     }
 
     private async getTreeForUri(uri: lsp.URI, hint?: EntryType): Promise<Entry | null> {
@@ -253,7 +250,7 @@ export class DiscoveryMessageHandler
         return result;
     }
 
-    private async getTreeForFile({ uri, parentUri, fsPath, ignoreCache }: GetTreeParams): Promise<FileEntry> {
+    private async getTreeForFile({ uri, parentUri, ignoreCache }: GetTreeParams): Promise<FileEntry> {
         if (!ignoreCache) {
             const cacheHit = this.getFromCache(uri, EntryType.File);
             if (cacheHit) {
@@ -262,7 +259,8 @@ export class DiscoveryMessageHandler
         }
 
         const document = await this.documentService.getOrCreate(uri);
-        const parseResult = parseJs(document);
+        const parser = await this.parsers.get(document.languageId);
+        const parseResult = await parser.parse(document);
         const result: FileEntry = {
             uri,
             parentUri,
@@ -278,7 +276,7 @@ export class DiscoveryMessageHandler
             type: EntryType.Regex,
             location: {
                 uri,
-                range: regex.node.range,
+                range: regex.range,
             },
             info: {
                 pattern: regex.pattern,

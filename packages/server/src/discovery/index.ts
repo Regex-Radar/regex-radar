@@ -1,1 +1,1 @@
-export { IDiscoveryMessageHandler, DiscoveryMessageHandler } from "./message-handler";
+export { IDiscoveryService, DiscoveryService } from "./service";
