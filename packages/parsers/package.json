@@ -1,0 +1,28 @@
+{
+    "name": "@regex-radar/parsers",
+    "private": true,
+    "displayName": "Regex Radar Parsers",
+    "publisher": "Kevin Ramharak",
+    "description": "The Parsers used by Regex Radar",
+    "version": "0.1.0",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "browser": "./dist/index.browser.cjs",
+    "types": "./dist/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kevinramharak/regex-radar",
+        "directory": "packages/parsers"
+    },
+    "homepage": "https://github.com/kevinramharak/regex-radar",
+    "scripts": {
+        "build": "node scripts/build-grammars.js",
+        "clean": "rm -r dist/"
+    },
+    "devDependencies": {
+        "tree-sitter-cli": "^0.25.10",
+        "tree-sitter-javascript": "^0.25.0",
+        "tree-sitter-typescript": "^0.23.2",
+        "tree-sitter-json": "^0.24.8"
+    }
+}

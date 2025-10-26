@@ -9,7 +9,8 @@
         "paths": {
             "@regex-radar/client": ["./packages/client/src"],
             "@regex-radar/server": ["./packages/server/src"],
-            "@regex-radar/lsp-types": ["./packages/lsp-types/src"]
+            "@regex-radar/lsp-types": ["./packages/lsp-types/src"],
+            "@regex-radar/parsers": ["./packages/parsers/src"]
         }
     },
     "references": [
@@ -22,6 +23,9 @@
         },
         {
             "path": "packages/lsp-types"
+        },
+        {
+            "path": "packages/parsers"
         }
     ]
 }

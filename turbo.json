@@ -1,11 +1,19 @@
 {
     "$schema": "https://turbo.build/schema.json",
     "globalDependencies": [
-        "**/.env.*local"
+        "**/.env.*local",
+        "tsconfig.json"
     ],
     "tasks": {
-        "build": {},
-        "lint": {},
+        "build": {
+            "cache": false
+        },
+        "build:production": {
+            "cache": false
+        },
+        "lint": {
+            "cache": false
+        },
         "dev": {
             "cache": false,
             "persistent": true

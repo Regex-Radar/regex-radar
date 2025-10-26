@@ -18,11 +18,14 @@
     "scripts": {
         "build": "node scripts/build.js",
         "dev": "node scripts/build.js --watch",
-        "package": "node scripts/build.js --production",
+        "build:production": "node scripts/build.js --production",
         "tsc": "tsc -p .",
         "clean": "rm -r dist/"
     },
-    "dependencies": {},
+    "dependencies": {
+        "vscode-languageclient": "^9.0.1",
+        "@regex-radar/lsp-types": "*"
+    },
     "devDependencies": {
         "esbuild": "^0.25.11"
     }

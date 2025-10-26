@@ -1,0 +1,4 @@
+
+# keep the .wasm files from being commited as part of the repository
+grammars/manifest.json
+grammars/tree-sitter-*.wasm

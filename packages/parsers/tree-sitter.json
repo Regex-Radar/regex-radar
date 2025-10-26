@@ -1,0 +1,22 @@
+{
+    "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+    "grammars": [],
+    "bindings": {
+        "c": false,
+        "go": false,
+        "java": false,
+        "kotlin": false,
+        "node": false,
+        "python": false,
+        "rust": false,
+        "swift": false,
+        "zig": false
+    },
+    "metadata": {
+        "version": "0.1.0",
+        "description": "This file is needed to generate the grammars, this repo has no custom grammar definitions",
+        "links": {
+            "repository": "https://github.com/kevinramharak/regex-radar"
+        }
+    }
+}

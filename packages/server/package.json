@@ -18,7 +18,7 @@
     "scripts": {
         "build": "node scripts/build.js",
         "dev": "node scripts/build.js --watch",
-        "package": "node scripts/build.js --production",
+        "build:production": "node scripts/build.js --production",
         "tsc": "tsc -p .",
         "clean": "rm -r dist/"
     },
@@ -26,7 +26,8 @@
         "@gitlab/needle": "^1.5.0",
         "vscode-languageserver": "^9.0.1",
         "vscode-languageserver-textdocument": "^1.0.12",
-        "vscode-uri": "^3.1.0"
+        "vscode-uri": "^3.1.0",
+        "@regex-radar/lsp-types": "*"
     },
     "devDependencies": {
         "esbuild": "^0.25.11"
