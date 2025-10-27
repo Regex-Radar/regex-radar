@@ -21,6 +21,10 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
         this._onDidChangeTreeData.event;
 
     private entries = new Map<string, Exclude<Entry, RegexEntry>>();
+    /**
+     * If only 1 workspace is opened, keep track of its uri to resolve `getParent` correctly
+     */
+    private rootUri: string | undefined;
 
     refresh(): void {
         this.entries.clear();
@@ -74,6 +78,9 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
             case EntryType.Workspace:
             case EntryType.Directory:
             case EntryType.File: {
+                if (this.rootUri === serverEntry.parentUri) {
+                    delete serverEntry.parentUri;
+                }
                 this.entries.set(serverEntry.uri, serverEntry);
                 return serverEntry.children;
             }
@@ -93,6 +100,7 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
         });
         if (workspaceEntries.length === 1) {
             // skip 1 level if there is only 1 workspace active
+            this.rootUri = workspaceEntries[0].uri;
             return this.getChildren(workspaceEntries[0]);
         }
         return workspaceEntries;

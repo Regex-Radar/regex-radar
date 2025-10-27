@@ -26,6 +26,7 @@ export type Entry = WorkspaceEntry | DirectoryEntry | FileEntry | RegexEntry;
 export type WorkspaceEntry = {
     type: EntryType.Workspace;
     uri: lsp.URI;
+    parentUri?: never;
     children: (DirectoryEntry | FileEntry)[];
 };
 

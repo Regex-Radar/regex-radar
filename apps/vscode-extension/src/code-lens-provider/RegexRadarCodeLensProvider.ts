@@ -5,7 +5,6 @@ import * as vscode from "vscode";
 export class RegexRadarCodeLensProvider implements vscode.CodeLensProvider {
     constructor(private readonly client: RegexRadarLanguageClient) {}
 
-    // TODO: which commands should be part of code lens, which on context menu (right click)?
     async provideCodeLenses(
         document: vscode.TextDocument,
         token: vscode.CancellationToken

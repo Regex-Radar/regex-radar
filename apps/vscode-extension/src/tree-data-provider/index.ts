@@ -48,12 +48,21 @@ export function registerTreeView(client: RegexRadarLanguageClient, context: vsco
                 vscode.commands.executeCommand("vscode.open", uri.toString(true));
             }
         ),
-        vscode.commands.registerCommand("regex-radar.tree-data-provider.reveal", (entry: RegexEntry) => {
-            if (explorerTreeView.visible) {
-                return explorerTreeView.reveal(entry);
+        vscode.commands.registerCommand(
+            "regex-radar.tree-data-provider.reveal",
+            async (entry: RegexEntry) => {
+                console.log(entry);
+                const options = {
+                    select: true,
+                    focus: true,
+                    expand: false,
+                };
+                if (explorerTreeView.visible) {
+                    return await explorerTreeView.reveal(entry, options);
+                }
+                return await regexExplorerTreeView.reveal(entry, options);
             }
-            return regexExplorerTreeView.reveal(entry);
-        }),
+        ),
         vscode.commands.registerCommand("regex-radar.test", async (entry: RegexEntry) => {})
     );
 
