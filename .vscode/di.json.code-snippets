@@ -1,0 +1,18 @@
+{
+  "New DI Class": {
+    "prefix": "diclass",
+    "body": [
+      "import { Injectable, createInterfaceId } from '@gitlab/needle';",
+      "",
+      "export interface I${1:InterfaceName} {}",
+      "",
+      "export const I${1:InterfaceName} = createInterfaceId<I${1:InterfaceName}>('I${1:InterfaceName}');",
+      "",
+      "@Injectable(I${1:InterfaceName}, [])",
+      "export class ${1:InterfaceName} implements I${1:InterfaceName} {}"
+    ],
+    "description": "Creates DI framework boilerplate",
+    "isFileTemplate": true,
+    "scope": "typescript"
+  }
+}

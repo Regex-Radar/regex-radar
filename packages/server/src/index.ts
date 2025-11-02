@@ -1,7 +1,8 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ProposedFeatures, TextDocuments, createConnection } from 'vscode-languageserver/node';
 
-import { CodeActionMessageHandler, codeActions } from './code-actions';
+import { CodeActionMessageHandler, onCodeActionHandlers } from './code-actions';
+import { CodeLensMessageHandler, onCodeLensHandlers } from './code-lens';
 import { Configuration } from './configuration';
 import { Connection, IConnection } from './connection';
 import { buildServiceProvider, createServiceCollection } from './di';
@@ -29,7 +30,9 @@ const provider = buildServiceProvider(collection, {
         ParserProvider,
         DiagnosticsService,
         CodeActionMessageHandler,
-        ...codeActions,
+        ...onCodeActionHandlers,
+        CodeLensMessageHandler,
+        ...onCodeLensHandlers,
     ],
 });
 

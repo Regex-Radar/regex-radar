@@ -1,6 +1,6 @@
-import { PreferRegexNewExpressionCodeAction } from './diagnostics/prefer-regex-new-expression';
+import { PreferRegexNewExpressionCodeAction } from './handlers/prefer-regex-new-expression';
 
 export * from './events';
 export * from './message-handler';
 
-export const codeActions = [PreferRegexNewExpressionCodeAction];
+export const onCodeActionHandlers = [PreferRegexNewExpressionCodeAction];

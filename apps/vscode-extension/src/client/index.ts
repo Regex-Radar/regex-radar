@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 
 import * as vscode from 'vscode';
-import { type LanguageClientOptions, type ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import { type ServerOptions, TransportKind } from 'vscode-languageclient/node';
 
 import { RegexRadarLanguageClient } from '@regex-radar/client';
 
@@ -16,6 +16,10 @@ export async function registerLanguageClient(
 
     client = createLanguageClient(context);
     await client.start();
+
+    if (client.isInDebugMode) {
+        client.outputChannel.show(true);
+    }
 
     context.subscriptions.push(client);
 

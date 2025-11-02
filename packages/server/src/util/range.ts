@@ -2,7 +2,7 @@ import type { lsp } from '@regex-radar/lsp-types';
 
 /**
  * Test if range `a` is in range `b`. Check is inclusive (`>=`, `<=`).
- * Overlapping range will return `false`
+ * If either `start` or `end` is out of range `false` will be returned
  */
 export function isInRange(a: lsp.Range, b: lsp.Range) {
     return (

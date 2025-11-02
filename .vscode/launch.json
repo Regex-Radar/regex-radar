@@ -31,6 +31,7 @@
             ],
             // Enable this when (custom) webviews need to be availble through the debugger
             // "debugWebviews": true,
+            "cascadeTerminateToConfigurations": ["Attach to the language server"],
             "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
         },
         {
@@ -48,6 +49,7 @@
             ],
             // Enable this when (custom) webviews need to be availble through the debugger
             // "debugWebviews": true,
+            "cascadeTerminateToConfigurations": ["Attach to the language server"],
             "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
         },
         {
@@ -61,6 +63,7 @@
             ],
             // Enable this when (custom) webviews need to be availble through the debugger
             // "debugWebviews": true,
+            "cascadeTerminateToConfigurations": ["Attach to the language server"],
             "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
         },
         {
@@ -75,6 +78,7 @@
                 "delay": 1000,
                 "maxAttempts": 10
             },
+            "cascadeTerminateToConfigurations": ["Run Extension", "Run Extension (all extensions disabled)"],
             "continueOnAttach": true,
             "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
         }

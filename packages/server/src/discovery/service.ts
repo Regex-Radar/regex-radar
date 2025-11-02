@@ -72,10 +72,6 @@ export class DiscoveryService
 
     static readonly SUPPORTED_FILE_EXTENSIONS = ['.js', '.ts'];
 
-    dispose() {
-        this.disposables.forEach((disposable) => disposable.dispose());
-    }
-
     constructor(
         private documentService: IDocumentsService,
         private connection: LsConnection,
@@ -276,7 +272,9 @@ export class DiscoveryService
             uri,
             parentUri,
             type: EntryType.File,
-            children: parseResult.matches.map((match) => this.createRegexEntry(match, uri)),
+            children: parseResult.matches
+                .map((match) => this.createRegexEntry(match, uri))
+                .sort((a, b) => compare(a, b)),
         };
         this.cache.set(uri, result);
         return result;
@@ -291,5 +289,17 @@ export class DiscoveryService
             },
             match,
         };
+    }
+}
+
+// TO
+function compare(a: RegexEntry, b: RegexEntry): number {
+    const x = a.location.range;
+    const y = b.location.range;
+    const lineCompare = x.start.line - y.start.line;
+    if (lineCompare === 0) {
+        return x.start.character - y.start.character;
+    } else {
+        return lineCompare;
     }
 }
