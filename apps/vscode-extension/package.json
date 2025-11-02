@@ -46,12 +46,12 @@
             "type": "object",
             "title": "Regex Radar",
             "properties": {
-                "regexRadar.discovery.enabled": {
+                "regex-radar.discovery.enabled": {
                     "description": "Enables discovery of regular expressions throughout the workspace.",
                     "type": "boolean",
                     "default": true
                 },
-                "regexRadar.languages.enabled": {
+                "regex-radar.languages.enabled": {
                     "description": "The programming languages that Regex Radar will provide its features for.",
                     "type": "array",
                     "items": {

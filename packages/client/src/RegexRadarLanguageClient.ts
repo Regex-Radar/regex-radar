@@ -4,9 +4,9 @@ import {
     type Disposable,
     type LanguageClientOptions,
     type ServerOptions,
-} from "vscode-languageclient/node";
-import { displayName, name } from "../package.json";
-import type { DiscoveryDidChangeParams, DiscoveryParams, DiscoveryResult } from "@regex-radar/lsp-types";
+} from 'vscode-languageclient/node';
+import { displayName, name } from '../package.json';
+import type { DiscoveryDidChangeParams, DiscoveryParams, DiscoveryResult } from '@regex-radar/lsp-types';
 
 export class RegexRadarLanguageClient extends LanguageClient implements Disposable {
     private disposables: Disposable[] = [];
@@ -16,10 +16,10 @@ export class RegexRadarLanguageClient extends LanguageClient implements Disposab
     }
 
     async discovery(param: DiscoveryParams, token?: CancellationToken): Promise<DiscoveryResult> {
-        return await this.sendRequest("regexRadar/discovery", param, token);
+        return await this.sendRequest('regexRadar/discovery', param, token);
     }
 
     async onDiscoveryDidChange(handler: (param: DiscoveryDidChangeParams) => void | Promise<void>) {
-        this.disposables.push(this.onNotification("regexRadar/discovery/didChange", handler));
+        this.disposables.push(this.onNotification('regexRadar/discovery/didChange', handler));
     }
 }

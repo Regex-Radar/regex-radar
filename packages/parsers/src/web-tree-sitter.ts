@@ -4,7 +4,7 @@ const {
     Parser: TreeSitterParser,
     Query: TreeSitterQuery,
     Language,
-} = require("web-tree-sitter") as typeof import("web-tree-sitter");
+} = require('web-tree-sitter') as typeof import('web-tree-sitter');
 
 type TreeSitterParser = InstanceType<typeof TreeSitterParser>;
 type TreeSitterQuery = InstanceType<typeof TreeSitterQuery>;

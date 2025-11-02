@@ -5,8 +5,7 @@
   (regex
     pattern: (regex_pattern) @regex.pattern
     flags: (regex_flags)? @regex.flags
-    (#set! regex.type "literal")
-  ) @regex
+  ) @regex @regex.literal
   ;; match regex constructor calls:
   ;; new RegExp("pattern", "gi")
   ;; new RegExp("pattern")
@@ -23,7 +22,6 @@
       )?
     )
     (#eq? @regex.constructor "RegExp")
-    (#set! regex.type "constructor")
   ) @regex
   ;; match regex function calls:
   ;; RegExp("pattern", "gi")
@@ -41,6 +39,5 @@
       )?
     )
     (#eq? @regex.function "RegExp")
-    (#set! regex.type "function")
   ) @regex
 ]

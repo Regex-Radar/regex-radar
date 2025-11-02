@@ -1,1 +1,1 @@
-export { IParserProvider, ParserProvider } from "./provider";
+export { IParserProvider, ParserProvider } from './provider';

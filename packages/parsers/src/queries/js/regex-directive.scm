@@ -12,12 +12,11 @@
         value: (
           string
           (_)+ @regex.pattern
-        ) @regex
+        ) @regex @regex.string
       )
     )
     (#match? @comment "^/\\*\\*")
     (#match? @comment "(:?\\s|\\/\\*\\*)@regex(:?\\s|\\*\\/)")
-    (#set! regex.type "string")
   )
   ;; match a string literal with a preceding doc comment containing a @regex tag
   ;; /** @regex */ "pattern"
@@ -30,9 +29,8 @@
     (
       string
       (_)+ @regex.pattern
-    ) @regex
+    ) @regex @regex.string
     (#match? @comment "^/\\*\\*")
     (#match? @comment "(:?\\s|\\/\\*\\*)@regex(:?\\s|\\*\\/)")
-    (#set! regex.type "string")
   )
 ]

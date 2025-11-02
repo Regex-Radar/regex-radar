@@ -1,1 +1,1 @@
-export { RegexRadarLanguageClient } from "./RegexRadarLanguageClient";
+export { RegexRadarLanguageClient } from './RegexRadarLanguageClient';

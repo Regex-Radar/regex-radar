@@ -1,1 +1,1 @@
-export { IDiscoveryService, DiscoveryService } from "./service";
+export { IDiscoveryService, DiscoveryService } from './service';

@@ -1,13 +1,13 @@
-import type * as lsp from "vscode-languageserver-types";
+import type * as lsp from 'vscode-languageserver-types';
 
 export { lsp };
 
-export type DiscoveryParams = {
+export type DiscoveryParams<T extends EntryType = EntryType> = {
     uri: lsp.URI;
-    hint?: EntryType;
+    hint?: T;
 };
 
-export type DiscoveryResult = Entry | null;
+export type DiscoveryResult<T extends EntryType = EntryType> = (Entry & { type: T }) | null;
 
 export type DiscoveryDidChangeParams = {
     uri: lsp.URI;
@@ -47,9 +47,43 @@ export type FileEntry = {
 export type RegexEntry = {
     type: EntryType.Regex;
     location: lsp.Location;
-    info: {
-        pattern: string;
-        flags: string;
-        isDynamic?: boolean;
-    };
+    match: RegexMatch;
 };
+
+export type RegexMatch = RegexMatchLiteral | RegexMatchConstructor | RegexMatchFunction | RegexMatchString;
+
+export enum RegexMatchType {
+    Unknown = 0,
+    Literal = 1,
+    Constructor = 2,
+    Function = 3,
+    String = 4,
+}
+
+interface RegexMatchBase {
+    type: RegexMatchType;
+    range: lsp.Range;
+}
+
+export interface RegexMatchLiteral extends RegexMatchBase {
+    type: RegexMatchType.Literal;
+    pattern: string;
+    flags: string;
+}
+
+export interface RegexMatchConstructor extends RegexMatchBase {
+    type: RegexMatchType.Constructor;
+    pattern: string;
+    flags: string;
+}
+
+export interface RegexMatchFunction extends RegexMatchBase {
+    type: RegexMatchType.Function;
+    pattern: string;
+    flags: string;
+}
+
+export interface RegexMatchString extends RegexMatchBase {
+    type: RegexMatchType.String;
+    pattern: string;
+}

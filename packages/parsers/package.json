@@ -24,6 +24,7 @@
         "clean": "rm -r dist/"
     },
     "devDependencies": {
+        "@regex-radar/lsp-types": "*",
         "tree-sitter-cli": "^0.25.10",
         "tree-sitter-javascript": "^0.25.0",
         "tree-sitter-json": "^0.24.8",

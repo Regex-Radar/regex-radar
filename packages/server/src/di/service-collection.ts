@@ -1,5 +1,5 @@
-import { createInstanceDescriptor, ServiceCollection } from "@gitlab/needle";
-import { LsConnection, LsTextDocuments } from "./external-interfaces";
+import { createInstanceDescriptor, ServiceCollection } from '@gitlab/needle';
+import { LsConnection, LsTextDocuments } from './external-interfaces';
 
 export interface ServiceCollectionExternals {
     connection: LsConnection;
@@ -13,12 +13,12 @@ export function createServiceCollection(externals: ServiceCollectionExternals): 
             createInstanceDescriptor({
                 instance: connection,
                 aliases: [LsConnection],
-            })
+            }),
         )
         .add(
             createInstanceDescriptor({
                 instance: documents,
                 aliases: [LsTextDocuments],
-            })
+            }),
         );
 }

@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 import {
     EntryType,
     Entry,
@@ -6,9 +6,9 @@ import {
     DirectoryEntry,
     FileEntry,
     RegexEntry,
-} from "@regex-radar/lsp-types";
-import { RegexRadarLanguageClient } from "@regex-radar/client";
-import * as logger from "../logger";
+} from '@regex-radar/lsp-types';
+import { RegexRadarLanguageClient } from '@regex-radar/client';
+import * as logger from '../logger';
 
 type OnDidChangeTreeDataEventParams = Entry | undefined | null | void;
 
@@ -128,7 +128,7 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
                 //       3. discover/display them as normal files
                 //       4. cover all the change events to update state/view correctly
                 this.workspaceMode = WorkspaceMode.None;
-                const workspaceUri = "regex-radar:virtual-workspace";
+                const workspaceUri = 'regex-radar:virtual-workspace';
                 this.rootUri = workspaceUri;
                 const virtualWorkspaceEntry: WorkspaceEntry = {
                     type: EntryType.Workspace,
@@ -152,17 +152,17 @@ export class RegexRadarTreeDataProvider implements vscode.TreeDataProvider<Entry
         if (vscode.workspace.workspaceFolders) {
             return vscode.workspace.workspaceFolders.map((workspaceFolder) => workspaceFolder.uri.toString());
         }
-        logger.warn("missing vsode.workspace.workspaceFolders");
+        logger.warn('missing vsode.workspace.workspaceFolders');
         return [];
     }
 }
 
 const ThemeIcon: Record<EntryType, vscode.ThemeIcon> = {
-    [EntryType.Unknown]: new vscode.ThemeIcon("circle-filled"),
-    [EntryType.Workspace]: new vscode.ThemeIcon("root-folder"),
+    [EntryType.Unknown]: new vscode.ThemeIcon('circle-filled'),
+    [EntryType.Workspace]: new vscode.ThemeIcon('root-folder'),
     [EntryType.Directory]: vscode.ThemeIcon.Folder,
     [EntryType.File]: vscode.ThemeIcon.File,
-    [EntryType.Regex]: new vscode.ThemeIcon("regex"),
+    [EntryType.Regex]: new vscode.ThemeIcon('regex'),
 };
 
 function createTreeItem(entry: Entry): vscode.TreeItem {
@@ -178,7 +178,7 @@ function createTreeItem(entry: Entry): vscode.TreeItem {
         }
         default: {
             return {
-                label: `<invalid entry with type ${EntryType[entry["type"]] || "<invalid>"}>`,
+                label: `<invalid entry with type ${EntryType[entry['type']] || '<invalid>'}>`,
                 iconPath,
             };
         }
@@ -192,17 +192,17 @@ function createRegexEntry(entry: RegexEntry, iconPath: vscode.ThemeIcon) {
                 entry.location.range.start.line,
                 entry.location.range.start.character,
                 entry.location.range.end.line,
-                entry.location.range.end.character
+                entry.location.range.end.character,
             ),
         },
     ];
     return {
         label: `/${entry.info.pattern}/${entry.info.flags}`,
         iconPath,
-        contextValue: "regex",
+        contextValue: 'regex',
         command: {
-            command: "vscode.open",
-            title: "Open",
+            command: 'vscode.open',
+            title: 'Open',
             arguments: args,
         },
     };
@@ -210,7 +210,7 @@ function createRegexEntry(entry: RegexEntry, iconPath: vscode.ThemeIcon) {
 
 function createUriEntry(
     entry: WorkspaceEntry | DirectoryEntry | FileEntry,
-    iconPath: vscode.ThemeIcon
+    iconPath: vscode.ThemeIcon,
 ): vscode.TreeItem {
     return {
         resourceUri: vscode.Uri.parse(entry.uri),

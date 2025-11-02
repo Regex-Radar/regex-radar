@@ -120,7 +120,7 @@ if (params.tool) {
 - Could even detect multi-line regex construction in code like:
 
 ```js
-const pattern = ["^\\d{4}", "[A-Z]{2}", "$"].join("");
+const pattern = ['^\\d{4}', '[A-Z]{2}', '$'].join('');
 ```
 
 ## 🔸 Advanced / Experimental

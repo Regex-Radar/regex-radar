@@ -1,5 +1,5 @@
-import { LogOutputChannel, window } from "vscode";
-import { displayName } from "../package.json";
+import { LogOutputChannel, window } from 'vscode';
+import { displayName } from '../package.json';
 
 let instance: null | LogOutputChannel = null;
 
@@ -11,22 +11,22 @@ function logger(): LogOutputChannel {
     return instance;
 }
 
-export function info(...args: Parameters<LogOutputChannel["info"]>) {
+export function info(...args: Parameters<LogOutputChannel['info']>) {
     logger().info(...args);
 }
 
-export function trace(...args: Parameters<LogOutputChannel["trace"]>) {
+export function trace(...args: Parameters<LogOutputChannel['trace']>) {
     logger().trace(...args);
 }
 
-export function debug(...args: Parameters<LogOutputChannel["debug"]>) {
+export function debug(...args: Parameters<LogOutputChannel['debug']>) {
     logger().debug(...args);
 }
-export function warn(...args: Parameters<LogOutputChannel["warn"]>) {
+export function warn(...args: Parameters<LogOutputChannel['warn']>) {
     logger().warn(...args);
 }
 
-export function error(...args: Parameters<LogOutputChannel["error"]>) {
+export function error(...args: Parameters<LogOutputChannel['error']>) {
     logger().error(...args);
 }
 

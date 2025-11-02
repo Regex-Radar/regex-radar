@@ -1,12 +1,14 @@
-import type { Range, URI } from "vscode-languageserver";
-import type { TextDocument } from "vscode-languageserver-textdocument";
+import type { Range, URI } from 'vscode-languageserver';
+import type { TextDocument } from 'vscode-languageserver-textdocument';
 
-import type { Node, QueryCapture, QueryMatch } from "web-tree-sitter";
+import type { Node, QueryCapture, QueryMatch } from 'web-tree-sitter';
 
-import { TreeSitterQuery, type TreeSitterParser } from "./web-tree-sitter";
-import { languageIdToLanguageName } from "./language-id-to-language-name.js";
-import jsRegexQuery from "./queries/js/regex.scm";
-import jsRegexDirectiveQuery from "./queries/js/regex-directive.scm";
+import { RegexMatch, RegexMatchType, lsp } from '@regex-radar/lsp-types';
+
+import { TreeSitterQuery, type TreeSitterParser } from './web-tree-sitter';
+import { languageIdToLanguageName } from './language-id-to-language-name.js';
+import jsRegexQuery from './queries/js/regex.scm';
+import jsRegexDirectiveQuery from './queries/js/regex-directive.scm';
 
 const jsQueries = [jsRegexQuery, jsRegexDirectiveQuery];
 
@@ -23,7 +25,7 @@ const queries: Record<string, string[]> = {
 export class Parser implements IParser {
     constructor(private parser: TreeSitterParser) {
         if (!parser.language) {
-            throw new TypeError("expected parser to have a language set");
+            throw new TypeError('expected parser to have a language set');
         }
     }
 
@@ -37,10 +39,10 @@ export class Parser implements IParser {
         const querySources = queries[languageName];
         if (!querySources) {
             console.warn(
-                `no querySource for language.name: ${this.parser.language?.name} (document.languageId : ${document.languageId})`
+                `no querySource for language.name: ${this.parser.language?.name} (document.languageId : ${document.languageId})`,
             );
             return {
-                regexes: [],
+                matches: [],
                 uri: document.uri,
             };
         }
@@ -51,7 +53,7 @@ export class Parser implements IParser {
             return matches;
         });
         return {
-            regexes: createRegexMatchCollection(matches),
+            matches: createRegexMatchCollection(matches),
             uri: document.uri,
         };
     }
@@ -67,23 +69,23 @@ function createRegexMatchCollection(matches: QueryMatch[]): RegexMatch[] {
             case RegexMatchType.Constructor:
             case RegexMatchType.Function:
             case RegexMatchType.Literal: {
-                const regex = getNamedCapture(match, "regex")!;
-                const pattern = getNamedCaptures(match, "regex.pattern")!;
-                const flags = getNamedCapture(match, "regex.flags");
+                const regex = getNamedCapture(match, 'regex')!;
+                const pattern = getNamedCaptures(match, 'regex.pattern')!;
+                const flags = getNamedCapture(match, 'regex.flags');
                 results.push({
                     type,
-                    pattern: pattern.map((capture) => capture.node.text).join(""),
-                    flags: flags?.node.text ?? "",
+                    pattern: pattern.map((capture) => capture.node.text).join(''),
+                    flags: flags?.node.text ?? '',
                     range: createRangeFromNode(regex.node),
                 });
                 break;
             }
             case RegexMatchType.String: {
-                const regex = getNamedCapture(match, "regex")!;
-                const pattern = getNamedCaptures(match, "regex.pattern")!;
+                const regex = getNamedCapture(match, 'regex')!;
+                const pattern = getNamedCaptures(match, 'regex.pattern')!;
                 results.push({
                     type,
-                    pattern: pattern.map((capture) => capture.node.text).join(""),
+                    pattern: pattern.map((capture) => capture.node.text).join(''),
                     range: createRangeFromNode(regex.node),
                 });
             }
@@ -93,22 +95,26 @@ function createRegexMatchCollection(matches: QueryMatch[]): RegexMatch[] {
 }
 
 function getRegexMatchType(match: QueryMatch): RegexMatchType {
-    const type = match.setProperties?.["regex.type"];
-    switch (type) {
-        case "literal":
-            return RegexMatchType.Literal;
-        case "constructor":
-            return RegexMatchType.Constructor;
-        case "function":
-            return RegexMatchType.Function;
-        case "string":
-            return RegexMatchType.String;
-        default:
-            return RegexMatchType.Unknown;
+    // Would like to use `#set regex.type "function"`
+    // But that does not work as expected
+    // see: https://github.com/tree-sitter/tree-sitter/issues/1584#issuecomment-1013513454
+    // and: https://github.com/tree-sitter/tree-sitter/blob/master/lib/binding_web/src/query.ts#L409C10-L409C27
+    if (getNamedCapture(match, 'regex.literal')) {
+        return RegexMatchType.Literal;
     }
+    if (getNamedCapture(match, 'regex.constructor')) {
+        return RegexMatchType.Constructor;
+    }
+    if (getNamedCapture(match, 'regex.function')) {
+        return RegexMatchType.Function;
+    }
+    if (getNamedCapture(match, 'regex.string')) {
+        return RegexMatchType.String;
+    }
+    return RegexMatchType.Unknown;
 }
 
-function createRangeFromNode(node: Node): Range {
+function createRangeFromNode(node: Node): lsp.Range {
     return {
         start: {
             line: node.startPosition.row,
@@ -135,43 +141,5 @@ export interface IParser {
 
 export interface ParseResult {
     uri: URI;
-    regexes: RegexMatch[];
-}
-
-export type RegexMatch = RegexMatchLiteral | RegexMatchConstructor | RegexMatchFunction | RegexMatchString;
-
-enum RegexMatchType {
-    Unknown = 0,
-    Literal = 1,
-    Constructor = 2,
-    Function = 3,
-    String = 4,
-}
-
-interface RegexMatchBase {
-    type: RegexMatchType;
-    range: Range;
-}
-
-export interface RegexMatchLiteral extends RegexMatchBase {
-    type: RegexMatchType.Literal;
-    pattern: string;
-    flags: string;
-}
-
-export interface RegexMatchConstructor extends RegexMatchBase {
-    type: RegexMatchType.Constructor;
-    pattern: string;
-    flags: string;
-}
-
-export interface RegexMatchFunction extends RegexMatchBase {
-    type: RegexMatchType.Function;
-    pattern: string;
-    flags: string;
-}
-
-export interface RegexMatchString extends RegexMatchBase {
-    type: RegexMatchType.String;
-    pattern: string;
+    matches: RegexMatch[];
 }

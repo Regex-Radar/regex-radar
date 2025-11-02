@@ -1,39 +1,40 @@
-import { collection, createInterfaceId, Disposable, Injectable } from "@gitlab/needle";
-import { LsConnection } from "./di/external-interfaces";
-import { IServiceProvider } from "./di";
+import { collection, createInterfaceId, Injectable } from '@gitlab/needle';
+import { LsConnection } from './di/external-interfaces';
+import { IServiceProvider } from './di';
+import { Disposable } from './util/disposable';
 
 export interface IRequestMessageHandler {
     register(connection: LsConnection): void;
 }
 
-export const IRequestMessageHandler = createInterfaceId<IRequestMessageHandler>("IRequestMessageHandler");
+export const IRequestMessageHandler = createInterfaceId<IRequestMessageHandler>('IRequestMessageHandler');
 
 export interface INotificationMessageHandler {
     register(connection: LsConnection): void;
 }
 
 export const INotificationMessageHandler = createInterfaceId<INotificationMessageHandler>(
-    "INotificationMessageHandler"
+    'INotificationMessageHandler',
 );
 
 export interface IMessageHandler {
     register(): void;
 }
 
-export const IMessageHandler = createInterfaceId<IMessageHandler>("IMessageHandler");
+export const IMessageHandler = createInterfaceId<IMessageHandler>('IMessageHandler');
 
+/**
+ * The `MessageHandler` is a singleton that allows `IRequestMessageHandler` and `INotificationMessageHandler` implementations to register their message handlers
+ * TODO: don't use a `register(connection) { ... }` callback, but handle the registration for implementations instead, probably like `LifecycleHandler`
+ */
 @Injectable(IMessageHandler, [LsConnection, IServiceProvider])
-export class MessageHandler implements IMessageHandler, Disposable {
-    private disposables: Disposable[] = [];
-
-    dispose() {
-        this.disposables.forEach((disposable) => disposable.dispose());
-    }
-
+export class MessageHandler extends Disposable implements IMessageHandler {
     constructor(
         private connection: LsConnection,
-        private provider: IServiceProvider
-    ) {}
+        private provider: IServiceProvider,
+    ) {
+        super();
+    }
 
     register() {
         const requestHandlers = this.provider.getServices(collection(IRequestMessageHandler));

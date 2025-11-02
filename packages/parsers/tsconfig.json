@@ -7,5 +7,6 @@
         "outDir": "dist",
         "rootDir": "src"
     },
-    "include": ["src/**/*.ts", "test/**/*.ts", "package.json"]
+    "include": ["src/**/*.ts", "test/**/*.ts", "package.json"],
+    "references": [{ "path": "../lsp-types" }]
 }

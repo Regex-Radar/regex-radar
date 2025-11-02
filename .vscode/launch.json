@@ -75,6 +75,7 @@
                 "delay": 1000,
                 "maxAttempts": 10
             },
+            "continueOnAttach": true,
             "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
         }
     ]

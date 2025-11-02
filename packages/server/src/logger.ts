@@ -1,5 +1,6 @@
-import { createInterfaceId, Implements, Injectable, type Disposable } from "@gitlab/needle";
-import { LsConnection } from "./di";
+import { createInterfaceId, Injectable } from '@gitlab/needle';
+import { LsConnection } from './di';
+import { Disposable } from './util/disposable';
 
 export interface ILogger {
     debug(message: string): void;
@@ -9,14 +10,16 @@ export interface ILogger {
     error(message: string): void;
 }
 
-export const ILogger = createInterfaceId<ILogger>("ILogger");
+export const ILogger = createInterfaceId<ILogger>('ILogger');
 
+/**
+ * The `Logger` will log messages over the LSP back to the client.
+ * TODO: enable logging on server side as well.
+ */
 @Injectable(ILogger, [LsConnection])
-export class Logger implements ILogger, Disposable {
-    constructor(private readonly connection: LsConnection) {}
-
-    dispose(): void {
-        return;
+export class Logger extends Disposable implements ILogger {
+    constructor(private readonly connection: LsConnection) {
+        super();
     }
 
     debug(message: string): void {

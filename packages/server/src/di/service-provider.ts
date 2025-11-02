@@ -1,34 +1,41 @@
 import {
     createInterfaceId,
     ServiceProvider as _ServiceProvider,
-    Disposable,
     Injectable,
     ServiceIdentifier,
     ServiceCollection,
     ServiceDescriptor,
     Constructor,
-} from "@gitlab/needle";
+} from '@gitlab/needle';
+import { Disposable } from '../util/disposable';
 
 export interface IServiceProvider {
-    getRequiredService: _ServiceProvider["getRequiredService"];
-    getServices: _ServiceProvider["getServices"];
-    createScope: _ServiceProvider["createScope"];
+    getRequiredService: _ServiceProvider['getRequiredService'];
+    getServices: _ServiceProvider['getServices'];
+    createScope: _ServiceProvider['createScope'];
+    dispose: _ServiceProvider['dispose'];
 }
 
-export const IServiceProvider = createInterfaceId<IServiceProvider>("IServiceProvider");
+export const IServiceProvider = createInterfaceId<IServiceProvider>('IServiceProvider');
 
 @Injectable(IServiceProvider, [])
-export class ServiceProvider implements IServiceProvider, Disposable {
+export class ServiceProvider extends Disposable implements IServiceProvider {
     private _serviceProvider: _ServiceProvider | null = null;
 
     private get serviceProvider(): _ServiceProvider {
         if (!this._serviceProvider) {
-            throw new Error("_serviceProvider has to be set, before using the ServiceProvider methods");
+            throw new Error('_serviceProvider has to be set, before using the ServiceProvider');
         }
         return this._serviceProvider;
     }
 
-    constructor() {}
+    dispose() {
+        super.dispose();
+    }
+
+    constructor() {
+        super();
+    }
 
     getRequiredService<T>(identifier: ServiceIdentifier<T>): T {
         return this.serviceProvider.getRequiredService(identifier);
@@ -44,13 +51,7 @@ export class ServiceProvider implements IServiceProvider, Disposable {
 
     set(serviceProvider: _ServiceProvider) {
         this._serviceProvider = serviceProvider;
-    }
-
-    dispose() {
-        if (this._serviceProvider != null) {
-            this._serviceProvider.dispose();
-            this._serviceProvider = null;
-        }
+        this.disposables.push(this._serviceProvider);
     }
 }
 
@@ -59,7 +60,7 @@ export function buildServiceProvider(
     additions: Partial<{
         descriptors: ServiceDescriptor[];
         constructors: Constructor[];
-    }> = {}
+    }> = {},
 ): IServiceProvider {
     collection.addClass(ServiceProvider);
     additions.descriptors?.forEach((descriptor) => collection.add(descriptor));
@@ -68,7 +69,7 @@ export function buildServiceProvider(
     if (!validationResult.isValid) {
         throw new AggregateError(
             validationResult.errors,
-            "ServiceCollection.validate indicates collection is invalid and cannot be build"
+            'ServiceCollection.validate indicates collection is invalid and cannot be build',
         );
     }
     const _serviceProvider = collection.build();

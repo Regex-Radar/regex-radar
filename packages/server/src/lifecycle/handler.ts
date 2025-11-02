@@ -1,29 +1,32 @@
-import { InitializeResult } from "vscode-languageserver";
-import { collection, createInterfaceId, Injectable, type Disposable } from "@gitlab/needle";
+import { InitializeResult, type ServerCapabilities } from 'vscode-languageserver';
+import { collection, createInterfaceId, Injectable } from '@gitlab/needle';
 
-import { IServiceProvider, LsConnection } from "../di";
-import { IOnExit, IOnInitialize, IOnInitialized, IOnShutdown } from "./events";
+import { Disposable } from '../util/disposable';
 
-import packageJson from "../../package.json";
+import { IServiceProvider, LsConnection } from '../di';
+import { IOnExit, IOnInitialize, IOnInitialized, IOnShutdown } from './events';
+
+import packageJson from '../../package.json';
 
 export interface ILifecycleHandler {
     register(): void;
 }
 
-export const ILifecycleHandler = createInterfaceId<ILifecycleHandler>("ILifecycleHandler");
+export const ILifecycleHandler = createInterfaceId<ILifecycleHandler>('ILifecycleHandler');
 
+const defaultCapabilities: ServerCapabilities = {};
+
+/**
+ * The `LifecycleHandler` is a singleton that allows `IOnExit`, `IOnInitialize`, `IOnInitialized` and `IOnShutdown` implementations to register an event handler for those events.
+ */
 @Injectable(ILifecycleHandler, [LsConnection, IServiceProvider])
-export class LifecycleHandler implements ILifecycleHandler, Disposable {
-    private disposables: Disposable[] = [];
-
-    dispose(): void {
-        this.disposables.forEach((disposable) => disposable.dispose());
-    }
-
+export class LifecycleHandler extends Disposable implements ILifecycleHandler {
     constructor(
         private connection: LsConnection,
-        private provider: IServiceProvider
-    ) {}
+        private provider: IServiceProvider,
+    ) {
+        super();
+    }
 
     register() {
         const onInitializeHandlers = this.provider.getServices(collection(IOnInitialize));
@@ -34,42 +37,30 @@ export class LifecycleHandler implements ILifecycleHandler, Disposable {
             /**
              * @see https://microsoft.github.io/language-server-protocol/specifications/specification-current#initialize
              */
-            this.connection.onInitialize(async (params, token) => {
-                const results: InitializeResult[] = await Promise.all(
-                    onInitializeHandlers.map(async (handler) => {
+            this.connection.onInitialize((params, token) => {
+                const results: ServerCapabilities[] = onInitializeHandlers
+                    .map((handler) => {
                         try {
-                            const result = await handler.onInitialize(params, token);
-                            // TODO: handle ResponseError<>
-                            return result as InitializeResult;
+                            const result = handler.onInitialize(params, token);
+                            return result;
                         } catch (error: unknown) {
-                            this.logError("onInitialize", error);
+                            this.logError('onInitialize', error);
                             return { capabilities: {} };
                         }
                     })
-                );
-                return results.reduce<InitializeResult>(
-                    (previous, current) => {
-                        // TODO: implement this properly, with a deep merge or custom merge
-                        Object.assign(previous.capabilities, current.capabilities);
-                        if (current.serverInfo && !previous.serverInfo) {
-                            previous.serverInfo = current.serverInfo;
-                        }
-                        return previous;
+                    .filter((capabilities): capabilities is ServerCapabilities => !!capabilities);
+                const capabilities = results.reduce<ServerCapabilities>((previous, current) => {
+                    // TODO: implement this properly, with a deep merge or custom merge
+                    Object.assign(previous, current);
+                    return previous;
+                }, defaultCapabilities);
+                return {
+                    capabilities,
+                    serverInfo: {
+                        name: packageJson.name,
+                        version: packageJson.version,
                     },
-                    {
-                        capabilities: {
-                            workspace: {
-                                workspaceFolders: {
-                                    supported: true,
-                                },
-                            },
-                        },
-                        serverInfo: {
-                            name: packageJson.name,
-                            version: packageJson.version,
-                        },
-                    }
-                );
+                };
             }),
             /**
              * @see https://microsoft.github.io/language-server-protocol/specifications/specification-current#initialized
@@ -81,26 +72,26 @@ export class LifecycleHandler implements ILifecycleHandler, Disposable {
                             try {
                                 return await handler.onInitialized(params);
                             } catch (error: unknown) {
-                                this.logError("onInitialized", error);
+                                this.logError('onInitialized', error);
                             }
-                        })
-                    )
+                        }),
+                    ),
             ),
             /**
              * @see https://microsoft.github.io/language-server-protocol/specifications/specification-current#initialized
              *
              */
             this.connection.onShutdown(
-                () =>
+                (token) =>
                     void Promise.all(
                         onShutdownHandlers.map(async (handler) => {
                             try {
-                                return await handler.onShutdown();
+                                return await handler.onShutdown(token);
                             } catch (error: unknown) {
-                                this.logError("onShutdown", error);
+                                this.logError('onShutdown', error);
                             }
-                        })
-                    )
+                        }),
+                    ),
             ),
             /**
              *
@@ -113,26 +104,26 @@ export class LifecycleHandler implements ILifecycleHandler, Disposable {
                             try {
                                 return await handler.onExit();
                             } catch (error: unknown) {
-                                this.logError("onExit", error);
+                                this.logError('onExit', error);
                             }
-                        })
-                    )
-            )
+                        }),
+                    ),
+            ),
         );
     }
 
     private logError(name: string, error: unknown) {
         if (error instanceof Error) {
             this.connection.console.error(
-                `error occured in lifecycle event: ${name} - '${error.toString()}'`
+                `error occured in lifecycle event: ${name} - '${error.toString()}'`,
             );
-        } else if (error != null && typeof error["toString"] === "function") {
+        } else if (error != null && typeof error['toString'] === 'function') {
             this.connection.console.error(
-                `error occured in lifecycle event: ${name} - caught thrown value: ${error}`
+                `error occured in lifecycle event: ${name} - caught thrown value: ${error}`,
             );
         } else {
             this.connection.console.error(
-                `error occured in lifecycle event: ${name} - thrown value has no string representation`
+                `error occured in lifecycle event: ${name} - thrown value has no string representation`,
             );
         }
     }

@@ -1,10 +1,10 @@
-import { URI } from "vscode-uri";
-import type { TextDocumentChangeEvent } from "vscode-languageserver";
-import type { TextDocument } from "vscode-languageserver-textdocument";
-import { createInterfaceId, Disposable, Implements, Injectable } from "@gitlab/needle";
+import { URI } from 'vscode-uri';
+import type { TextDocumentChangeEvent } from 'vscode-languageserver';
+import type { TextDocument } from 'vscode-languageserver-textdocument';
+import { createInterfaceId, Implements, Injectable } from '@gitlab/needle';
 
-import * as fs from "fs/promises";
-import * as path from "path";
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 import {
     EntryType,
@@ -16,21 +16,22 @@ import {
     type lsp,
     type RegexEntry,
     type WorkspaceEntry,
-} from "@regex-radar/lsp-types";
-import type { RegexMatch } from "@regex-radar/parsers";
+} from '@regex-radar/lsp-types';
+import type { RegexMatch } from '@regex-radar/lsp-types';
+import { Disposable } from '../util/disposable';
 
-import { IRequestMessageHandler } from "../message-handler";
-import { LsConnection } from "../di/external-interfaces";
-import { IDocumentsService } from "../documents";
-import { IOnTextDocumentDidChangeHandler, IOnTextDocumentDidCloseHandler } from "../documents/events";
-import { ILogger } from "../logger";
-import { IParserProvider } from "../parsers";
+import { IRequestMessageHandler } from '../message-handler';
+import { LsConnection } from '../di/external-interfaces';
+import { IDocumentsService } from '../documents';
+import { IOnTextDocumentDidChangeHandler, IOnTextDocumentDidCloseHandler } from '../documents/events';
+import { ILogger } from '../logger';
+import { IParserProvider } from '../parsers';
 
-interface IDiscoveryService {
-    discover(uri: DiscoveryParams): Promise<DiscoveryResult>;
+export interface IDiscoveryService {
+    discover<T extends EntryType = EntryType>(params: DiscoveryParams<T>): Promise<DiscoveryResult<T>>;
 }
 
-export const IDiscoveryService = createInterfaceId<IDiscoveryService>("IDiscoveryService");
+export const IDiscoveryService = createInterfaceId<IDiscoveryService>('IDiscoveryService');
 
 type CachableEntry<T extends EntryType = EntryType> = Exclude<Entry, RegexEntry> & { type: T };
 
@@ -46,30 +47,29 @@ type GetTreeParams = {
 @Implements(IOnTextDocumentDidCloseHandler)
 @Injectable(IDiscoveryService, [IDocumentsService, LsConnection, ILogger, IParserProvider])
 export class DiscoveryService
+    extends Disposable
     implements
         IDiscoveryService,
         IRequestMessageHandler,
         IOnTextDocumentDidChangeHandler,
-        IOnTextDocumentDidCloseHandler,
-        Disposable
+        IOnTextDocumentDidCloseHandler
 {
     private cache = new Map<lsp.URI, CachableEntry>();
-    private disposables: Disposable[] = [];
 
     /**
      * TODO: move to configuration
      */
     static readonly ALWAYS_IGNORE_DIRECTORIES = [
-        "node_modules",
-        ".git",
-        ".github",
-        ".vscode-test",
-        "dist",
-        "out",
-        "build",
+        'node_modules',
+        '.git',
+        '.github',
+        '.vscode-test',
+        'dist',
+        'out',
+        'build',
     ];
 
-    static readonly SUPPORTED_FILE_EXTENSIONS = [".js", ".ts"];
+    static readonly SUPPORTED_FILE_EXTENSIONS = ['.js', '.ts'];
 
     dispose() {
         this.disposables.forEach((disposable) => disposable.dispose());
@@ -79,11 +79,13 @@ export class DiscoveryService
         private documentService: IDocumentsService,
         private connection: LsConnection,
         private logger: ILogger,
-        private parsers: IParserProvider
-    ) {}
+        private parsers: IParserProvider,
+    ) {
+        super();
+    }
 
     register(connection: LsConnection): void {
-        this.disposables.push(connection.onRequest("regexRadar/discovery", this.discover.bind(this)));
+        this.disposables.push(connection.onRequest('regexRadar/discovery', this.discover.bind(this)));
     }
 
     onTextDocumentDidOpen(event: TextDocumentChangeEvent<TextDocument>) {
@@ -101,7 +103,7 @@ export class DiscoveryService
         this.logger.debug(`(discovery) invalidating cache entry for: ${event.document.uri}`);
         this.cache.delete(event.document.uri);
         this.logger.debug(`(discovery) sending didChange notification for: ${event.document.uri}`);
-        await this.connection.sendNotification("regexRadar/discovery/didChange", { uri: entry.uri });
+        await this.connection.sendNotification('regexRadar/discovery/didChange', { uri: entry.uri });
     }
 
     onTextDocumentDidClose(event: TextDocumentChangeEvent<TextDocument>) {
@@ -111,9 +113,12 @@ export class DiscoveryService
         }
     }
 
-    async discover({ uri, hint }: DiscoveryParams): Promise<DiscoveryResult> {
+    async discover<T extends EntryType = EntryType>({
+        uri,
+        hint,
+    }: DiscoveryParams<T>): Promise<DiscoveryResult<T>> {
         this.logger.debug(
-            `(discovery) request for ${uri} with hint: ${hint ? EntryType[hint] : "<no hint>"}`
+            `(discovery) request for ${uri} with hint: ${hint ? EntryType[hint] : '<no hint>'}`,
         );
         if (this.isUriIgnored(uri)) {
             this.logger.debug(`(discovery) ignored discovery request for: ${uri}`);
@@ -125,7 +130,8 @@ export class DiscoveryService
         //       research if recursive watcher is more effecient than watching each file / directory on its own
         const tree = await this.getTreeForUri(uri, hint);
         this.logger.debug(`(discovery) responding to discovery request for: ${uri}`);
-        return tree;
+        // TODO: fix this type assertion
+        return tree as DiscoveryResult<T>;
     }
 
     private getFromCache<T extends EntryType>(uri: lsp.URI, hint?: T): CachableEntry<T> | null {
@@ -143,7 +149,7 @@ export class DiscoveryService
     private isUriIgnored(uri: lsp.URI): boolean {
         const { scheme, fsPath } = URI.parse(uri);
         switch (scheme) {
-            case "file": {
+            case 'file': {
                 return this.isFsPathIgnored(fsPath);
             }
         }
@@ -178,7 +184,7 @@ export class DiscoveryService
             return cacheHit;
         }
         const { fsPath, scheme } = URI.parse(uri);
-        if (scheme !== "file") {
+        if (scheme !== 'file') {
             return null;
         }
         const params: GetTreeParams = { fsPath, uri, ignoreCache: true };
@@ -241,7 +247,7 @@ export class DiscoveryService
                             parentUri: uri,
                         });
                     }
-                })
+                }),
             )
         ).filter((child) => child != null);
         const result: DirectoryEntry = {
@@ -269,25 +275,20 @@ export class DiscoveryService
             uri,
             parentUri,
             type: EntryType.File,
-            children: parseResult.regexes.map((regex) => this.createRegexEntry(regex, uri)),
+            children: parseResult.matches.map((match) => this.createRegexEntry(match, uri)),
         };
         this.cache.set(uri, result);
         return result;
     }
 
-    private createRegexEntry(regex: RegexMatch, uri: lsp.URI): RegexEntry {
+    private createRegexEntry(match: RegexMatch, uri: lsp.URI): RegexEntry {
         return {
             type: EntryType.Regex,
             location: {
                 uri,
-                range: regex.range,
+                range: match.range,
             },
-            info: {
-                pattern: regex.pattern,
-                flags: "flags" in regex ? regex.flags : "",
-                // TODO: model this properly
-                isDynamic: regex.pattern === "<dynamic>",
-            },
+            match,
         };
     }
 }
