@@ -146,7 +146,7 @@ function createDiagnosticsForMatchTypeFunction(entry: RegexEntry): Diagnostic[] 
         source: EXTENSION_ID,
         message: DO_NOT_USE_REGEXP_AS_FUNCTION_MESSAGE,
         severity: DiagnosticSeverity.Warning,
-        code: 'no-regexp-fn-call',
+        code: 'prefer-regex-new-expression',
     });
 
     return diagnostics;

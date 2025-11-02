@@ -19,7 +19,10 @@
     "<THIRD_PARTY_MODULES>",
     "<SEPERATOR>",
     "^@regex-radar/",
-    "^[./]"
+    "<SEPERATOR>",
+    "^[.]{2}/",
+    "<SEPERATOR>",
+    "^[.]/"
   ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": false,

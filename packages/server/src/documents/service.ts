@@ -7,7 +7,6 @@ import {
     DidOpenTextDocumentNotification,
     type InitializeParams,
     type InitializeResult,
-    type InitializedParams,
     type TextDocumentRegistrationOptions,
     TextDocumentSyncKind,
     type TextEdit,
@@ -15,21 +14,13 @@ import {
 import { type DocumentUri, TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
 
-import {
-    Implements,
-    Service,
-    ServiceLifetime,
-    collection,
-    createInterfaceId,
-    isDisposable,
-} from '@gitlab/needle';
-
-import 'wasi';
+import { Implements, Injectable, collection, createInterfaceId, isDisposable } from '@gitlab/needle';
 
 import { IServiceProvider, LsConnection, LsTextDocuments } from '../di';
 import { IOnInitialize, IOnInitialized } from '../lifecycle';
 import { Disposable } from '../util/disposable';
 import { getLanguageIdForFileExtension } from '../util/language-identifiers';
+
 import {
     IOnTextDocumentDidChangeHandler,
     IOnTextDocumentDidCloseHandler,
@@ -52,11 +43,7 @@ export const IDocumentsService = createInterfaceId<IDocumentsService>('IDocument
  */
 @Implements(IOnInitialize)
 @Implements(IOnInitialized)
-@Implements(IDocumentsService)
-@Service({
-    dependencies: [LsConnection, LsTextDocuments, IServiceProvider],
-    lifetime: ServiceLifetime.Singleton,
-})
+@Injectable(IDocumentsService, [LsConnection, LsTextDocuments, IServiceProvider])
 export class DocumentsService extends Disposable implements IDocumentsService, IOnInitialized {
     constructor(
         private connection: LsConnection,

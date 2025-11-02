@@ -198,8 +198,10 @@ function createRegexEntry(entry: RegexEntry, iconPath: vscode.ThemeIcon) {
             ),
         },
     ];
+    const pattern = entry.match.pattern;
+    const flags = 'flags' in entry.match ? entry.match.flags : '';
     return {
-        label: `/${entry.info.pattern}/${entry.info.flags}`,
+        label: `/${pattern}/${flags}`,
         iconPath,
         contextValue: 'regex',
         command: {

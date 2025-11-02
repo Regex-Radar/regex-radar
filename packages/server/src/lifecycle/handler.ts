@@ -5,6 +5,7 @@ import { Injectable, collection, createInterfaceId } from '@gitlab/needle';
 import packageJson from '../../package.json';
 import { IServiceProvider, LsConnection } from '../di';
 import { Disposable } from '../util/disposable';
+
 import { IOnExit, IOnInitialize, IOnInitialized, IOnShutdown } from './events';
 
 export interface ILifecycleHandler {
@@ -41,7 +42,7 @@ export class LifecycleHandler extends Disposable implements ILifecycleHandler {
                             return result;
                         } catch (error: unknown) {
                             this.logError('onInitialize', error);
-                            return { capabilities: {} };
+                            return {};
                         }
                     })
                     .filter((capabilities): capabilities is ServerCapabilities => !!capabilities);
