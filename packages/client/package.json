@@ -27,6 +27,6 @@
         "@regex-radar/lsp-types": "*"
     },
     "devDependencies": {
-        "esbuild": "^0.25.11"
+        "esbuild": "^0.25.12"
     }
 }

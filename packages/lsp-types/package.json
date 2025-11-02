@@ -26,6 +26,6 @@
         "vscode-languageserver-types": "^3.17.5"
     },
     "devDependencies": {
-        "esbuild": "^0.25.11"
+        "esbuild": "^0.25.12"
     }
 }

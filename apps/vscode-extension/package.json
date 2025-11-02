@@ -174,9 +174,9 @@
         "clean": "rm -r dist/"
     },
     "devDependencies": {
-        "@types/node": "^22.18.10",
+        "@types/node": "^22.18.13",
         "@types/vscode": "^1.105.0",
-        "esbuild": "^0.25.11"
+        "esbuild": "^0.25.12"
     },
     "dependencies": {
         "vscode-languageclient": "^9.0.1",

@@ -23,14 +23,14 @@
         "clean": "rm -r dist/"
     },
     "dependencies": {
-        "@gitlab/needle": "^1.5.0",
+        "@gitlab/needle": "^1.5.1",
         "@regex-radar/lsp-types": "*",
-        "recheck": "^4.4.5",
+        "recheck": "^4.5.0",
         "vscode-languageserver": "^9.0.1",
         "vscode-languageserver-textdocument": "^1.0.12",
         "vscode-uri": "^3.1.0"
     },
     "devDependencies": {
-        "esbuild": "^0.25.11"
+        "esbuild": "^0.25.12"
     }
 }
