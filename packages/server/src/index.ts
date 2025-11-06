@@ -6,8 +6,8 @@ import { CodeLensMessageHandler, onCodeLensHandlers } from './code-lens';
 import { Configuration } from './configuration';
 import { Connection, IConnection } from './connection';
 import { buildServiceProvider, createServiceCollection } from './di';
-import { DiagnosticsService } from './diagnostics';
-import { DiscoveryService } from './discovery';
+import { DiagnosticsMessageHandler, onDiagnosticHandlers } from './diagnostics';
+import { DiscoveryRequestMessageHandler, DiscoveryService } from './discovery';
 import { DocumentsService } from './documents';
 import { FileSystem } from './file-system';
 import { fileSystemProviders } from './file-system-provider';
@@ -26,10 +26,12 @@ const provider = buildServiceProvider(collection, [
     MessageHandler,
     Configuration,
     Logger,
+    DiscoveryRequestMessageHandler,
     DiscoveryService,
     DocumentsService,
     ParserProvider,
-    DiagnosticsService,
+    DiagnosticsMessageHandler,
+    ...onDiagnosticHandlers,
     CodeActionMessageHandler,
     ...onCodeActionHandlers,
     CodeLensMessageHandler,

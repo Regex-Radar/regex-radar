@@ -1,4 +1,7 @@
+import type { Descriptor } from '../di/service-provider';
+
 import { NodeFileSystemProvider } from './node';
 
-export { IFileSystemProvider } from './provider';
-export const fileSystemProviders = [NodeFileSystemProvider];
+export * from './provider';
+
+export const fileSystemProviders: Descriptor[] = [NodeFileSystemProvider];

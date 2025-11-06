@@ -2,7 +2,7 @@ import type { CodeLensParams, CodeLens, CancellationToken } from 'vscode-languag
 
 import { Implements, Service, ServiceLifetime } from '@gitlab/needle';
 
-import { EntryType } from '@regex-radar/lsp-types';
+import { EntryType, type RegexEntry } from '@regex-radar/lsp-types';
 
 import { IDiscoveryService } from '../../discovery';
 import { IOnCodeLens } from '../events';
@@ -15,25 +15,27 @@ import { IOnCodeLens } from '../events';
 export class RevealInRegexExporerCodeLens implements IOnCodeLens {
     constructor(private readonly discovery: IDiscoveryService) {}
 
-    async onCodeLens(params: CodeLensParams, token: CancellationToken): Promise<CodeLens[]> {
+    async onCodeLens(params: CodeLensParams, token?: CancellationToken): Promise<CodeLens[]> {
         const entry = await this.discovery.discover({
             uri: params.textDocument.uri,
             hint: EntryType.File,
         });
-        if (!entry) {
+        if (!entry || token?.isCancellationRequested) {
             return [];
         }
-        return entry.children.map((entry) => {
-            return {
-                isResolved: true,
-                range: entry.location.range,
-                command: {
-                    command: 'regex-radar.tree-data-provider.reveal',
-                    title: 'Regex Explorer',
-                    tooltip: 'Reveal in the Regex Explorer',
-                    arguments: [entry],
-                },
-            };
-        });
+        return entry.children.map((entry) => createCodeLens(entry));
     }
+}
+
+function createCodeLens(entry: RegexEntry) {
+    return {
+        isResolved: true,
+        range: entry.location.range,
+        command: {
+            command: 'regex-radar.tree-data-provider.reveal',
+            title: 'Regex Explorer',
+            tooltip: 'Reveal in the Regex Explorer',
+            arguments: [entry],
+        },
+    };
 }

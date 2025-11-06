@@ -73,7 +73,7 @@ export class LifecycleHandler extends Disposable implements ILifecycleHandler {
                     void Promise.all(
                         onInitializedHandlers.map(async (handler) => {
                             try {
-                                return await handler.onInitialized(params);
+                                return await handler.onInitialized(this.connection);
                             } catch (error: unknown) {
                                 this.logError('onInitialized', error);
                             }

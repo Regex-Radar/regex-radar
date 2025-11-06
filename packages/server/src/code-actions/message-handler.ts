@@ -3,8 +3,8 @@ import {
     type CodeAction,
     type CodeActionKind,
     type CodeActionParams,
+    type CodeActionRegistrationOptions,
     CodeActionRequest,
-    type Diagnostic,
     type ResultProgressReporter,
     type WorkDoneProgressReporter,
 } from 'vscode-languageserver';
@@ -15,13 +15,12 @@ import { IConfiguration } from '../configuration';
 import { DOCUMENT_SELECTOR } from '../constants';
 import { IServiceProvider } from '../di';
 import { LsConnection } from '../di/external-interfaces';
-import { IDiagnosticsService } from '../diagnostics';
 import { IOnInitialized } from '../lifecycle';
+import { ILogger } from '../logger';
 import { unique } from '../util/array';
-import { resultOrCancellation } from '../util/cancellation-promise';
 import { Disposable } from '../util/disposable';
+import { runHandlers } from '../util/handlers';
 import type { MaybePromise } from '../util/maybe';
-import { isInRange } from '../util/range';
 
 import { IOnCodeAction, IOnCodeActionResolve } from './events';
 
@@ -39,7 +38,7 @@ export const ICodeActionMessageHandler =
     createInterfaceId<ICodeActionMessageHandler>('ICodeActionMessageHandler');
 
 @Implements(IOnInitialized)
-@Injectable(ICodeActionMessageHandler, [IConfiguration, IServiceProvider, LsConnection, IDiagnosticsService])
+@Injectable(ICodeActionMessageHandler, [IConfiguration, IServiceProvider, ILogger])
 export class CodeActionMessageHandler
     extends Disposable
     implements ICodeActionMessageHandler, IOnInitialized
@@ -50,15 +49,15 @@ export class CodeActionMessageHandler
     constructor(
         private readonly configuration: IConfiguration,
         private readonly provider: IServiceProvider,
-        private readonly connection: LsConnection,
-        private readonly diagnostics: IDiagnosticsService,
+        private readonly logger: ILogger,
     ) {
         super();
     }
 
-    async onInitialized(): Promise<void> {
+    async onInitialized(connection: LsConnection): Promise<void> {
         const capabilties = await this.configuration.get('client.capabilities');
         const codeActionCapabilities = capabilties.textDocument?.codeAction;
+        const diagnosticDataSupport = capabilties.textDocument?.publishDiagnostics?.dataSupport;
 
         if (!codeActionCapabilities?.dynamicRegistration) {
             return;
@@ -69,24 +68,39 @@ export class CodeActionMessageHandler
             return;
         }
 
-        let onCodeActionHandlers = this.provider.getServices(collection(IOnCodeAction)).filter((handler) => {
-            const canHandleResolve = codeActionCapabilities.resolveSupport || !handler.requiresResolveSupport;
-            const kindMatches = kindIntersects(
-                handler.kinds,
-                codeActionCapabilities.codeActionLiteralSupport!.codeActionKind.valueSet,
-            );
-            return canHandleResolve && kindMatches;
-        });
+        const onCodeActionHandlers = this.provider
+            .getServices(collection(IOnCodeAction))
+            .filter((handler) => {
+                const canHandleResolve =
+                    codeActionCapabilities.resolveSupport || !handler.requiresResolveSupport;
+                const kindMatches = kindIntersects(
+                    handler.kinds,
+                    codeActionCapabilities.codeActionLiteralSupport!.codeActionKind.valueSet,
+                );
+                const canHandleDataSupport =
+                    codeActionCapabilities.dataSupport || !handler.requiresDataSupport;
+                const canHandleDiagnosticDataSupport =
+                    diagnosticDataSupport || !handler.requiresDiagnosticDataSupport;
+                return (
+                    canHandleResolve && canHandleDataSupport && canHandleDiagnosticDataSupport && kindMatches
+                );
+            });
 
-        let onCodeActionResolveHandlers = codeActionCapabilities.resolveSupport
-            ? this.provider.getServices(collection(IOnCodeActionResolve))
+        const onCodeActionResolveHandlers = codeActionCapabilities.resolveSupport
+            ? this.provider.getServices(collection(IOnCodeActionResolve)).filter((handler) => {
+                  const canHandleDataSupport =
+                      codeActionCapabilities.dataSupport || !handler.requiresDataSupport;
+                  return canHandleDataSupport;
+              })
             : [];
 
-        const registerParams: Record<string, any> = {
+        const registerParams: CodeActionRegistrationOptions = {
             codeActionKinds: unique(onCodeActionHandlers.flatMap((handler) => handler.kinds)),
-            // TODO: dynamic document selector
             documentSelector: DOCUMENT_SELECTOR,
         };
+        if (capabilties.window?.workDoneProgress) {
+            registerParams.workDoneProgress = true;
+        }
 
         this.onCodeActionHandlers = onCodeActionHandlers;
         this.onCodeActionResolveHandlers = onCodeActionResolveHandlers;
@@ -95,11 +109,11 @@ export class CodeActionMessageHandler
         const hasCodeActionResolveHandlers = onCodeActionResolveHandlers.length > 0;
 
         if (hasCodeActionHandlers) {
-            this.disposables.push(this.connection.onCodeAction(this.onCodeAction.bind(this)));
+            this.disposables.push(connection.onCodeAction(this.onCodeAction.bind(this)));
         }
 
         if (hasCodeActionResolveHandlers) {
-            this.disposables.push(this.connection.onCodeActionResolve(this.onCodeActionResolve.bind(this)));
+            this.disposables.push(connection.onCodeActionResolve(this.onCodeActionResolve.bind(this)));
         }
 
         if (hasCodeActionHandlers || hasCodeActionResolveHandlers) {
@@ -109,7 +123,7 @@ export class CodeActionMessageHandler
             if (capabilties.window?.workDoneProgress) {
                 registerParams.workDoneProgress = true;
             }
-            const disposable = await this.connection.client.register(CodeActionRequest.type, registerParams);
+            const disposable = await connection.client.register(CodeActionRequest.type, registerParams);
             this.disposables.push(disposable);
         }
     }
@@ -120,7 +134,6 @@ export class CodeActionMessageHandler
         workDone?: WorkDoneProgressReporter,
         progress?: ResultProgressReporter<CodeAction[]>,
     ): Promise<CodeAction[]> {
-        const actions: CodeAction[] = [];
         const handlers = params.context.only
             ? this.onCodeActionHandlers.filter((handler) =>
                   kindIntersects(handler.kinds, params.context.only!),
@@ -128,62 +141,38 @@ export class CodeActionMessageHandler
             : this.onCodeActionHandlers;
 
         if (handlers.length === 0) {
-            return actions;
+            return [];
         }
 
-        const pending: Promise<CodeAction[]>[] = [];
-        params.context.diagnostics = await this.ensureDiagnostics(params);
+        return runHandlers(
+            handlers.map((handler) => () => handler.onCodeAction(params, token)),
+            token,
+            workDone,
+            progress,
+            this.logger,
+        );
+    }
 
-        // TODO: use work done progress reporter?
-
-        for (const handler of handlers) {
+    onCodeActionResolve(action: CodeAction, token?: CancellationToken): MaybePromise<CodeAction> {
+        return this.onCodeActionResolveHandlers.reduce(async (result, handler) => {
             if (token?.isCancellationRequested) {
-                break;
+                return result;
             }
-            try {
-                const result = handler.onCodeAction(params);
-                if (result instanceof Promise) {
-                    // TODO: use result progress reporter?
-                    pending.push(result);
-                } else {
-                    actions.push(...result);
-                }
-            } catch (error) {
-                // TODO: log error
-            }
-        }
-
-        if (pending.length > 0 && !token?.isCancellationRequested) {
-            const result = await resultOrCancellation(Promise.allSettled(pending), token);
-            if (Array.isArray(result)) {
-                for (const promise of result) {
-                    if (promise.status === 'fulfilled') {
-                        actions.push(...promise.value);
-                    } else {
-                        // TODO: log error
-                    }
-                }
-            }
-        }
-
-        return actions;
+            const action = await result;
+            return handler.onCodeActionResolve(action, token);
+        }, Promise.resolve(action));
     }
 
-    onCodeActionResolve(action: CodeAction): MaybePromise<CodeAction> {
-        // TODO: implement this
-        return action;
-    }
-
-    private async ensureDiagnostics(params: CodeActionParams): Promise<Diagnostic[]> {
-        if (params.context.diagnostics.length > 0) {
-            return params.context.diagnostics;
-        }
-        const result = await this.diagnostics.onDiagnosticRequest(params);
-        if (result.kind === 'full') {
-            return result.items.filter((item) => isInRange(item.range, params.range));
-        }
-        return [];
-    }
+    // private async ensureDiagnostics(params: CodeActionParams): Promise<Diagnostic[]> {
+    //     if (params.context.diagnostics.length > 0) {
+    //         return params.context.diagnostics;
+    //     }
+    //     const result = await this.diagnostics.onDiagnosticRequest(params);
+    //     if (result.kind === 'full') {
+    //         return result.items.filter((item) => isInRange(item.range, params.range));
+    //     }
+    //     return [];
+    // }
 }
 
 /**

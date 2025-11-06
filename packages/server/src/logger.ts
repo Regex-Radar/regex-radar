@@ -4,12 +4,12 @@ import { LsConnection } from './di';
 import { Disposable } from './util/disposable';
 
 export interface ILogger {
-    trace(message: string): void;
-    debug(message: string): void;
+    trace(message: string, verbose?: string): void;
     log(message: string): void;
     info(message: string): void;
     warn(message: string): void;
     error(message: string): void;
+    thrown(thrown: unknown): void;
 }
 
 export const ILogger = createInterfaceId<ILogger>('ILogger');
@@ -24,8 +24,8 @@ export class Logger extends Disposable implements ILogger {
         super();
     }
 
-    trace(message: string): void {
-        this.connection.console.debug(message);
+    trace(message: string, verbose?: string) {
+        this.connection.tracer.log(message, verbose);
     }
 
     debug(message: string): void {
@@ -46,5 +46,29 @@ export class Logger extends Disposable implements ILogger {
 
     error(message: string): void {
         this.connection.console.error(message);
+    }
+
+    thrown(thrown: unknown, printStackTrace = true): void {
+        let error: Error;
+        if (thrown == null) {
+            error = new Error(`caught thrown nullish value`, { cause: thrown });
+        } else if (thrown instanceof Error) {
+            error = thrown;
+        } else {
+            error = new Error(`caught thrown non-Error value`, { cause: thrown });
+        }
+        const message = this.stringifyError(error, printStackTrace);
+        this.error(message);
+    }
+
+    private stringifyError(error: Error, addStackTrace: boolean): string {
+        let message = `${error.name}: '${error.message}'`;
+        if (error.cause) {
+            message += `\n  { cause: ${error.cause?.toString() ?? '<no-string-representation>'}}`;
+        }
+        if (addStackTrace && error.stack) {
+            message += `\n${error.stack}`;
+        }
+        return message;
     }
 }

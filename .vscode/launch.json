@@ -74,12 +74,11 @@
             "type": "node",
             "request": "attach",
             "port": 6009,
-            "restart": {
-                "delay": 1000,
-                "maxAttempts": 10
-            },
+            "restart": false,
             "cascadeTerminateToConfigurations": ["Run Extension", "Run Extension (all extensions disabled)"],
             "continueOnAttach": true,
+            "autoAttachChildProcesses": true,
+            "showAsyncStacks": true,
             "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
         }
     ]

@@ -1,24 +1,30 @@
 import {
+    type CancellationToken,
+    type Diagnostic,
     type DocumentDiagnosticParams,
-    type DocumentDiagnosticReport,
     type WorkspaceDiagnosticParams,
-    type WorkspaceDiagnosticReport,
 } from 'vscode-languageserver';
 
 import { createInterfaceId } from '@gitlab/needle';
 
 export interface IOnDocumentDiagnostic {
+    interFileDependencies?: boolean;
     onDocumentDiagnostic(
         params: DocumentDiagnosticParams,
-    ): DocumentDiagnosticReport | Promise<DocumentDiagnosticReport>;
+        token?: CancellationToken,
+    ): Diagnostic[] | Promise<Diagnostic[]>;
 }
 
 export const IOnDocumentDiagnostic = createInterfaceId<IOnDocumentDiagnostic>('IOnDocumentDiagnostic');
 
-interface IOnWorkspaceDiagnostic {
+export type IOnWorkspaceDiagnosticResult = Record<string, Diagnostic[]>;
+
+export interface IOnWorkspaceDiagnostic {
+    interFileDependencies?: boolean;
     onWorkspaceDiagnostic(
         params: WorkspaceDiagnosticParams,
-    ): WorkspaceDiagnosticReport | Promise<WorkspaceDiagnosticReport>;
+        token?: CancellationToken,
+    ): IOnWorkspaceDiagnosticResult | Promise<IOnWorkspaceDiagnosticResult>;
 }
 
 export const IOnWorkspaceDiagnostic = createInterfaceId<IOnWorkspaceDiagnostic>('IOnWorkspaceDiagnostic');

@@ -128,10 +128,6 @@
                 {
                     "command": "regex-radar.tree-data-provider.openInRegex101",
                     "when": "(view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view) && viewItem == regex"
-                },
-                {
-                    "command": "regex-radar.test",
-                    "when": "(view == regex-radar.regex-explorer.tree-view || view == regex-radar.explorer.tree-view) && viewItem == regex"
                 }
             ]
         },

@@ -1,10 +1,11 @@
-import { DidChangeConfigurationParams, type WorkspaceFoldersChangeEvent } from 'vscode-languageserver';
+import type { WorkspaceFoldersChangeEvent } from 'vscode-languageserver';
 
 import { createInterfaceId } from '@gitlab/needle';
 
+import type { ConfigurationSchema } from './index';
+
 export interface IOnDidChangeConfiguration {
-    // TODO: what type should this be?
-    onDidChangeConfiguration(settings: DidChangeConfigurationParams['settings']): void | Promise<void>;
+    onDidChangeConfiguration(settings: ConfigurationSchema): void | Promise<void>;
 }
 
 export const IOnDidChangeConfiguration =

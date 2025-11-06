@@ -8,13 +8,15 @@ import {
     type URI,
 } from 'vscode-languageserver';
 
-import { Implements, Injectable, createInterfaceId } from '@gitlab/needle';
+import { Implements, Injectable, collection, createInterfaceId } from '@gitlab/needle';
 
 import { EXTENSION_ID } from '../constants';
 import { IServiceProvider, LsConnection } from '../di';
 import { IOnInitialize, IOnInitialized } from '../lifecycle';
 import { createDeferred, isDeferred } from '../util/deferred';
 import { Disposable } from '../util/disposable';
+
+import { IOnDidChangeConfiguration } from './events';
 
 export interface ConfigurationSchema extends ConfigurationSchemaClient, ConfigurationSchemaServer {}
 
@@ -68,16 +70,14 @@ const defaultConfigurationSchema: ConfigurationSchema = {
 
 @Implements(IOnInitialize)
 @Implements(IOnInitialized)
-@Injectable(IConfiguration, [LsConnection, IServiceProvider])
+@Injectable(IConfiguration, [IServiceProvider])
 export class Configuration extends Disposable implements IConfiguration, IOnInitialize, IOnInitialized {
     private static readonly EXTENSION_SECTION = EXTENSION_ID;
     private configuration: ConfigurationSchema = defaultConfigurationSchema;
     private fetching: Promise<void> = createDeferred();
+    private onDidChangeConfigurationHandlers: IOnDidChangeConfiguration[] = [];
 
-    constructor(
-        private readonly connection: LsConnection,
-        private readonly provider: IServiceProvider,
-    ) {
+    constructor(private readonly provider: IServiceProvider) {
         super();
     }
 
@@ -108,14 +108,16 @@ export class Configuration extends Disposable implements IConfiguration, IOnInit
         };
     }
 
-    async onInitialized(): Promise<void> {
+    async onInitialized(connection: LsConnection): Promise<void> {
         if (this.configuration['client.capabilities'].workspace?.configuration) {
             const deferred = this.fetching;
-            this.fetching = this.connection.workspace
+            this.fetching = connection.workspace
                 .getConfiguration(Configuration.EXTENSION_SECTION)
                 .then((configuration: ConfigurationSchemaServer) => {
                     for (const [key, value] of Object.entries(configuration)) {
-                        this.configuration[`regex-radar.${key}` as keyof ConfigurationSchemaServer] = value;
+                        this.configuration[
+                            `${Configuration.EXTENSION_SECTION}.${key}` as keyof ConfigurationSchemaServer
+                        ] = value;
                     }
                     if (isDeferred(deferred)) {
                         deferred.resolve(void 0);
@@ -125,23 +127,34 @@ export class Configuration extends Disposable implements IConfiguration, IOnInit
         if (
             this.configuration['client.capabilities'].workspace?.didChangeConfiguration?.dynamicRegistration
         ) {
+            this.onDidChangeConfigurationHandlers = this.provider.getServices(
+                collection(IOnDidChangeConfiguration),
+            );
             this.disposables.push(
-                await this.connection.client.register(DidChangeConfigurationNotification.type, {
+                connection.onDidChangeConfiguration(this.onDidChangeConfiguration.bind(this)),
+            );
+            this.disposables.push(
+                await connection.client.register(DidChangeConfigurationNotification.type, {
                     section: Configuration.EXTENSION_SECTION,
                 }),
             );
         }
         if (this.configuration['client.capabilities'].workspace?.workspaceFolders) {
             this.disposables.push(
-                this.connection.workspace.onDidChangeWorkspaceFolders(
-                    this.onDidChangeWorkspaceFolders.bind(this),
-                ),
+                connection.workspace.onDidChangeWorkspaceFolders(this.onDidChangeWorkspaceFolders.bind(this)),
             );
         }
     }
 
     async onDidChangeConfiguration(params: DidChangeConfigurationParams): Promise<void> {
-        // TODO: create our own DidChangeConfiguration event handler registry
+        for (const [key, value] of Object.entries(params.settings[Configuration.EXTENSION_SECTION])) {
+            this.configuration[
+                `${Configuration.EXTENSION_SECTION}.${key}` as keyof ConfigurationSchemaServer
+            ] = value as any;
+        }
+        this.onDidChangeConfigurationHandlers.forEach((handler) =>
+            handler.onDidChangeConfiguration(this.configuration),
+        );
     }
 
     async onDidChangeWorkspaceFolders(event: WorkspaceFoldersChangeEvent): Promise<void> {
@@ -155,7 +168,6 @@ export class Configuration extends Disposable implements IConfiguration, IOnInit
         }
         updated.push(...event.added);
         this.configuration['client.workspace.folders'] = updated;
-        // TODO: emit event
     }
 
     async get<T extends keyof ConfigurationSchema & string>(

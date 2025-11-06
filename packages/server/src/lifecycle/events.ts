@@ -8,6 +8,8 @@ import type {
 
 import { createInterfaceId } from '@gitlab/needle';
 
+import type { LsConnection } from '../di';
+
 /**
  * @see https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initialize
  */
@@ -27,7 +29,7 @@ export const IOnInitialize = createInterfaceId<IOnInitialize>('IOnInitialize');
  * @see https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#initialized
  */
 export interface IOnInitialized {
-    onInitialized(params?: InitializedParams): void | Promise<void>;
+    onInitialized(connection?: LsConnection): void | Promise<void>;
 }
 
 export const IOnInitialized = createInterfaceId<IOnInitialized>('IOnInitialized');

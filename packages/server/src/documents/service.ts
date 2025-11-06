@@ -5,7 +5,6 @@ import {
     DidChangeTextDocumentNotification,
     DidCloseTextDocumentNotification,
     DidOpenTextDocumentNotification,
-    type InitializeParams,
     type InitializeResult,
     type TextDocumentRegistrationOptions,
     TextDocumentSyncKind,
@@ -16,6 +15,8 @@ import { URI } from 'vscode-uri';
 
 import { Implements, Injectable, collection, createInterfaceId, isDisposable } from '@gitlab/needle';
 
+import { IConfiguration } from '../configuration';
+import { DOCUMENT_SELECTOR } from '../constants';
 import { IServiceProvider, LsConnection, LsTextDocuments } from '../di';
 import { IOnInitialize, IOnInitialized } from '../lifecycle';
 import { Disposable } from '../util/disposable';
@@ -43,17 +44,17 @@ export const IDocumentsService = createInterfaceId<IDocumentsService>('IDocument
  */
 @Implements(IOnInitialize)
 @Implements(IOnInitialized)
-@Injectable(IDocumentsService, [LsConnection, LsTextDocuments, IServiceProvider])
+@Injectable(IDocumentsService, [IConfiguration, LsTextDocuments, IServiceProvider])
 export class DocumentsService extends Disposable implements IDocumentsService, IOnInitialized {
     constructor(
-        private connection: LsConnection,
-        private documents: LsTextDocuments,
-        private provider: IServiceProvider,
+        private readonly configuration: IConfiguration,
+        private readonly documents: LsTextDocuments,
+        private readonly provider: IServiceProvider,
     ) {
         super();
     }
 
-    onInitialize(params: InitializeParams): InitializeResult['capabilities'] {
+    onInitialize(): InitializeResult['capabilities'] {
         return {
             textDocumentSync: {
                 change: TextDocumentSyncKind.Incremental,
@@ -62,19 +63,35 @@ export class DocumentsService extends Disposable implements IDocumentsService, I
         };
     }
 
-    onInitialized(): void | Promise<void> {
-        // TODO: make languages configurable
+    async onInitialized(connection: LsConnection): Promise<void> {
+        const clientCapabilities = await this.configuration.get('client.capabilities');
+        const synchronizationOptions = clientCapabilities.textDocument?.synchronization;
+
+        if (!synchronizationOptions?.dynamicRegistration) {
+            return;
+        }
+
         const registrationParams: TextDocumentRegistrationOptions = {
-            documentSelector: [{ language: 'javascript' }, { language: 'typescript' }],
+            documentSelector: DOCUMENT_SELECTOR,
         };
-        Promise.all([
-            this.connection.client.register(DidOpenTextDocumentNotification.type, registrationParams),
-            this.connection.client.register(DidChangeTextDocumentNotification.type, {
+
+        const pendingDisposables: Promise<{ dispose(): void }>[] = [
+            connection.client.register(DidOpenTextDocumentNotification.type, registrationParams),
+            connection.client.register(DidCloseTextDocumentNotification.type, registrationParams),
+            connection.client.register(DidChangeTextDocumentNotification.type, {
                 ...registrationParams,
                 syncKind: TextDocumentSyncKind.Incremental,
             }),
-            this.connection.client.register(DidCloseTextDocumentNotification.type, registrationParams),
-        ]).then((disposables) => {
+        ];
+
+        if (synchronizationOptions.didSave) {
+        }
+        if (synchronizationOptions.willSave) {
+        }
+        if (synchronizationOptions.willSaveWaitUntil) {
+        }
+
+        Promise.all(pendingDisposables).then((disposables) => {
             this.disposables.push(...disposables);
         });
 
@@ -128,7 +145,7 @@ export class DocumentsService extends Disposable implements IDocumentsService, I
             this.disposables.push(notSureIfDisposable);
         }
         // TODO: allow for a `IOnTextDocumentDidChangeRaw` handler, which contains `TextDocumentChangeEvent` properties: `contentChanges` and `reason`
-        this.disposables.push(this.documents.listen(this.connection));
+        this.disposables.push(this.documents.listen(connection));
     }
 
     get(uri: DocumentUri): TextDocument | null {

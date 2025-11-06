@@ -6,9 +6,9 @@ import {
     ServiceIdentifier,
     ServiceProvider as _ServiceProvider,
     createInterfaceId,
-    type ConstructorServiceDescriptor,
-    type FactoryServiceDescriptor,
-    type InstanceServiceDescriptor,
+    isServiceDescriptor,
+    type CollectionId,
+    type InterfaceId,
 } from '@gitlab/needle';
 
 import { Disposable } from '../util/disposable';
@@ -59,19 +59,20 @@ export class ServiceProvider extends Disposable implements IServiceProvider {
     }
 }
 
-type DescriptorType = ServiceDescriptor['type'];
-const types: DescriptorType[] = ['Constructor', 'Factory', 'Instance'];
+export type Descriptor = ServiceDescriptor | Exclude<ServiceIdentifier, InterfaceId<any> | CollectionId<any>>;
 
 export function buildServiceProvider(
     collection: ServiceCollection,
-    descriptors: (ServiceDescriptor | Constructor)[],
+    descriptors: Descriptor[],
 ): IServiceProvider {
     collection.addClass(ServiceProvider);
     descriptors.forEach((descriptor) => {
-        if ('type' in descriptor && types.includes(descriptor.type)) {
+        if (isServiceDescriptor(descriptor)) {
             collection.add(descriptor);
+        } else if (typeof descriptor === 'function') {
+            collection.addClass(descriptor);
         } else {
-            collection.addClass(descriptor as Constructor);
+            throw new TypeError(`buildServiceProvider received an invalid descriptor`, { cause: descriptor });
         }
     });
     const validationResult = collection.validate();

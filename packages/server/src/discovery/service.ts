@@ -24,7 +24,6 @@ import { IOnTextDocumentDidChangeHandler, IOnTextDocumentDidCloseHandler } from 
 import { IFileSystem } from '../file-system';
 import { FileType } from '../file-system/file-stats';
 import { ILogger } from '../logger';
-import { IRequestMessageHandler } from '../message-handler';
 import { IParserProvider } from '../parsers';
 import { Disposable } from '../util/disposable';
 
@@ -37,23 +36,18 @@ export const IDiscoveryService = createInterfaceId<IDiscoveryService>('IDiscover
 type CachableEntry<T extends EntryType = EntryType> = Exclude<Entry, RegexEntry> & { type: T };
 
 type GetTreeParams = {
-    uri: URI;
+    uri: _URI;
     fsPath: string;
-    parentUri?: URI;
+    parentUri?: _URI;
     ignoreCache?: boolean;
 };
 
-@Implements(IRequestMessageHandler)
 @Implements(IOnTextDocumentDidChangeHandler)
 @Implements(IOnTextDocumentDidCloseHandler)
 @Injectable(IDiscoveryService, [IDocumentsService, LsConnection, ILogger, IParserProvider, IFileSystem])
 export class DiscoveryService
     extends Disposable
-    implements
-        IDiscoveryService,
-        IRequestMessageHandler,
-        IOnTextDocumentDidChangeHandler,
-        IOnTextDocumentDidCloseHandler
+    implements IDiscoveryService, IOnTextDocumentDidChangeHandler, IOnTextDocumentDidCloseHandler
 {
     private cache = new Map<URI, CachableEntry>();
 
@@ -80,10 +74,6 @@ export class DiscoveryService
         private fs: IFileSystem,
     ) {
         super();
-    }
-
-    register(connection: LsConnection): void {
-        this.disposables.push(connection.onRequest('regexRadar/discovery', this.discover.bind(this)));
     }
 
     onTextDocumentDidOpen(event: TextDocumentChangeEvent<TextDocument>) {
@@ -124,7 +114,12 @@ export class DiscoveryService
         // TODO: workspaces should be monitored recursively for edits, managed documents should **NOT** be watched
         //       research if recursive watcher is more effecient than watching each file / directory on its own
         const tree = await this.getTreeForUri(uri, hint);
-        // TODO: fix this type assertion
+
+        if (hint && (!tree || tree.type !== hint)) {
+            this.logger.trace(
+                `(discovery) request with hint ${EntryType[hint]} instead resolved to ${tree?.type ?? '<null>'}`,
+            );
+        }
         return tree as DiscoveryResult<T>;
     }
 
@@ -227,14 +222,14 @@ export class DiscoveryService
                         if (this.isFsPathIgnored(entryPath) || !this.isFsPathSupported(entryPath)) {
                             return null;
                         }
-                        const entryUri = URI.file(entryPath);
+                        const entryUri = _URI.file(entryPath);
                         return this.getTreeForFile({ uri: entryUri, fsPath: entryPath, parentUri: uri });
                     } else if (type === FileType.Directory) {
                         const entryPath = path.join(fsPath, name);
                         if (this.isFsPathIgnored(entryPath)) {
                             return null;
                         }
-                        const entryUri = URI.file(entryPath);
+                        const entryUri = _URI.file(entryPath);
                         return this.getTreeForDirectory({
                             uri: entryUri,
                             fsPath: entryPath,

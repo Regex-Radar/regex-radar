@@ -1,3 +1,3 @@
-import type { IFileSystemProvider } from './system';
+import type { FileSystemProvider } from 'vscode';
 
-export type OnDidChangeFileHandler = Parameters<IFileSystemProvider['onDidChangeFile']>[0];
+export type OnDidChangeFileHandler = Parameters<FileSystemProvider['onDidChangeFile']>[0];
