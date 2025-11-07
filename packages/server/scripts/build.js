@@ -20,6 +20,10 @@ async function main() {
         entryPoints: ['src/server.ts'],
         outfile: isProduction ? 'dist/server.min.js' : 'dist/server.js',
         platform: 'node',
+        define: {
+            // TODO: perf test this
+            'process.env.RECHECK_BACKEND': '"worker"',
+        },
         external: ['vscode'],
     });
     if (isWatch) {

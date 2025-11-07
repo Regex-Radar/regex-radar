@@ -15,6 +15,7 @@ import { LifecycleHandler } from './lifecycle';
 import { Logger } from './logger';
 import { MessageHandler } from './message-handler';
 import { ParserProvider } from './parsers';
+import { RedosCheckService } from './redos';
 
 const collection = createServiceCollection({
     connection: createConnection(ProposedFeatures.all),
@@ -31,6 +32,7 @@ const provider = buildServiceProvider(collection, [
     DocumentsService,
     ParserProvider,
     DiagnosticsMessageHandler,
+    RedosCheckService,
     ...onDiagnosticHandlers,
     CodeActionMessageHandler,
     ...onCodeActionHandlers,

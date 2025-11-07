@@ -1,8 +1,9 @@
 import type { Descriptor } from '../di/service-provider';
 
 import { LinterDiagnostic } from './handlers/linter';
+import { RedosDiagnostic } from './handlers/redos';
 
 export * from './events';
 export * from './message-handler';
 
-export const onDiagnosticHandlers: Descriptor[] = [LinterDiagnostic];
+export const onDiagnosticHandlers: Descriptor[] = [LinterDiagnostic, RedosDiagnostic];

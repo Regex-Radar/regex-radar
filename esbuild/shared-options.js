@@ -45,6 +45,12 @@ export const sharedOptions = {
  */
 export const banner = `
 // topLevelCreateRequire is used to circumvent external dependencies being bundled as CJS instead of ESM
-import { createRequire as topLevelCreateRequire } from 'module';
-const require = topLevelCreateRequire(import.meta.url);
+import { createRequire as __cjs_create_require } from 'node:module';
+const require = __cjs_create_require(import.meta.url);
+
+// attempt to provide __filename and __dirname for CJS modules that depend on it
+import { fileURLToPath as __cjs_file_url_to_path } from 'node:url';
+import { dirname as __cjs_dirname } from 'node:path';
+const __filename = __cjs_file_url_to_path(import.meta.url);
+const __dirname = __cjs_dirname(__filename);
 `;

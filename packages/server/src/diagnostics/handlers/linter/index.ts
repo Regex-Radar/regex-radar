@@ -62,6 +62,7 @@ export class LinterDiagnostic implements IOnDocumentDiagnostic {
         }
 
         return entries.children.reduce<Diagnostic[]>((results, entry) => {
+            // TODO: move linter 'pure' code to a seperate package
             {
                 /**
                  * TODO: implement this
