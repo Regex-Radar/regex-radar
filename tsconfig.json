@@ -5,6 +5,7 @@
     "compilerOptions": {
         "composite": true,
         "emitDeclarationOnly": true,
+        "resolveJsonModule": true,
         "declarationMap": true,
         "sourceMap": true,
         "module": "esnext",

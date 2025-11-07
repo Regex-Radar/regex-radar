@@ -14,9 +14,14 @@ const distDirectoryPath = path.resolve(packagePath, 'dist');
 const monoRepoPath = path.resolve(packagePath, '..', '..');
 const nodeModulesPath = path.resolve(monoRepoPath, 'node_modules');
 
-const treeSitterWasmPath = path.resolve(nodeModulesPath, 'web-tree-sitter', 'tree-sitter.wasm');
-const treeSitterGrammarsDirectory = path.resolve(monoRepoPath, 'packages', 'parsers', 'grammars');
-const wasmDestinationDirectoryPath = path.resolve(distDirectoryPath, 'wasm');
+const readmePath = path.resolve(monoRepoPath, 'README.md');
+const readmeDestinationPath = path.resolve(distDirectoryPath, 'README.md');
+
+async function ensureReadmeIsCopied() {
+    console.log(`copying readme`);
+    console.log(`  - ${readmePath}`);
+    await copyFile(readmePath, readmeDestinationPath);
+}
 
 const serverModulePath = path.resolve(monoRepoPath, 'packages', 'server', 'dist', 'server.min.js');
 const serverModuleDestinationPath = path.resolve(distDirectoryPath, 'server.min.js');
@@ -26,6 +31,10 @@ async function ensureServerModuleIsCopied() {
     console.log(`  - ${serverModulePath}`);
     await copyFile(serverModulePath, serverModuleDestinationPath);
 }
+
+const treeSitterWasmPath = path.resolve(nodeModulesPath, 'web-tree-sitter', 'tree-sitter.wasm');
+const treeSitterGrammarsDirectory = path.resolve(monoRepoPath, 'packages', 'parsers', 'grammars');
+const wasmDestinationDirectoryPath = path.resolve(distDirectoryPath, 'wasm');
 
 async function ensureServerWasmFilesAreCopied() {
     console.log('copying .wasm files:');
@@ -81,28 +90,42 @@ let contents = '';
  * @returns {Promise<number>}
  */
 async function main(...args) {
-    let error;
-    // read original contents
     contents = await readFile(packageJsonPath, { encoding: 'utf-8' });
     try {
+        await ensureReadmeIsCopied();
         await ensureServerWasmFilesAreCopied();
         await ensureServerModuleIsCopied();
         await patchPackageJson(contents);
         // package extension
-        await createVSIX();
-    } catch (e) {
-        error = e;
+        console.log('invoking `vsce package`');
+        await createVSIX({
+            // NOTE: this directory has to exist, else it will write the .vsix file to the directory path as a file...
+            packagePath: distDirectoryPath,
+            // NOTE: because `vsce` is a buggy and undocumented mess, this has to be a relative path, but without using `./` or `../`
+            readmePath: 'dist/README.md',
+        });
+    } catch (error) {
+        console.error(error);
+        return 1;
     } finally {
         // restore original contents
         if (contents) {
             await writeFile(packageJsonPath, contents);
+            // make sure beforeExit doesn't try to duplicate the restoration
+            contents = '';
         }
-    }
-    if (error) {
-        console.error(error);
-        return 1;
     }
     return 0;
 }
 
 main(...process.argv.slice(2)).then((code) => (process.exitCode = code));
+
+// createVSIX will exit the process if it fails to validate, which is suprising behaviour
+process.on('beforeExit', (code) => {
+    if (code === 1) {
+        if (contents) {
+            console.log('`vsce` tried to fatally crash our program, restoring package.json');
+            return writeFile(packageJsonPath, contents);
+        }
+    }
+});

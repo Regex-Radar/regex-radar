@@ -8,4 +8,7 @@ node_modules
 
 # build output files
 dist
+out
+
+# packaged extensions
 *.vsix
