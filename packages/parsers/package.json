@@ -6,8 +6,12 @@
     "description": "The Parsers used by Regex Radar",
     "version": "0.1.0",
     "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/kevinramharak/regex-radar",

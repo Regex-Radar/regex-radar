@@ -12,6 +12,7 @@ async function main() {
         entryPoints: ['src/**/*.ts'],
         outbase: 'src',
         outdir: 'dist',
+        packages: 'external',
         platform: 'node',
     });
     if (watch) {

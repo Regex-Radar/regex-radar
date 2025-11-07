@@ -1,12 +1,15 @@
 // @ts-check
 // import { esbuildProblemMatcherPlugin } from "./plugins/problem-matcher-plugin.js";
+import { aliasEsmPlugin } from './plugins/alias-esm-plugin.js';
 import { scmImporterPlugin } from './plugins/scm-importer-plugin.js';
 import { workspacePackagesPlugin } from './plugins/workspace-packages-plugin.js';
 import { writeMetaFilePlugin } from './plugins/write-meta-file-plugin.js';
 
 const isProduction = process.argv.includes('--production');
 const isWatch = process.argv.includes('--watch');
-const enableMetaFile = isProduction || process.argv.includes('--metafile');
+const metafile = isProduction || process.argv.includes('--metafile');
+const analyze = process.argv.includes('--analyze');
+const verbose = process.argv.includes('--verbose');
 
 /**
  * @type {import('esbuild').BuildOptions}
@@ -23,10 +26,16 @@ export const sharedOptions = {
      * @see https://github.com/ewanharris/vscode-versions
      */
     target: 'node22.19',
-    logLevel: 'info',
+    logLevel: verbose ? 'verbose' : 'info',
     format: 'esm',
     treeShaking: true,
-    plugins: [workspacePackagesPlugin, scmImporterPlugin, writeMetaFilePlugin(enableMetaFile)],
+    mainFields: ['module', 'main'],
+    plugins: [
+        workspacePackagesPlugin,
+        scmImporterPlugin,
+        aliasEsmPlugin,
+        writeMetaFilePlugin(metafile, analyze, verbose),
+    ],
 };
 
 /**

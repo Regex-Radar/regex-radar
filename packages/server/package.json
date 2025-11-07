@@ -6,8 +6,12 @@
     "description": "The Language Server for Regex Radar",
     "version": "0.1.0",
     "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/server.d.ts",
+            "import": "./dist/server.js"
+        }
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/kevinramharak/regex-radar",

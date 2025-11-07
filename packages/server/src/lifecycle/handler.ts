@@ -1,8 +1,8 @@
-import { InitializeResult, type ServerCapabilities } from 'vscode-languageserver';
+import { type ServerCapabilities } from 'vscode-languageserver';
 
 import { Injectable, collection, createInterfaceId } from '@gitlab/needle';
 
-import packageJson from '../../package.json';
+import { name, version } from '../../package.json';
 import { IServiceProvider, LsConnection } from '../di';
 import { Disposable } from '../util/disposable';
 
@@ -54,8 +54,8 @@ export class LifecycleHandler extends Disposable implements ILifecycleHandler {
                 return {
                     capabilities,
                     serverInfo: {
-                        name: packageJson.name,
-                        version: packageJson.version,
+                        name,
+                        version,
                     },
                 };
             }),

@@ -1,6 +1,6 @@
 // @ts-check
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,15 +11,15 @@ const __dirname = path.dirname(__filename);
  * @type {import('esbuild').Plugin}
  */
 export const workspacePackagesPlugin = {
-    name: "workspace-packages",
+    name: 'workspace-packages',
     setup(build) {
-        const pkgRoot = path.resolve(__dirname, "../../packages");
+        const pkgRoot = path.resolve(__dirname, '../../packages');
         /** @type {Record<string, string>} */
         const alias = {
-            "@regex-radar/lsp-types": path.join(pkgRoot, "lsp-types/src/index.ts"),
-            "@regex-radar/client": path.join(pkgRoot, "client/src/index.ts"),
-            "@regex-radar/server": path.join(pkgRoot, "server/src/index.ts"),
-            "@regex-radar/parsers": path.join(pkgRoot, "parsers/src/index.ts"),
+            '@regex-radar/lsp-types': path.join(pkgRoot, 'lsp-types/src/index.ts'),
+            '@regex-radar/client': path.join(pkgRoot, 'client/src/index.ts'),
+            '@regex-radar/server': path.join(pkgRoot, 'server/src/index.ts'),
+            '@regex-radar/parsers': path.join(pkgRoot, 'parsers/src/index.ts'),
         };
         build.onResolve({ filter: /^@regex-radar\// }, (args) => {
             const target = alias[args.path];

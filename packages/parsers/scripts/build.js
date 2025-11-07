@@ -1,6 +1,4 @@
 // @ts-check
-import { writeFile } from 'node:fs/promises';
-
 import { context } from 'esbuild';
 
 import { sharedOptions } from '../../../esbuild/shared-options.js';
@@ -14,6 +12,7 @@ async function main() {
         entryPoints: ['src/**/*.ts'],
         outbase: 'src',
         outdir: 'dist',
+        packages: 'external',
         platform: 'node',
     });
     if (watch) {
