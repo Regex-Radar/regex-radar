@@ -47,7 +47,7 @@ export class LifecycleHandler extends Disposable implements ILifecycleHandler {
                     })
                     .filter((capabilities): capabilities is ServerCapabilities => !!capabilities);
                 const capabilities = results.reduce<ServerCapabilities>((previous, current) => {
-                    // TODO: implement this properly, with a deep merge or custom merge
+                    // NOTE: this is not a deep merge, but since we try to dynamically register everything that should not be an issue
                     Object.assign(previous, current);
                     return previous;
                 }, defaultCapabilities);

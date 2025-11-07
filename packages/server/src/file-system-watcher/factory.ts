@@ -10,7 +10,7 @@ export interface FileSystemWatcherIgnore {
     delete?: boolean;
 }
 
-// TODO: figre out this API
+// TODO: figure out this API
 export interface IFileSystemWatcherFactory {
     readonly scheme: string;
     create(glob: GlobPattern, options?: FileSystemWatcherIgnore): IFileSystemWatcher;

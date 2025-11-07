@@ -3,8 +3,8 @@ import { context } from 'esbuild';
 
 import { banner, sharedOptions } from '../../../esbuild/shared-options.js';
 
-const production = process.argv.includes('--production');
-const watch = process.argv.includes('--watch');
+const isProduction = process.argv.includes('--production');
+const isWatch = process.argv.includes('--watch');
 
 async function main() {
     const ctx = await context({
@@ -17,12 +17,12 @@ async function main() {
         banner: {
             js: banner,
         },
-        entryPoints: ['src/index.ts'],
-        outfile: 'dist/index.js',
+        entryPoints: ['src/server.ts'],
+        outfile: isProduction ? 'dist/server.min.js' : 'dist/server.js',
         platform: 'node',
         external: ['vscode'],
     });
-    if (watch) {
+    if (isWatch) {
         await ctx.watch();
     } else {
         await ctx.rebuild();

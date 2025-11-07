@@ -15,7 +15,7 @@ export const sharedOptions = {
     /**
      * Always generate sourcemaps, but make sure they are not being bundled as part of the extension with `files` or a `.vscodeignore`
      */
-    sourcemap: true,
+    sourcemap: !isProduction,
     sourcesContent: false,
     /**
      * Based on the node version bundled with vscode 1.105.x

@@ -1,10 +1,10 @@
-import * as vscode from 'vscode';
+import type { ExtensionContext } from 'vscode';
 
 import * as logger from './logger';
 import { registerLanguageClient } from './client';
 import { registerTreeView } from './tree-data-provider';
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: ExtensionContext) {
     context.subscriptions.push(logger);
     logger.info('activating');
 

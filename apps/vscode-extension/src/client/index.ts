@@ -28,10 +28,11 @@ export async function registerLanguageClient(
 
 function createLanguageClient(context: vscode.ExtensionContext): RegexRadarLanguageClient {
     // TODO: figure out how to bundle the server, as part of the extension
-    const serverModule = context.asAbsolutePath(
-        path.join('..', '..', 'packages', 'server', 'dist', 'index.js'),
-    );
-    const debugOptions = { execArgv: ['--nolazy', '--inspect=6009', '--inspect-brk'] };
+    const serverModulePath =
+        context.extensionMode === vscode.ExtensionMode.Production
+            ? path.join('dist/server.min.js')
+            : path.join('..', '..', 'packages', 'server', 'dist', 'server.js');
+    const serverModule = context.asAbsolutePath(serverModulePath);
     const serverOptions: ServerOptions = {
         run: {
             module: serverModule,
@@ -40,7 +41,7 @@ function createLanguageClient(context: vscode.ExtensionContext): RegexRadarLangu
         debug: {
             module: serverModule,
             transport: TransportKind.ipc,
-            options: debugOptions,
+            options: { execArgv: ['--nolazy', '--inspect=6009', '--inspect-brk'] },
         },
     };
 

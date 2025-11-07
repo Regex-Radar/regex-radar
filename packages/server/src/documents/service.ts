@@ -18,6 +18,7 @@ import { Implements, Injectable, collection, createInterfaceId, isDisposable } f
 import { IConfiguration } from '../configuration';
 import { DOCUMENT_SELECTOR } from '../constants';
 import { IServiceProvider, LsConnection, LsTextDocuments } from '../di';
+import { IFileSystem } from '../file-system';
 import { IOnInitialize, IOnInitialized } from '../lifecycle';
 import { Disposable } from '../util/disposable';
 import { getLanguageIdForFileExtension } from '../util/language-identifiers';
@@ -44,12 +45,15 @@ export const IDocumentsService = createInterfaceId<IDocumentsService>('IDocument
  */
 @Implements(IOnInitialize)
 @Implements(IOnInitialized)
-@Injectable(IDocumentsService, [IConfiguration, LsTextDocuments, IServiceProvider])
+@Injectable(IDocumentsService, [IConfiguration, LsTextDocuments, IServiceProvider, IFileSystem])
 export class DocumentsService extends Disposable implements IDocumentsService, IOnInitialized {
+    private readonly decoder = new TextDecoder();
+
     constructor(
         private readonly configuration: IConfiguration,
         private readonly documents: LsTextDocuments,
         private readonly provider: IServiceProvider,
+        private readonly fs: IFileSystem,
     ) {
         super();
     }
@@ -142,7 +146,8 @@ export class DocumentsService extends Disposable implements IDocumentsService, I
                         return handler.onTextDocumentWillSaveUntil(params, token);
                     }),
                 );
-                // TODO: if multiple handlers return overlapping text edits, what happens?
+                // NOTE: each text edit should apply itself on the document as is
+                //       no need to synchronize with other edits
                 return results.filter((result): result is TextEdit[] => !Array.isArray(result)).flat();
             },
         );
@@ -165,10 +170,10 @@ export class DocumentsService extends Disposable implements IDocumentsService, I
         let document = this.documents.get(uri);
 
         if (!document) {
-            const fsPath = URI.parse(uri).fsPath;
-            // TODO: add a FileSystemService / URI fetcher service
-            const contents = await fs.readFile(fsPath, { encoding: 'utf-8' });
-            const extension = path.extname(fsPath);
+            const _uri = URI.parse(uri);
+            const bytes = await this.fs.readFile(_uri);
+            const contents = this.decoder.decode(bytes);
+            const extension = path.extname(_uri.fsPath);
             const languageId = getLanguageIdForFileExtension(extension) || 'plaintext';
             // TODO: cache this document instance?
             //       this could be cached, as long as there is no didOpen event, and the file disk is being watched for changes

@@ -43,9 +43,10 @@
         "onLanguage:javascript",
         "onLanguage:typescript"
     ],
-    "main": "./dist/extension.min.js",
+    "main": "./dist/extension.js",
     "files": [
         "dist/extension.min.js",
+        "dist/server.min.js",
         "assets/**/*",
         "LICENSE"
     ],
@@ -169,17 +170,18 @@
         "build": "node scripts/build.js",
         "dev": "node scripts/build.js --watch",
         "build:production": "node scripts/build.js --production",
-        "package": "vsce package",
+        "package": "node scripts/package.js",
         "tsc": "tsc -p .",
         "clean": "rm -r dist/"
     },
     "devDependencies": {
         "@types/node": "^22.18.13",
         "@types/vscode": "^1.105.0",
+        "@vscode/vsce": "^3.6.2",
         "esbuild": "^0.25.12"
     },
     "dependencies": {
-        "vscode-languageclient": "^9.0.1",
-        "@regex-radar/client": "*"
+        "@regex-radar/client": "*",
+        "vscode-languageclient": "^9.0.1"
     }
 }
