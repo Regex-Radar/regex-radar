@@ -6,7 +6,6 @@ import { workspacePackagesPlugin } from './plugins/workspace-packages-plugin.js'
 import { writeMetaFilePlugin } from './plugins/write-meta-file-plugin.js';
 
 const isProduction = process.argv.includes('--production');
-const isWatch = process.argv.includes('--watch');
 const metafile = isProduction || process.argv.includes('--metafile');
 const analyze = process.argv.includes('--analyze');
 const verbose = process.argv.includes('--verbose');

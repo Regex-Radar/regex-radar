@@ -25,8 +25,8 @@ import type { MaybePromise } from './maybe';
 export async function runHandlers<T>(
     handlers: (() => MaybePromise<T[]>)[],
     token?: CancellationToken,
-    workDone?: WorkDoneProgressReporter,
-    progress?: ResultProgressReporter<T[]>,
+    _workDone?: WorkDoneProgressReporter,
+    _progress?: ResultProgressReporter<T[]>,
     logger?: Pick<ILogger, 'thrown' | 'trace'>,
 ): Promise<T[]> {
     const results: T[] = [];

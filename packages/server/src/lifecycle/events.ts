@@ -2,7 +2,6 @@ import type {
     CancellationToken,
     InitializeParams,
     InitializeResult,
-    InitializedParams,
     SetTraceParams,
 } from 'vscode-languageserver';
 

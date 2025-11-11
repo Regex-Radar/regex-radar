@@ -6,7 +6,7 @@ import { IFileSystemProvider } from '../file-system-provider';
 import { createFileSystemProviderError, FileSystemProviderErrorCode } from '../file-system-provider/error';
 import { Disposable } from '../util/disposable';
 
-export interface IFileSystem extends _FileSystem {}
+export type IFileSystem = _FileSystem;
 
 export const IFileSystem = createInterfaceId<IFileSystem>('IFileSystem');
 

@@ -17,12 +17,9 @@ export enum FileSystemProviderErrorCode {
     NotSupported = 'NotSupported',
 }
 
-export interface FileSystemProviderError extends Error {
-    readonly name: string;
-    readonly code: FileSystemProviderErrorCode;
-}
-
 export class FileSystemProviderError extends Error {
+    declare readonly name: 'FileSystemProviderError';
+
     static create(error: Error | string, code: FileSystemProviderErrorCode): FileSystemProviderError {
         const providerError = new FileSystemProviderError(error.toString(), code);
         markAsFileSystemProviderError(providerError, code);
@@ -36,6 +33,7 @@ export class FileSystemProviderError extends Error {
         cause?: Error | string,
     ) {
         super(message, { cause });
+        this.name = 'FileSystemProviderError';
     }
 }
 

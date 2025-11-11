@@ -52,13 +52,9 @@ export function resultOrCancellation<T>(
 
 export type CancellationPromise = Promise<void> & Disposable;
 
-export interface CancellationError {
-    readonly name: 'CancellationError';
-    readonly cause: CancellationToken;
-}
-
 export class CancellationError extends Error {
     readonly name: 'CancellationError' = 'CancellationError' as const;
+    declare readonly cause: CancellationToken;
 
     constructor(token: CancellationToken) {
         super('cancellation was requested', {

@@ -113,10 +113,11 @@ export class Configuration extends Disposable implements IConfiguration, IOnInit
     }
 
     async onDidChangeConfiguration(params: DidChangeConfigurationParams): Promise<void> {
+        type Key = keyof ConfigurationSchemaServer;
+        type Value = ConfigurationSchemaServer[Key];
         for (const [key, value] of Object.entries(params.settings[Configuration.EXTENSION_SECTION])) {
-            this.configuration[
-                `${Configuration.EXTENSION_SECTION}.${key}` as keyof ConfigurationSchemaServer
-            ] = value as any;
+            const fullKey = `${Configuration.EXTENSION_SECTION}.${key}` as Key;
+            (this.configuration as Record<Key, Value>)[fullKey] = value as Value;
         }
         this.onDidChangeConfigurationHandlers.forEach((handler) =>
             handler.onDidChangeConfiguration(this.configuration),

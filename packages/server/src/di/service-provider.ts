@@ -1,5 +1,4 @@
 import {
-    Constructor,
     Injectable,
     ServiceCollection,
     ServiceDescriptor,
@@ -59,7 +58,9 @@ export class ServiceProvider extends Disposable implements IServiceProvider {
     }
 }
 
-export type Descriptor = ServiceDescriptor | Exclude<ServiceIdentifier, InterfaceId<any> | CollectionId<any>>;
+export type Descriptor =
+    | ServiceDescriptor
+    | Exclude<ServiceIdentifier, InterfaceId<unknown> | CollectionId<unknown>>;
 
 export function buildServiceProvider(
     collection: ServiceCollection,

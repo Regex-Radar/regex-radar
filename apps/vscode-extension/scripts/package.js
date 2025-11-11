@@ -86,10 +86,10 @@ let contents = '';
 
 /**
  * A custom `vsce package` script, to support patching `package.json` manifest
- * @param {string[]} args
+ * @param {string[]} _args
  * @returns {Promise<number>}
  */
-async function main(...args) {
+async function main(..._args) {
     contents = await readFile(packageJsonPath, { encoding: 'utf-8' });
     try {
         await ensureReadmeIsCopied();

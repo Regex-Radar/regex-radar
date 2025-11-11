@@ -1,8 +1,8 @@
-type AnyFn = (...args: any[]) => void;
+type UnknownFn = (...args: unknown[]) => void;
 type TimeoutId = ReturnType<typeof setTimeout>;
 
 export function debounce(delay: number) {
-    return <Fn extends AnyFn>(value: AnyFn, context: ClassMethodDecoratorContext) => {
+    return <Fn extends UnknownFn>(value: Fn, context: ClassMethodDecoratorContext) => {
         if (context.kind !== 'method') {
             throw new TypeError('debounce only supports decorating class methods');
         }

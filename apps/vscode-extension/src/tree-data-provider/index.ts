@@ -11,8 +11,6 @@ import {
 import { RegexRadarLanguageClient } from '@regex-radar/client';
 import { Entry, RegexEntry } from '@regex-radar/lsp-types';
 
-import * as logger from '../logger';
-
 import { RegexRadarTreeDataProvider } from './RegexRadarTreeDataProvider';
 
 function buildQuery(params: Record<string, string>) {
@@ -90,7 +88,7 @@ export function registerTreeView(client: RegexRadarLanguageClient, context: Exte
     context.subscriptions.push(explorerTreeView, regexExplorerTreeView);
     context.subscriptions.push(
         commands.registerCommand('regex-radar.tree-data-provider.refresh', () => treeDataProvider.refresh()),
-        workspace.onDidChangeWorkspaceFolders((event) => treeDataProvider.refresh()),
+        workspace.onDidChangeWorkspaceFolders(() => treeDataProvider.refresh()),
     );
 
     context.subscriptions.push(

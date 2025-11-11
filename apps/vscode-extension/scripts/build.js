@@ -1,6 +1,4 @@
 // @ts-check
-import { writeFile } from 'node:fs/promises';
-
 import { context } from 'esbuild';
 
 import { banner, sharedOptions } from '../../../esbuild/shared-options.js';

@@ -1,12 +1,6 @@
 import { Injectable, createInterfaceId } from '@gitlab/needle';
 
-import {
-    IParser,
-    Parser,
-    TreeSitterParser,
-    TreeSitterParserProvider,
-    TreeSitterQuery,
-} from '@regex-radar/parsers';
+import { IParser, Parser, TreeSitterParserProvider } from '@regex-radar/parsers';
 
 import { IServiceProvider } from '../di';
 
@@ -35,12 +29,14 @@ export class ParserProvider implements IParserProvider {
             case 'javascript':
             case 'javascriptreact':
             case 'typescript':
-            case 'typescriptreact':
+            case 'typescriptreact': {
                 const parser = await this.parsers.get(languageId);
                 return new Parser(parser);
+            }
             case 'json':
-            default:
+            default: {
                 throw new TypeError(`language ID: ${languageId} is not supported`);
+            }
         }
     }
 }

@@ -1,4 +1,3 @@
-import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import {
@@ -95,10 +94,13 @@ export class DocumentsService extends Disposable implements IDocumentsService, I
 
         // TODO: figure out how to dynamically register this properly
         if (synchronizationOptions.didSave) {
+            /* empty */
         }
         if (synchronizationOptions.willSave) {
+            /* empty */
         }
         if (synchronizationOptions.willSaveWaitUntil) {
+            /* empty */
         }
 
         Promise.all(pendingDisposables).then((disposables) => {

@@ -1,10 +1,10 @@
 // @ts-check
-import { execSync } from "node:child_process";
-import { mkdir, writeFile, stat } from "node:fs/promises";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import * as path from 'node:path';
+import { execSync } from 'node:child_process';
+import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 
-import packageJson from "../package.json" with { type: "json" };
+import packageJson from '../package.json' with { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,24 +30,24 @@ const __dirname = path.dirname(__filename);
  */
 const GRAMMARS = [
     {
-        name: "typescript",
-        packageName: "tree-sitter-typescript/typescript",
+        name: 'typescript',
+        packageName: 'tree-sitter-typescript/typescript',
     },
     {
-        name: "tsx",
-        packageName: "tree-sitter-typescript/tsx",
+        name: 'tsx',
+        packageName: 'tree-sitter-typescript/tsx',
     },
     {
-        name: "javascript",
-        packageName: "tree-sitter-javascript",
+        name: 'javascript',
+        packageName: 'tree-sitter-javascript',
     },
     {
-        name: "jsx",
-        packageName: "tree-sitter-javascript",
+        name: 'jsx',
+        packageName: 'tree-sitter-javascript',
     },
     {
-        name: "json",
-        packageName: "tree-sitter-json",
+        name: 'json',
+        packageName: 'tree-sitter-json',
     },
 ];
 
@@ -59,8 +59,8 @@ const cache = new Map();
 /**
  * Root directory of `@regex-radar/parsers`
  */
-const pkgRoot = path.resolve(__dirname, "..");
-const outputDirPath = path.resolve(pkgRoot, "grammars");
+const pkgRoot = path.resolve(__dirname, '..');
+const outputDirPath = path.resolve(pkgRoot, 'grammars');
 
 /**
  * @param {Grammar} grammar
@@ -73,9 +73,9 @@ async function buildGrammar(grammar) {
         const wasmFileName = `tree-sitter-${grammar.name}.wasm`;
         const packageImportPath = fileURLToPath(import.meta.resolve(grammar.packageName));
         const wasmFileInputPath = path.join(
-            packageImportPath.slice(0, packageImportPath.lastIndexOf("node_modules")),
-            "node_modules",
-            grammar.packageName
+            packageImportPath.slice(0, packageImportPath.lastIndexOf('node_modules')),
+            'node_modules',
+            grammar.packageName,
         );
         const wasmFileOutputPath = path.join(outputDirPath, `tree-sitter-${grammar.name}.wasm`);
 
@@ -96,8 +96,13 @@ async function buildGrammar(grammar) {
             console.log(`skipping ${grammar.name}, as ${grammar.packageName} is already build`);
         }
 
-        // @ts-expect-error
-        const version = packageJson.devDependencies[grammar.packageName];
+        if (!(grammar.packageName in packageJson.devDependencies)) {
+            console.error(`${grammar.packageName} is not listed as a devDependency in the package.json`);
+            return null;
+        }
+
+        const packageName = /** @type {keyof typeof packageJson.devDependencies} */ (grammar.packageName);
+        const version = packageJson.devDependencies[packageName];
 
         const [wasmFile, size] = cache.get(grammar.packageName) || [wasmFileName, 0];
         return {
@@ -134,13 +139,13 @@ async function main() {
         buildDate: new Date().toISOString(),
         grammars: results,
     };
-    await writeFile(path.join(outputDirPath, "manifest.json"), JSON.stringify(manifest, null, 2));
+    await writeFile(path.join(outputDirPath, 'manifest.json'), JSON.stringify(manifest, null, 2));
 
     console.log(`\nBuilt ${results.length} grammars successfully!`);
     console.log(`Output directory: ${outputDirPath}`);
 }
 
 main().catch((error) => {
-    console.error("Build failed:", error);
+    console.error('Build failed:', error);
     process.exit(1);
 });

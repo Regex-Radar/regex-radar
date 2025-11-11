@@ -69,7 +69,7 @@ export class LifecycleHandler extends Disposable implements ILifecycleHandler {
              * @see https://microsoft.github.io/language-server-protocol/specifications/specification-current#initialized
              */
             this.connection.onInitialized(
-                (params) =>
+                () =>
                     void Promise.all(
                         onInitializedHandlers.map(async (handler) => {
                             try {

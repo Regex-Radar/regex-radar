@@ -6,7 +6,7 @@ import { Disposable } from '../util/disposable';
 
 import { IDiscoveryService } from './service';
 
-export interface IDiscoveryRequestMessageHandler {}
+export type IDiscoveryRequestMessageHandler = object;
 
 export const IDiscoveryRequestMessageHandler = createInterfaceId<IDiscoveryRequestMessageHandler>(
     'IDiscoveryRequestMessageHandler',

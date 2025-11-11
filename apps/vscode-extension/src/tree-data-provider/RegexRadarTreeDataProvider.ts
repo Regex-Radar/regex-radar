@@ -55,7 +55,7 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
 
     constructor(private readonly client: RegexRadarLanguageClient) {
         client.onDiscoveryDidChange(async ({ uri }: { uri: string }) => {
-            let entry = this.entries.get(uri);
+            const entry = this.entries.get(uri);
             if (!entry) {
                 return;
             }
@@ -191,6 +191,7 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
             case EntryType.File: {
                 this.entries.delete(entry.uri);
                 entry.children.forEach((entry) => this.clearEntryRecursively(entry));
+                break;
             }
             case EntryType.Regex: {
                 break;

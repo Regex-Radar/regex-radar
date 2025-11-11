@@ -17,8 +17,6 @@ export abstract class Disposable implements IDisposable {
     }
 
     protected onError(error: unknown) {
-        try {
-            console.error(`error occured while disposing: ${error}`, error);
-        } catch (_) {}
+        console.error(`error occured while disposing: ${error}`, error);
     }
 }

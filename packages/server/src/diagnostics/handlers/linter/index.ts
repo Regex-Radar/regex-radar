@@ -69,7 +69,7 @@ export class LinterDiagnostic implements IOnDocumentDiagnostic {
                  * see https://eslint.org/docs/latest/rules/no-control-regex
                  * NOTE: maybe don't bother with the unicode
                  */
-                const code: Code = 'no-control-regex';
+                const _code: Code = 'no-control-regex';
             }
             {
                 /**
@@ -77,7 +77,7 @@ export class LinterDiagnostic implements IOnDocumentDiagnostic {
                  * see https://eslint.org/docs/latest/rules/no-invalid-regexp
                  * use a regex parser like: https://github.com/eslint-community/regexpp
                  */
-                const code: Code = 'no-invalid-regexp';
+                const _code: Code = 'no-invalid-regexp';
             }
             {
                 const code: Code = 'no-regex-spaces';

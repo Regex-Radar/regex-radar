@@ -82,8 +82,7 @@ export class DiagnosticsMessageHandler
 
         const registerParams: DiagnosticRegistrationOptions = {
             interFileDependencies,
-            // TODO: implement workspaceDiagnostics
-            workspaceDiagnostics: false || this.onWorkspaceDiagnosticHandlers.length > 0,
+            workspaceDiagnostics: this.onWorkspaceDiagnosticHandlers.length > 0,
             identifier: EXTENSION_ID,
             documentSelector: DOCUMENT_SELECTOR,
         };
@@ -105,7 +104,7 @@ export class DiagnosticsMessageHandler
         params: DocumentDiagnosticParams,
         token?: CancellationToken,
         workDone?: WorkDoneProgressReporter,
-        progress?: ResultProgressReporter<DocumentDiagnosticReportPartialResult>,
+        _progress?: ResultProgressReporter<DocumentDiagnosticReportPartialResult>,
     ): Promise<DocumentDiagnosticReport> {
         const report: DocumentDiagnosticReport = {
             kind: DocumentDiagnosticReportKind.Full,
@@ -130,10 +129,10 @@ export class DiagnosticsMessageHandler
     }
 
     async onWorkspaceDiagnosticRequest(
-        params: WorkspaceDiagnosticParams,
-        token?: CancellationToken,
-        workDone?: WorkDoneProgressReporter,
-        progress?: ResultProgressReporter<WorkspaceDiagnosticReportPartialResult>,
+        _params: WorkspaceDiagnosticParams,
+        _token?: CancellationToken,
+        _workDone?: WorkDoneProgressReporter,
+        _progress?: ResultProgressReporter<WorkspaceDiagnosticReportPartialResult>,
     ): Promise<WorkspaceDiagnosticReport> {
         // TODO: onWorkspaceDiagnosticsRequests can be a constantly open & streaming request
         //       if the request is closed, the client might start the request again immediatly

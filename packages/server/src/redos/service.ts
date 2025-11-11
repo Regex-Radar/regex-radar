@@ -5,11 +5,7 @@ import { Injectable, createInterfaceId } from '@gitlab/needle';
 // TODO: fix these .d.ts files
 import * as native from '@local/recheck/core/backend/native';
 import { createCheck } from '@local/recheck/core/builder';
-import {
-    type VulnerableDiagnostics as VulnerableRecheckDiagnostics,
-    type Diagnostics as RecheckDiagnostics,
-    type check,
-} from 'recheck';
+import { type Diagnostics as RecheckDiagnostics, type check } from 'recheck';
 
 import { ILogger } from '../logger';
 
