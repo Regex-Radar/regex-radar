@@ -64,12 +64,8 @@
     },
     "categories": [
         "Linters",
-        "Visualization",
-        "Testing",
-        "Education",
         "Programming Languages",
-        "Other",
-        "Debuggers"
+        "Other"
     ],
     "activationEvents": [
         "onLanguage:javascript",
