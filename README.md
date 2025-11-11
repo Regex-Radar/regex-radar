@@ -32,7 +32,7 @@
 
 ## ⚙️ Core Concept
 
-A toolkit for developing & maintaining Regular Expressions powered by the Language Service Protocol:
+A toolkit for developing & maintaining Regular Expressions powered by a LSP Server:
 
 - Detects regex literals and constructor calls in your code.
 - Indexes and lists them in a sidebar.
