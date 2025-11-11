@@ -38,6 +38,10 @@
     "sponsor": {
         "url": "https://github.com/sponsors/kevinramharak"
     },
+    "galleryBanner": {
+        "color": "#fdf7ec",
+        "theme": "light"
+    },
     "license": "SEE LICENCE IN LICENCE",
     "qna": false,
     "type": "module",
