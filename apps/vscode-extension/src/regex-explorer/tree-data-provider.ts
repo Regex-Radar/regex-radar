@@ -75,7 +75,7 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
             }
             case EntryType.Directory:
             case EntryType.File: {
-                if (!entry.parentUri) {
+                if (!entry.parentUri || this.rootUri === entry.parentUri) {
                     return;
                 }
                 return this.entries.get(entry.parentUri);
@@ -87,7 +87,8 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
     }
 
     getTreeItem(entry: Entry): TreeItem {
-        return createTreeItem(entry);
+        const item = createTreeItem(entry);
+        return item;
     }
 
     async getChildren(entry?: Entry): Promise<Entry[]> {
@@ -227,7 +228,8 @@ function createTreeItem(entry: Entry): TreeItem {
         }
     }
 }
-function createRegexEntry(entry: RegexEntry, iconPath: ThemeIcon) {
+
+function createRegexEntry(entry: RegexEntry, iconPath: ThemeIcon): TreeItem {
     const args: [string, TextDocumentShowOptions] = [
         entry.location.uri,
         {
@@ -242,9 +244,12 @@ function createRegexEntry(entry: RegexEntry, iconPath: ThemeIcon) {
     const pattern = entry.match.pattern;
     const flags = 'flags' in entry.match ? entry.match.flags : '';
     return {
+        id: createUriForLocation(entry.location),
+        resourceUri: Uri.parse(createUriForLocation(entry.location)),
         label: `/${pattern}/${flags}`,
-        iconPath,
+        description: true,
         contextValue: 'regex',
+        iconPath,
         command: {
             command: 'vscode.open',
             title: 'Open',
@@ -253,10 +258,16 @@ function createRegexEntry(entry: RegexEntry, iconPath: ThemeIcon) {
     };
 }
 
+function createUriForLocation(location: RegexEntry['location']): string {
+    return `${location.uri}:${location.range.start.line + 1}:${location.range.start.character + 1}`;
+}
+
 function createUriEntry(entry: WorkspaceEntry | DirectoryEntry | FileEntry, iconPath: ThemeIcon): TreeItem {
     return {
+        id: entry.uri,
         resourceUri: Uri.parse(entry.uri),
-        collapsibleState: TreeItemCollapsibleState.Collapsed,
+        description: true,
         iconPath,
+        collapsibleState: TreeItemCollapsibleState.Collapsed,
     };
 }

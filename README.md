@@ -1,5 +1,3 @@
-![Logo](./assets/logo-wide.png)
-
 # Regex Radar
 
 A Language Server-powered toolkit for developing, testing, and maintaining regular expressions inside VS Code and beyond.
@@ -13,6 +11,7 @@ It provides instant visibility across your regex patterns, enables safe testing,
 - Fully configurable behavior and rules to match your workflow
 
 > [!NOTE]
+>
 > Regex Radar is in (pre)alpha. Features and behavior are still evolving as the core foundation is built toward the first stable release.
 
 ## Features
