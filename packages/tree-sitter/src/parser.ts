@@ -51,14 +51,18 @@ export class Parser implements IParser {
                 uri: document.uri,
             };
         }
+        const tree = this.parser.parse(text, null, {})!;
         const matches = querySources.flatMap((source) => {
             const query = new TreeSitterQuery(this.parser.language!, source);
-            const tree = this.parser.parse(text, null, {})!;
+            // TODO: use query.captures instead
             const matches = query.matches(tree.rootNode, {});
+            query.delete();
             return matches;
         });
+        tree.delete();
+        const regexMatchCollection = createRegexMatchCollection(matches);
         return {
-            matches: createRegexMatchCollection(matches),
+            matches: regexMatchCollection,
             uri: document.uri,
         };
     }

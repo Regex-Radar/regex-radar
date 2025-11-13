@@ -18,7 +18,7 @@
         "dev": "turbo run dev",
         "tsc": "turbo run tsc",
         "clean": "turbo run clean",
-        "lint": "npx eslint",
+        "lint": "eslint --fix",
         "format": "prettier --cache --cache-strategy metadata --write \"**/*.{ts,tsx,md}\""
     },
     "devDependencies": {
