@@ -33,6 +33,7 @@ import {
 
 export interface IDocumentsService {
     getOrCreate(uri: DocumentUri): Promise<TextDocument>;
+    get(uri: DocumentUri): TextDocument | undefined;
 }
 
 export const IDocumentsService = createInterfaceId<IDocumentsService>('IDocumentsService');

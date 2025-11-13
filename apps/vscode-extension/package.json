@@ -87,7 +87,9 @@
     ],
     "activationEvents": [
         "onLanguage:javascript",
-        "onLanguage:typescript"
+        "onLanguage:typescript",
+        "onLanguage:javascriptreact",
+        "onLanguage:typescriptreact"
     ],
     "contributes": {
         "viewsContainers": {

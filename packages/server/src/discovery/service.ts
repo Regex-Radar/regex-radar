@@ -28,6 +28,7 @@ import { IParserProvider } from '../parsers';
 import { Disposable } from '../util/disposable';
 
 export interface IDiscoveryService {
+    // TODO: add API for discovering in: TextDocument, TreeSitterAST
     discover<T extends EntryType = EntryType>(params: DiscoveryParams<T>): Promise<DiscoveryResult<T>>;
 }
 
@@ -64,7 +65,7 @@ export class DiscoveryService
         'build',
     ];
 
-    static readonly SUPPORTED_FILE_EXTENSIONS = ['.js', '.ts'];
+    static readonly SUPPORTED_FILE_EXTENSIONS = ['.js', '.ts', '.jsx', '.tsx'];
 
     constructor(
         private documentService: IDocumentsService,

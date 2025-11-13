@@ -12,7 +12,7 @@ import { IOnCodeLens } from '../events';
     dependencies: [IDiscoveryService],
     lifetime: ServiceLifetime.Singleton,
 })
-export class RevealInRegexExporerCodeLens implements IOnCodeLens {
+export class RegexRadarCodeLens implements IOnCodeLens {
     constructor(private readonly discovery: IDiscoveryService) {}
 
     async onCodeLens(params: CodeLensParams, token?: CancellationToken): Promise<CodeLens[]> {
