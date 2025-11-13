@@ -3,7 +3,9 @@ import type { CancellationToken } from 'vscode-languageserver';
 import { Injectable, createInterfaceId } from '@gitlab/needle';
 
 // TODO: fix these .d.ts files
+// @ts-expect-error - .d.ts file is missing
 import * as backend from '@local/recheck/core/backend/thread-worker';
+// @ts-expect-error - .d.ts file is missing
 import { createCheck } from '@local/recheck/core/builder';
 import { type Diagnostics as RecheckDiagnostics, type check } from 'recheck';
 

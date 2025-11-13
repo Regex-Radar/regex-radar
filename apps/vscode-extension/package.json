@@ -12,7 +12,7 @@
         "vscode:prepublish": "cd ../.. && npm run build:production",
         "package": "node scripts/package.js",
         "publish": "node scripts/publish.js",
-        "tsc": "tsc -p .",
+        "tsc": "tsc -b tsconfig.json",
         "clean": "rm -r dist/",
         "vscode:install-extension": "code --install-extension ./dist/regex-radar-*.vsix",
         "vscode:uninstall-extension": "code --uninstall-extension regex-radar.regex-radar"
