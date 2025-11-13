@@ -26,7 +26,6 @@ const new_control = new RegExp('\x0C'); // raw U+000C character in the pattern
 const new_control_escape = new RegExp('\\x0C'); // \x0C pattern
 
 // regex-radar(no-invalid-regexp)
-
 const invalid_pattern_new = new RegExp('[');
 const invalid_flag_new = RegExp('.', 'z');
 const invalid_new_escape = new RegExp('\\');

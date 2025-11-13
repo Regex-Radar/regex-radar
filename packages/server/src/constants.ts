@@ -1,3 +1,5 @@
+import type { DocumentSelector } from 'vscode-languageserver';
+
 /**
  * A constant used when a string is used to identify the source/category of entities:
  * - diagnostics identifier
@@ -10,4 +12,9 @@ export const EXTENSION_ID = 'regex-radar';
  * A constant for what documents are supported
  * TODO: have this be configuration based
  */
-export const DOCUMENT_SELECTOR = [{ language: 'javascript' }, { language: 'typescript' }];
+export const DOCUMENT_SELECTOR: DocumentSelector = [
+    'javascript',
+    'javascriptreact',
+    'typescript',
+    'typescriptreact',
+];

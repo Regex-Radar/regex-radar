@@ -1,8 +1,8 @@
 import type { Descriptor } from '../di/service-provider';
 
-import { RevealInRegexExporerCodeLens } from './handlers/reveal-in-regex-explorer';
+import { RegexRadarCodeLens } from './handlers/regex-radar';
 
 export * from './message-handler';
 export * from './events';
 
-export const onCodeLensHandlers: Descriptor[] = [RevealInRegexExporerCodeLens];
+export const onCodeLensHandlers: Descriptor[] = [RegexRadarCodeLens];

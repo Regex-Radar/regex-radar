@@ -12,7 +12,7 @@ import { IOnCodeLens } from '../events';
     dependencies: [IDiscoveryService],
     lifetime: ServiceLifetime.Singleton,
 })
-export class RevealInRegexExporerCodeLens implements IOnCodeLens {
+export class RegexRadarCodeLens implements IOnCodeLens {
     constructor(private readonly discovery: IDiscoveryService) {}
 
     async onCodeLens(params: CodeLensParams, token?: CancellationToken): Promise<CodeLens[]> {
@@ -27,14 +27,12 @@ export class RevealInRegexExporerCodeLens implements IOnCodeLens {
     }
 }
 
-function createCodeLens(entry: RegexEntry) {
+function createCodeLens(entry: RegexEntry): CodeLens {
     return {
-        isResolved: true,
         range: entry.location.range,
         command: {
             command: 'regex-radar.tree-data-provider.reveal',
-            title: 'Regex Explorer',
-            tooltip: 'Reveal in the Regex Explorer',
+            title: 'Regex Radar',
             arguments: [entry],
         },
     };

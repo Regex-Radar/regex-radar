@@ -14,6 +14,7 @@ import { EntryType, type RegexEntry } from '@regex-radar/lsp-types';
 import { IConfiguration } from '../../../configuration';
 import { EXTENSION_ID } from '../../../constants';
 import { IDiscoveryService } from '../../../discovery';
+import { IDocumentsService } from '../../../documents';
 import { IRedosCheckService } from '../../../redos/service';
 import { resultOrCancellation } from '../../../util/cancellation-promise';
 import { IOnDocumentDiagnostic } from '../../events';
@@ -21,7 +22,13 @@ import { IDiagnosticService } from '../../service';
 
 @Implements(IOnDocumentDiagnostic)
 @Service({
-    dependencies: [IConfiguration, IDiscoveryService, IRedosCheckService, IDiagnosticService],
+    dependencies: [
+        IConfiguration,
+        IDiscoveryService,
+        IRedosCheckService,
+        IDiagnosticService,
+        IDocumentsService,
+    ],
     lifetime: ServiceLifetime.Singleton,
 })
 export class RedosDiagnostic implements IOnDocumentDiagnostic {
@@ -30,6 +37,7 @@ export class RedosDiagnostic implements IOnDocumentDiagnostic {
         private readonly discovery: IDiscoveryService,
         private readonly redos: IRedosCheckService,
         private readonly diagnostics: IDiagnosticService,
+        private readonly documents: IDocumentsService,
     ) {}
 
     async onDocumentDiagnostic(
@@ -40,7 +48,10 @@ export class RedosDiagnostic implements IOnDocumentDiagnostic {
         if (!configuration.redos.enabled || token?.isCancellationRequested) {
             return [];
         }
-
+        const document = this.documents.get(params.textDocument.uri);
+        if (!document) {
+            return [];
+        }
         const entries = await this.discovery.discover({ uri: params.textDocument.uri, hint: EntryType.File });
         if (!entries || token?.isCancellationRequested) {
             return [];
@@ -60,7 +71,7 @@ export class RedosDiagnostic implements IOnDocumentDiagnostic {
             return results;
         }, []);
 
-        this.handleAsyncChecks(params.textDocument.uri, asyncChecks, token);
+        this.handleAsyncChecks(params.textDocument.uri, asyncChecks, document.version, token);
 
         return diagnostics;
     }
@@ -69,6 +80,7 @@ export class RedosDiagnostic implements IOnDocumentDiagnostic {
     private async handleAsyncChecks(
         uri: string,
         asyncChecks: [RegexEntry, Promise<RecheckDiagnostics>][],
+        version: number,
         token?: CancellationToken,
     ): Promise<void> {
         const awaitedChecks = Promise.all(
@@ -91,7 +103,7 @@ export class RedosDiagnostic implements IOnDocumentDiagnostic {
             return results;
         }, []);
         if (diagnostics.length) {
-            this.diagnostics.publish(uri, diagnostics);
+            this.diagnostics.publish(uri, diagnostics, version);
         }
     }
 }

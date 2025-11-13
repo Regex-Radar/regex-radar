@@ -1,6 +1,6 @@
 export const languageIdToLanguageName: Record<string, string> = {
     javascript: 'javascript',
-    javascriptreact: 'jsx',
+    javascriptreact: 'javascript',
     typescript: 'typescript',
     typescriptreact: 'tsx',
 };

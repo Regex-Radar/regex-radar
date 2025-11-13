@@ -75,7 +75,7 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
             }
             case EntryType.Directory:
             case EntryType.File: {
-                if (!entry.parentUri) {
+                if (!entry.parentUri || this.rootUri === entry.parentUri) {
                     return;
                 }
                 return this.entries.get(entry.parentUri);
@@ -87,7 +87,8 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
     }
 
     getTreeItem(entry: Entry): TreeItem {
-        return createTreeItem(entry);
+        const item = createTreeItem(entry);
+        return item;
     }
 
     async getChildren(entry?: Entry): Promise<Entry[]> {
@@ -227,36 +228,58 @@ function createTreeItem(entry: Entry): TreeItem {
         }
     }
 }
-function createRegexEntry(entry: RegexEntry, iconPath: ThemeIcon) {
-    const args: [string, TextDocumentShowOptions] = [
-        entry.location.uri,
-        {
+
+// TODO: add selection state based on what file is focusses, and where the cursor is
+function createUriEntry(entry: WorkspaceEntry | DirectoryEntry | FileEntry, iconPath: ThemeIcon): TreeItem {
+    return {
+        id: entry.uri,
+        resourceUri: Uri.parse(entry.uri),
+        description: true,
+        iconPath,
+        collapsibleState: TreeItemCollapsibleState.Collapsed,
+        command: entry.type === EntryType.File ? createVsOpenCommand(entry) : void 0,
+    };
+}
+
+// TODO: add selection state based on what file is focusses, and where the cursor is
+function createRegexEntry(entry: RegexEntry, iconPath: ThemeIcon): TreeItem {
+    const pattern = entry.match.pattern;
+    const flags = 'flags' in entry.match ? entry.match.flags : '';
+    return {
+        id: createUriForLocation(entry.location),
+        resourceUri: Uri.parse(createUriForLocation(entry.location)),
+        label: `/${pattern}/${flags}`,
+        description: true,
+        contextValue: 'regex',
+        iconPath,
+        command: createVsOpenCommand(entry),
+    };
+}
+
+function createUriForLocation(location: RegexEntry['location']): string {
+    return `${location.uri}:${location.range.start.line + 1}:${location.range.start.character + 1}`;
+}
+
+function createVsOpenCommand(entry: FileEntry | RegexEntry) {
+    return {
+        command: 'vscode.open',
+        title: 'Open',
+        arguments: createVscodeOpenCommandArgs(entry),
+    };
+}
+
+function createVscodeOpenCommandArgs(entry: FileEntry | RegexEntry): [string, TextDocumentShowOptions?] {
+    const uri = entry.type === EntryType.File ? entry.uri : entry.location.uri;
+    const args: [string, TextDocumentShowOptions?] = [uri];
+    if (entry.type === EntryType.Regex) {
+        args.push({
             selection: new Range(
                 entry.location.range.start.line,
                 entry.location.range.start.character,
                 entry.location.range.end.line,
                 entry.location.range.end.character,
             ),
-        },
-    ];
-    const pattern = entry.match.pattern;
-    const flags = 'flags' in entry.match ? entry.match.flags : '';
-    return {
-        label: `/${pattern}/${flags}`,
-        iconPath,
-        contextValue: 'regex',
-        command: {
-            command: 'vscode.open',
-            title: 'Open',
-            arguments: args,
-        },
-    };
-}
-
-function createUriEntry(entry: WorkspaceEntry | DirectoryEntry | FileEntry, iconPath: ThemeIcon): TreeItem {
-    return {
-        resourceUri: Uri.parse(entry.uri),
-        collapsibleState: TreeItemCollapsibleState.Collapsed,
-        iconPath,
-    };
+        });
+    }
+    return args;
 }

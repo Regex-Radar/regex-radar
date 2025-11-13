@@ -7,7 +7,7 @@ import { LsConnection } from '../di/external-interfaces';
 import { IOnTextDocumentDidChangeHandler, IOnTextDocumentDidCloseHandler } from '../documents';
 
 export interface IDiagnosticService {
-    publish(uri: string, diagnostics: Diagnostic[], version?: number): void;
+    publish(uri: string, diagnostics: Diagnostic[], version: number): void;
 }
 
 export const IDiagnosticService = createInterfaceId<IDiagnosticService>('IDiagnosticService');
@@ -82,7 +82,7 @@ export class DiagnosticService
                     version,
                     diagnostics: [],
                 });
-            }, 100),
+            }, 10),
         );
     }
 
