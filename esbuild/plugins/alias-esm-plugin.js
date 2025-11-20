@@ -14,7 +14,6 @@ export const aliasEsmPlugin = {
                 'vscode-jsonrpc': '@local/vscode-jsonrpc',
                 'vscode-languageserver-protocol': '@local/vscode-languageserver-protocol',
                 'vscode-languageserver': '@local/vscode-languageserver',
-                recheck: '@local/recheck',
             };
         }
     },
