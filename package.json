@@ -26,10 +26,6 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.39.1",
-        "@local/vscode-jsonrpc": "file:../vscode-languageserver-node/jsonrpc",
-        "@local/vscode-languageclient": "file:../vscode-languageserver-node/client",
-        "@local/vscode-languageserver": "file:../vscode-languageserver-node/server",
-        "@local/vscode-languageserver-protocol": "file:../vscode-languageserver-node/protocol",
         "@trivago/prettier-plugin-sort-imports": "^6.0.0",
         "@tsconfig/recommended": "^1.0.13",
         "eslint": "^9.39.1",
