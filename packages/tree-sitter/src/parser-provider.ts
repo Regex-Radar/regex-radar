@@ -43,7 +43,7 @@ export class TreeSitterParserProvider {
                  * @see https://www.npmjs.com/package/web-tree-sitter/v/0.25.10#user-content-loading-the-wasm-file
                  */
                 locateFile() {
-                    const fileUrl = import.meta.resolve('#wasm/tree-sitter.wasm');
+                    const fileUrl = import.meta.resolve('web-tree-sitter/tree-sitter.wasm');
                     return fileURLToPath(fileUrl);
                 },
             });
@@ -57,7 +57,9 @@ export class TreeSitterParserProvider {
         // NOTE: Parser.init() has to be done, before we can load languages
         //       without it the C ABI has not been loaded or something like that (not really documented either ofcourse)
         await this.treeSitterParserInitializePromise;
-        const fileUrl = import.meta.resolve(`#wasm/grammars/tree-sitter-${languageName}.wasm`);
+        const fileUrl = import.meta.resolve(
+            `@regex-radar/tree-sitter/grammars/tree-sitter-${languageName}.wasm`,
+        );
         const filePath = fileURLToPath(fileUrl);
         const languagePromise = Language.load(filePath);
         languagePromise.catch((error) => console.error(error));

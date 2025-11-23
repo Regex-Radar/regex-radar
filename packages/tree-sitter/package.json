@@ -13,10 +13,6 @@
         },
         "./grammars/*.wasm": "./grammars/*.wasm"
     },
-    "imports": {
-        "#wasm/tree-sitter.wasm": "web-tree-sitter/tree-sitter.wasm",
-        "#wasm/grammars/*.wasm": "@regex-radar/tree-sitter/grammars/*.wasm"
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/regex-radar/regex-radar",
