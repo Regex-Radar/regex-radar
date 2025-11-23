@@ -63,7 +63,7 @@ Available on:
 
 - the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=regex-radar.regex-radar).
 - in your [VS Code editor](vscode:extension/regex-radar.regex-radar).
-- As `.vsix` file on the [GitHub Releases](github.com/kevinramharak/regex-radar/releases) page.
+- As `.vsix` file on the [GitHub Releases](github.com/regex-radar/regex-radar/releases) page.
 
 ## Getting Started
 
@@ -127,7 +127,7 @@ If you already use ESLint with rules that check regexes, disable overlapping rul
 
 ### 1. Reach the MVP baseline
 
-- [x] Complete the initial [MVP Release](https://github.com/kevinramharak/regex-radar/issues/6)
+- [x] Complete the initial [MVP Release](https://github.com/regex-radar/regex-radar/issues/6)
 
 ### Planned features
 

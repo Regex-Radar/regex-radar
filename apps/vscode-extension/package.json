@@ -27,12 +27,12 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/kevinramharak/regex-radar.git",
+        "url": "https://github.com/regex-radar/regex-radar.git",
         "directory": "apps/vscode-extension"
     },
-    "homepage": "https://github.com/kevinramharak/regex-radar",
+    "homepage": "https://github.com/regex-radar/regex-radar",
     "bugs": {
-        "url": "https://github.com/kevinramharak/regex-radar/issues"
+        "url": "https://github.com/regex-radar/regex-radar/issues"
     },
     "sponsor": {
         "url": "https://github.com/sponsors/kevinramharak"
