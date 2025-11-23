@@ -7,9 +7,8 @@ import {
 
 import { Implements, Service, ServiceLifetime } from '@gitlab/needle';
 
-import type { Diagnostics as RecheckDiagnostics, VulnerableDiagnostics } from 'recheck';
-
 import { EntryType, type RegexEntry } from '@regex-radar/lsp-types';
+import type { Diagnostics as RecheckDiagnostics, VulnerableDiagnostics } from '@regex-radar/recheck-esm';
 
 import { IConfiguration } from '../../../configuration';
 import { EXTENSION_ID } from '../../../constants';
