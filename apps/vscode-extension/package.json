@@ -4,7 +4,7 @@
     "displayName": "Regex Radar",
     "publisher": "regex-radar",
     "description": "Workspace-aware regex exploration, testing, and safety analysis powered by the Language Server Protocol.",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "scripts": {
         "build": "node scripts/build.js",
         "dev": "node scripts/build.js --watch",
@@ -13,9 +13,7 @@
         "package": "node scripts/package.js",
         "publish": "node scripts/publish.js",
         "tsc": "tsc -b tsconfig.json",
-        "clean": "rm -r dist/",
-        "vscode:install-extension": "code --install-extension ./dist/regex-radar-*.vsix",
-        "vscode:uninstall-extension": "code --uninstall-extension regex-radar.regex-radar"
+        "clean": "rm -r dist/"
     },
     "devDependencies": {
         "@types/node": "^22.18.13",
@@ -27,19 +25,14 @@
         "@regex-radar/client": "*",
         "vscode-languageclient": "^9.0.1"
     },
-    "imports": {
-        "#wasm/tree-sitter.wasm": "./dist/wasm/tree-sitter.wasm",
-        "#wasm/grammars/*.wasm": "./dist/wasm/*.wasm",
-        "#workers/recheck/thread.worker": "./dist/workers/recheck/thread.worker.js"
-    },
     "repository": {
         "type": "git",
-        "url": "https://github.com/kevinramharak/regex-radar.git",
+        "url": "https://github.com/regex-radar/regex-radar.git",
         "directory": "apps/vscode-extension"
     },
-    "homepage": "https://github.com/kevinramharak/regex-radar",
+    "homepage": "https://github.com/regex-radar/regex-radar",
     "bugs": {
-        "url": "https://github.com/kevinramharak/regex-radar/issues"
+        "url": "https://github.com/regex-radar/regex-radar/issues"
     },
     "sponsor": {
         "url": "https://github.com/sponsors/kevinramharak"
@@ -58,6 +51,7 @@
         "dist/server.min.js",
         "dist/wasm/*.wasm",
         "dist/workers/recheck/*",
+        "dist/node_modules/**",
         "assets/icon.png",
         "LICENSE"
     ],
