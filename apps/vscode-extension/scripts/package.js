@@ -1,6 +1,6 @@
 // @ts-check
 import * as path from 'node:path';
-import { readFile, writeFile, readdir, copyFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, copyFile, cp } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 import { createVSIX } from '@vscode/vsce';
@@ -26,48 +26,40 @@ async function ensureReadmeIsCopied() {
 const serverModulePath = path.resolve(monoRepoPath, 'packages', 'server', 'dist', 'server.min.js');
 const serverModuleDestinationPath = path.resolve(distDirectoryPath, 'server.min.js');
 
+// TODO: move this to the `ensureDependenciesAreCopied()` fn
 async function ensureServerModuleIsCopied() {
     console.log(`copying server module`);
     console.log(`  - ${serverModulePath}`);
     await copyFile(serverModulePath, serverModuleDestinationPath);
 }
 
-const treeSitterWasmPath = path.resolve(nodeModulesPath, 'web-tree-sitter', 'tree-sitter.wasm');
-const treeSitterGrammarsDirectory = path.resolve(monoRepoPath, 'packages', 'tree-sitter', 'grammars');
-const wasmDestinationDirectoryPath = path.resolve(distDirectoryPath, 'wasm');
+/**
+ * @type {Record<string, string | string[]>}
+ */
+const dependencies = {
+    '@regex-radar/tree-sitter': ['grammars/'],
+    '@regex-radar/recheck-esm': ['lib/thread.wasm.worker.js'],
+    '@regex-radar/recheck-scalajs-wasm': '.',
+    'web-tree-sitter': ['tree-sitter.wasm']
+};
 
-async function ensureServerWasmFilesAreCopied() {
-    console.log('copying .wasm files:');
-    console.log(`  - ${treeSitterWasmPath}`);
-    await mkdir(wasmDestinationDirectoryPath, { recursive: true });
-    await Promise.all([
-        copyFile(treeSitterWasmPath, path.join(wasmDestinationDirectoryPath, 'tree-sitter.wasm')),
-        readdir(treeSitterGrammarsDirectory).then((fileNames) => {
-            return Promise.all(
-                fileNames
-                    .filter((fileName) => fileName.endsWith('.wasm'))
-                    .map((fileName) => {
-                        const src = path.join(treeSitterGrammarsDirectory, fileName);
-                        console.log(`  - ${src}`);
-                        return copyFile(src, path.join(wasmDestinationDirectoryPath, fileName));
-                    }),
-            );
-        }),
-    ]);
-}
-
-const workerPath = path.resolve(nodeModulesPath, '@local', 'recheck', 'lib', 'thread.worker.js');
-const workerDestinationPath = path.resolve(distDirectoryPath, 'workers', 'recheck');
-
-async function ensureWorkerFilesAreCopied() {
-    console.log('copying .worker files:');
-    console.log(`  - ${workerPath}`);
-    await mkdir(workerDestinationPath, { recursive: true });
-    await copyFile(workerPath, path.join(workerDestinationPath, 'thread.worker.js'));
+async function ensureDependenciesAreCopied() {
+    for (const [name, fileOrFiles] of Object.entries(dependencies)) {
+        console.log(`copying ${name}`);
+        const files = Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
+        if (!files.includes('package.json')) {
+            files.push('package.json');
+        }
+        for (const file of files) {
+            const source = path.resolve(nodeModulesPath, name, file);
+            const dest = path.resolve(distDirectoryPath, 'node_modules', name, file);
+            await cp(source, dest, { recursive: true });
+        }
+    }
 }
 
 /**
- * @param {import('../package.json') & { imports: Record<string, string>}} json
+ * @param {import('../package.json') & Record<string, unknown>} json
  */
 async function patchPackageJson(json) {
     console.log('patching package.json');
@@ -78,12 +70,6 @@ async function patchPackageJson(json) {
         console.log(`  - main: '${main}' -> '${mainMin}'`);
         json.main = mainMin;
     }
-    // create import mappings for the wasm and worker paths
-    json['imports'] = {
-        '#wasm/tree-sitter.wasm': './dist/wasm/tree-sitter.wasm',
-        '#wasm/grammars/*.wasm': './dist/wasm/*.wasm',
-        '#workers/recheck/thread.worker': './dist/workers/recheck/thread.worker.js',
-    };
     const patchedContents = JSON.stringify(json, null, 4);
     await writeFile(packageJsonPath, patchedContents);
 }
@@ -185,9 +171,8 @@ async function main(...args) {
             const json = JSON.parse(contents);
             validateVersion(json.version, isPreRelease);
             await ensureReadmeIsCopied();
-            await ensureServerWasmFilesAreCopied();
-            await ensureWorkerFilesAreCopied();
             await ensureServerModuleIsCopied();
+            await ensureDependenciesAreCopied();
             await patchPackageJson(json);
             await packageVSIX(isPreRelease);
         } catch (error) {

@@ -1,6 +1,5 @@
 // @ts-check
 // import { esbuildProblemMatcherPlugin } from "./plugins/problem-matcher-plugin.js";
-import { aliasEsmPlugin } from './plugins/alias-esm-plugin.js';
 import { scmImporterPlugin } from './plugins/scm-importer-plugin.js';
 import { workspacePackagesPlugin } from './plugins/workspace-packages-plugin.js';
 import { writeMetaFilePlugin } from './plugins/write-meta-file-plugin.js';
@@ -29,12 +28,7 @@ export const sharedOptions = {
     format: 'esm',
     treeShaking: true,
     mainFields: ['module', 'main'],
-    plugins: [
-        workspacePackagesPlugin,
-        scmImporterPlugin,
-        aliasEsmPlugin,
-        writeMetaFilePlugin(metafile, analyze, verbose),
-    ],
+    plugins: [workspacePackagesPlugin, scmImporterPlugin, writeMetaFilePlugin(metafile, analyze, verbose)],
 };
 
 /**

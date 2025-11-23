@@ -14,10 +14,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/kevinramharak/regex-radar",
+        "url": "https://github.com/regex-radar/regex-radar",
         "directory": "packages/client"
     },
-    "homepage": "https://github.com/kevinramharak/regex-radar",
+    "homepage": "https://github.com/regex-radar/regex-radar",
     "scripts": {
         "build": "node scripts/build.js",
         "dev": "node scripts/build.js --watch",
@@ -30,6 +30,6 @@
         "@regex-radar/lsp-types": "*"
     },
     "devDependencies": {
-        "esbuild": "^0.25.12"
+        "esbuild": "^0.27.0"
     }
 }

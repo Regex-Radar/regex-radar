@@ -12,7 +12,7 @@ See the [VS Code docs](https://code.visualstudio.com/api/working-with-extensions
 - for normal releases use `major.EVEN_NUMBER.patch`
 - for pre-releases use `major.ODD_NUMBER.patch`
 
-Also keep the releases up to date on the [releases](https://github.com/kevinramharak/regex-radar/releases/) page.
+Also keep the releases up to date on the [releases](https://github.com/regex-radar/regex-radar/releases/) page.
 
 `0.x.x` releases will be considered the alpha phase.
 Stable releases will start from `1.x.x`.
