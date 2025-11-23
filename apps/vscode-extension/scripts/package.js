@@ -68,7 +68,7 @@ async function ensureWorkerFilesAreCopied() {
 
 async function ensureDependenciesAreCopied() {
     console.log('copying @regex-radar/recheck-scalajs');
-    const source = path.resolve(nodeModulesPath, '@regex-radar', 'recheck-scalajs')
+    const source = path.resolve(nodeModulesPath, '@regex-radar', 'recheck-scalajs');
     const dest = path.resolve(distDirectoryPath, 'node_modules', '@regex-radar', 'recheck-scalajs');
     await cp(source, dest, { recursive: true });
 }

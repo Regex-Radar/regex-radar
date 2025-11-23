@@ -28,11 +28,7 @@ export const sharedOptions = {
     format: 'esm',
     treeShaking: true,
     mainFields: ['module', 'main'],
-    plugins: [
-        workspacePackagesPlugin,
-        scmImporterPlugin,
-        writeMetaFilePlugin(metafile, analyze, verbose),
-    ],
+    plugins: [workspacePackagesPlugin, scmImporterPlugin, writeMetaFilePlugin(metafile, analyze, verbose)],
 };
 
 /**
