@@ -23,13 +23,16 @@
         "dev": "node scripts/build.js --watch",
         "build:production": "node scripts/build.js --production",
         "tsc": "tsc -b tsconfig.json",
+        "test": "vitest run",
+        "test:dev": "vitest",
         "clean": "rm -r dist/"
     },
     "dependencies": {
-        "vscode-languageclient": "^9.0.1",
-        "@regex-radar/lsp-types": "*"
+        "@regex-radar/lsp-types": "*",
+        "vscode-languageclient": "^9.0.1"
     },
     "devDependencies": {
-        "esbuild": "^0.27.0"
+        "esbuild": "^0.27.0",
+        "vitest": "^4.0.13"
     }
 }
