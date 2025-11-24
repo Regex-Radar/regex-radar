@@ -1,6 +1,6 @@
 import { expect, it, describe, vi } from 'vitest';
 
-import { RegexRadarLanguageClient } from '../src/RegexRadarLanguageClient';
+import { RegexRadarLanguageClient } from '../RegexRadarLanguageClient';
 
 const mocks = vi.hoisted(() => {
     return {

@@ -2,7 +2,7 @@ import type { CodeLensParams, CodeLens, CancellationToken } from 'vscode-languag
 
 import { Implements, Service, ServiceLifetime } from '@gitlab/needle';
 
-import { EntryType, type RegexEntry } from '@regex-radar/lsp-types';
+import { EntryType, type RegexEntry } from '@regex-radar/protocol';
 
 import { IDiscoveryService } from '../../discovery';
 import { IOnCodeLens } from '../events';

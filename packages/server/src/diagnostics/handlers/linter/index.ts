@@ -9,7 +9,7 @@ import { Implements, Service, ServiceLifetime } from '@gitlab/needle';
 
 import { RegExpValidator, RegExpSyntaxError } from '@eslint-community/regexpp';
 
-import { EntryType, RegexMatchType } from '@regex-radar/lsp-types';
+import { EntryType, RegexMatchType } from '@regex-radar/protocol';
 
 import { IConfiguration } from '../../../configuration';
 import { EXTENSION_ID } from '../../../constants';

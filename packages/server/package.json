@@ -28,7 +28,7 @@
     "dependencies": {
         "@eslint-community/regexpp": "^4.12.2",
         "@gitlab/needle": "^1.5.1",
-        "@regex-radar/lsp-types": "*",
+        "@regex-radar/protocol": "*",
         "@regex-radar/recheck-esm": "^4.5.7",
         "@regex-radar/tree-sitter": "*",
         "vscode-languageserver": "^9.0.1",

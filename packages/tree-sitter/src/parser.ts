@@ -9,7 +9,7 @@ import {
     type Parser as TreeSitterParser,
 } from 'web-tree-sitter';
 
-import { RegexMatch, RegexMatchType } from '@regex-radar/lsp-types';
+import { RegexMatch, RegexMatchType } from '@regex-radar/protocol';
 
 import { languageIdToLanguageName } from './language-id-to-language-name.js';
 import jsRegexDirectiveQuery from './queries/js/regex-directive.scm';

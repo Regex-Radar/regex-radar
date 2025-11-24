@@ -1,7 +1,7 @@
 import { type TreeView, type ExtensionContext, window, commands } from 'vscode';
 
 import { RegexRadarLanguageClient } from '@regex-radar/client';
-import { Entry, RegexEntry } from '@regex-radar/lsp-types';
+import { Entry, RegexEntry } from '@regex-radar/protocol';
 
 import { RegexRadarTreeDataProvider } from './tree-data-provider';
 

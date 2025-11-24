@@ -6,6 +6,7 @@ import { URI as _URI } from 'vscode-uri';
 
 import { Implements, Injectable, createInterfaceId } from '@gitlab/needle';
 
+import type { RegexMatch } from '@regex-radar/protocol';
 import {
     type DirectoryEntry,
     type DiscoveryParams,
@@ -15,8 +16,7 @@ import {
     type FileEntry,
     type RegexEntry,
     type WorkspaceEntry,
-} from '@regex-radar/lsp-types';
-import type { RegexMatch } from '@regex-radar/lsp-types';
+} from '@regex-radar/protocol';
 
 import { LsConnection } from '../di/external-interfaces';
 import { IDocumentsService } from '../documents';

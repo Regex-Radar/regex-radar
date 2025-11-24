@@ -28,7 +28,7 @@
         "clean": "rm -r dist/"
     },
     "dependencies": {
-        "@regex-radar/lsp-types": "*",
+        "@regex-radar/protocol": "*",
         "vscode-languageclient": "^9.0.1"
     },
     "devDependencies": {
