@@ -1,17 +1,19 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
+  - package-ecosystem: 'npm'
     directories:
-      - "/"
-      - "apps/*"
-      - "packages/*"
+      - '/'
+      - 'apps/*'
+      - 'packages/*'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       production-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'
       development-dependencies:
-        dependency-type: "development"
+        dependency-type: 'development'
     ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/vscode'
+        update-types: ['version-update:semver-minor']

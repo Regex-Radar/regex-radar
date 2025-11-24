@@ -7,6 +7,14 @@
   "arrowParens": "always",
   "singleQuote": true,
   "semi": true,
+  "overrides": [
+    {
+      "files": "*.yml",
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ],
   "plugins": [
     "@trivago/prettier-plugin-sort-imports"
   ],
