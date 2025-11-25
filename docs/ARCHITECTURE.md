@@ -26,7 +26,7 @@ Regex Radar is built on top of the Language Server Protocol (LSP), with a strict
 
 ## Components
 
-### [`diagnostics.md`](./diagnostics.md)
+### [`diagnostics.md`](./architecture/diagnostics.md)
 
 Regex Radar produces diagnostics through a hybrid of:
 
@@ -38,7 +38,7 @@ The system supports streaming workspace diagnostics and async results (e.g., ReD
 
 Internally, diagnostics are managed as if a single multi-root workspace is active. This central manager decides how diagnostics are forwarded to the client, simplifying coordination between components.
 
-### [`extension.md`](./extension.md)
+### [`extension.md`](./architecture/extension.md)
 
 The extension is intentionally thin:
 
@@ -53,7 +53,7 @@ The extension is intentionally thin:
 
 No business logic lives here.
 
-### [`parsers.md`](./parsers.md)
+### [`parsers.md`](./architecture/parsers.md)
 
 Responsible for turning source text into structured information.
 
@@ -69,7 +69,7 @@ Responsible for turning source text into structured information.
 
 Parsers produce pure syntactic data and are intentionally side-effect free.
 
-### [`analysis.md`](./analysis.md)
+### [`analysis.md`](./architecture/analysis.md)
 
 Consumes the results from the parser layer and produces analysis outputs such as:
 
@@ -86,7 +86,7 @@ Characteristics:
 
 Analysis focuses only on regex semantics, not editor state or LSP protocol.
 
-### [`configuration.md`](./configuration.md)
+### [`configuration.md`](./architecture/configuration.md)
 
 TODO: how is this supposed to work?
 
@@ -101,7 +101,7 @@ A minimal extension of [`vscode-languageserver-client`](https://github.com/micro
 
 Acts as a boundary between the extension and the server.
 
-### [`language-server.md`](./language-server.md)
+### [`language-server.md`](./architecture/language-server.md)
 
 The language server is built using:
 

@@ -8,8 +8,8 @@ It provides instant visibility across your regex patterns, enables safe testing,
 >
 > Regex Radar is currently in the `0.x.x` phase. Breaking changes and unstable behavior are still expected.
 >
-> - **0.even.x** → regular releases (recommended for most users)
-> - **0.odd.x** → pre-releases and experimental features
+> - **0.even.x** → regular releases, the default installation
+> - **0.odd.x** → pre-releases and experimental features, [how to install pre-release versions](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace#_install-a-prerelease-extension-version)
 >
 > The first stable release will begin at `1.x.x`.
 
@@ -128,6 +128,10 @@ If you already use ESLint with rules that check regexes, disable overlapping rul
 ### 1. Reach the MVP baseline
 
 - [x] Complete the initial [MVP Release](https://github.com/regex-radar/regex-radar/issues/6)
+
+### 2. Reach the `v1.0.0` milestone
+
+- [ ] Complete the `v1.0.0` release
 
 ### Planned features
 
