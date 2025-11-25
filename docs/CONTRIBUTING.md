@@ -8,7 +8,7 @@ Create a new issue [here](https://github.com/regex-regex/regex-radar/issues/new/
 
 It is recommended to discuss the changes as part of an new or existing issue, before submitting a PR.
 
-A new PR can be created [here](https://github.com/Regex-Radar/regex-radar/pulls). Choose a template and fill in the PR template, or choose a blank PR if the existing templates are not applicable.
+A new PR can be created [here](https://github.com/regex-radar/regex-radar/pulls). Choose a template and fill in the PR template, or choose a blank PR if the existing templates are not applicable.
 
 ## Setting up the development environment
 
@@ -82,10 +82,10 @@ npm run test
 
 The following packages are forked/redistributed from the [`recheck`](https://github.com/makenowjust-labs/recheck) repository:
 
-- [`recheck`](https://github.com/Regex-Radar/recheck)
-- [`recheck-esm`](https://github.com/Regex-Radar/recheck-esm)
-- [`recheck-scalajs`](https://github.com/Regex-Radar/recheck-scalajs)
-- [`recheck-scalajs-wasm`](https://github.com/Regex-Radar/recheck-scalajs-wasm)
+- [`recheck`](https://github.com/regex-radar/recheck)
+- [`recheck-esm`](https://github.com/regex-radar/recheck-esm)
+- [`recheck-scalajs`](https://github.com/regex-radar/recheck-scalajs)
+- [`recheck-scalajs-wasm`](https://github.com/regex-radar/recheck-scalajs-wasm)
 
 Published at:
 
@@ -93,15 +93,15 @@ Published at:
 - [`@regex-radar/recheck-scalajs`](https://www.npmjs.com/package/@regex-radar/recheck-scalajs)
 - [`@regex-radar/recheck-scalajs-wasm`](https://www.npmjs.com/package/@regex-radar/recheck-scalajs-wasm)
 
-The motivation and goal of these forks and redistributions are stated in [this issue](https://github.com/Regex-Radar/regex-radar/issues/20).
+The motivation and goal of these forks and redistributions are stated in [this issue](https://github.com/regex-radar/regex-radar/issues/20).
 
 ### `vscode-languageserver-node`
 
 The following packages are forked/redistributed from the [`vscode-languageserver-node`](https://github.com/microsoft/vscode-languageserver-node) repository:
 
-- [`vscode-languageserver-esm`](github.com/Regex-Radar/vscode-languageserver-esm)
+- [`vscode-languageserver-esm`](github.com/regex-radar/vscode-languageserver-esm)
 
-The motivation and goal of these forks and redistributions are stated in [this issue](https://github.com/Regex-Radar/regex-radar/issues/21).
+The motivation and goal of these forks and redistributions are stated in [this issue](https://github.com/regex-radar/regex-radar/issues/21).
 
 ## Structure
 
