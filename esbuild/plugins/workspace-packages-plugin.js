@@ -19,7 +19,7 @@ export const workspacePackagesPlugin = {
             '@regex-radar/protocol': path.join(pkgRoot, 'protocol/src/index.ts'),
             '@regex-radar/client': path.join(pkgRoot, 'client/src/index.ts'),
             '@regex-radar/server': path.join(pkgRoot, 'server/src/index.ts'),
-            '@regex-radar/tree-sitter': path.join(pkgRoot, 'tree-sitter/src/index.ts'),
+            '@regex-radar/parsers': path.join(pkgRoot, 'parsers/src/index.ts'),
         };
         build.onResolve({ filter: /^@regex-radar\// }, (args) => {
             const target = alias[args.path];

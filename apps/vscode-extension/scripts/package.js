@@ -37,7 +37,7 @@ async function ensureServerModuleIsCopied() {
  * @type {Record<string, string | string[]>}
  */
 const dependencies = {
-    '@regex-radar/tree-sitter': ['grammars/'],
+    '@regex-radar/parsers': ['grammars/'],
     '@regex-radar/recheck-esm': ['lib/thread.wasm.worker.js'],
     '@regex-radar/recheck-scalajs-wasm': '.',
     'web-tree-sitter': ['tree-sitter.wasm'],
