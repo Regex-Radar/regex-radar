@@ -1,5 +1,5 @@
 {
-    "name": "@regex-radar/tree-sitter",
+    "name": "@regex-radar/parsers",
     "private": true,
     "displayName": "Regex Radar Tree Sitter parsers, grammars and queries",
     "publisher": "regex-radar",
@@ -16,7 +16,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/regex-radar/regex-radar",
-        "directory": "packages/tree-sitter"
+        "directory": "packages/parsers"
     },
     "homepage": "https://github.com/regex-radar/regex-radar",
     "scripts": {
@@ -28,7 +28,7 @@
         "clean": "rm -r dist/"
     },
     "devDependencies": {
-        "@regex-radar/lsp-types": "*",
+        "@regex-radar/protocol": "*",
         "esbuild": "^0.27.0",
         "tree-sitter-cli": "^0.25.10",
         "tree-sitter-javascript": "^0.25.0",

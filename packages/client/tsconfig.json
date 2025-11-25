@@ -2,7 +2,9 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+        "outDir": "dist",
+        "rootDir": "src"
     },
-    "include": ["src/**/*.ts", "test/**/*.ts", "package.json"],
-    "references": [{ "path": "../lsp-types" }]
+    "include": ["src/**/*.ts", "package.json"],
+    "references": [{ "path": "../protocol" }]
 }

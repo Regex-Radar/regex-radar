@@ -1,5 +1,5 @@
 {
-    "name": "@regex-radar/lsp-types",
+    "name": "@regex-radar/protocol",
     "private": true,
     "displayName": "Regex Radar Language Server Protocol types",
     "publisher": "regex-radar",
@@ -15,7 +15,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/regex-radar/regex-radar",
-        "directory": "packages/lsp-types"
+        "directory": "packages/protocol"
     },
     "homepage": "https://github.com/regex-radar/regex-radar",
     "scripts": {

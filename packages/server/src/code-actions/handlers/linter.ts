@@ -8,7 +8,7 @@ import {
 
 import { Implements, Service, ServiceLifetime } from '@gitlab/needle';
 
-import { RegexEntry, RegexMatchType, type RegexMatch } from '@regex-radar/lsp-types';
+import { RegexEntry, RegexMatchType, type RegexMatch } from '@regex-radar/protocol';
 
 import { IConfiguration } from '../../configuration';
 import { EXTENSION_ID } from '../../constants';

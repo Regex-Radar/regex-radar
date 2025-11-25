@@ -21,7 +21,7 @@
         "tsc": "tsc -b tsconfig.json",
         "test": "vitest run",
         "lint": "eslint --fix",
-        "format": "prettier --cache --cache-strategy metadata --write \"**/*.{ts,tsx,js,json,md}\"",
+        "format": "prettier --cache --cache-strategy metadata --write \"**/*.{ts,tsx,js,json,md,yml}\"",
         "preversion": "npm run tsc && npm run lint",
         "version": "npm version %npm_package_version% --workspaces && npm run build:production && git add **/package.json"
     },

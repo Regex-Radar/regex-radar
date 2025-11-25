@@ -5,10 +5,10 @@
         "outDir": "dist",
         "rootDir": "src"
     },
-    "include": ["src/**/*.ts", "test/**/*.ts", "package.json"],
+    "include": ["src/**/*.ts", "package.json"],
     "references": [
         {
-            "path": "../../packages/lsp-types"
+            "path": "../../packages/protocol"
         },
         {
             "path": "../../packages/client"

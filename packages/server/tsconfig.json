@@ -5,6 +5,6 @@
         "outDir": "dist",
         "rootDir": "src"
     },
-    "include": ["src/**/*.ts", "test/**/*.ts", "package.json"],
-    "references": [{ "path": "../lsp-types" }, { "path": "../tree-sitter" }]
+    "include": ["src/**/*.ts", "package.json"],
+    "references": [{ "path": "../protocol" }, { "path": "../parsers" }]
 }

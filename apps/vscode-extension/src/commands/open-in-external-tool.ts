@@ -1,6 +1,6 @@
 import { commands, Uri, type ExtensionContext } from 'vscode';
 
-import { RegexEntry } from '@regex-radar/lsp-types';
+import { RegexEntry } from '@regex-radar/protocol';
 
 function buildQuery(params: Record<string, string>) {
     return Object.entries(params)
@@ -11,12 +11,12 @@ function buildQuery(params: Record<string, string>) {
         .slice(0, -1);
 }
 
-function createParams(entry: RegexEntry, expressionKey: string): Record<string, string> {
+function createParams(entry: RegexEntry, expressionKey: string, flagsKeys = 'flags'): Record<string, string> {
     const params: Record<string, string> = {
         [expressionKey]: entry.match.pattern,
     };
     if ('flags' in entry.match) {
-        params['flags'] = entry.match.flags;
+        params[flagsKeys] = entry.match.flags;
     }
     return params;
 }
