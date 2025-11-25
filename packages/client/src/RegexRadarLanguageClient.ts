@@ -6,7 +6,7 @@ import {
     type ServerOptions,
 } from 'vscode-languageclient/node';
 
-import type { DiscoveryDidChangeParams, DiscoveryParams, DiscoveryResult } from '@regex-radar/lsp-types';
+import type { DiscoveryDidChangeParams, DiscoveryParams, DiscoveryResult } from '@regex-radar/protocol';
 
 import { displayName, name } from '../package.json';
 

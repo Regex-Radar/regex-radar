@@ -16,8 +16,8 @@
         "paths": {
             "@regex-radar/client": ["./packages/client/src"],
             "@regex-radar/server": ["./packages/server/src"],
-            "@regex-radar/lsp-types": ["./packages/lsp-types/src"],
-            "@regex-radar/tree-sitter": ["./packages/tree-sitter/src"]
+            "@regex-radar/protocol": ["./packages/protocol/src"],
+            "@regex-radar/parsers": ["./packages/parsers/src"]
         }
     },
     "references": [
@@ -29,10 +29,10 @@
             "path": "packages/client"
         },
         {
-            "path": "packages/lsp-types"
+            "path": "packages/protocol"
         },
         {
-            "path": "packages/tree-sitter"
+            "path": "packages/parsers"
         }
     ]
 }

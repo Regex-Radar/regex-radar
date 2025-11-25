@@ -1,7 +1,7 @@
 import { expect, it, describe, vi } from 'vitest';
 
-import * as index from '../src/index';
-import { RegexRadarLanguageClient } from '../src/RegexRadarLanguageClient';
+import * as index from '../index';
+import { RegexRadarLanguageClient } from '../RegexRadarLanguageClient';
 
 vi.mock('vscode-languageclient/node', async () => {
     return {

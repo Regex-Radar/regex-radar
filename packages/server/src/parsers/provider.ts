@@ -1,6 +1,6 @@
 import { Injectable, createInterfaceId } from '@gitlab/needle';
 
-import { IParser, Parser, TreeSitterParserProvider } from '@regex-radar/tree-sitter';
+import { IParser, Parser, TreeSitterParserProvider } from '@regex-radar/parsers';
 
 import { IServiceProvider } from '../di';
 

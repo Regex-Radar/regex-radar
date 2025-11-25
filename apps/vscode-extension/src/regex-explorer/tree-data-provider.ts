@@ -21,7 +21,7 @@ import {
     FileEntry,
     RegexEntry,
     WorkspaceEntry,
-} from '@regex-radar/lsp-types';
+} from '@regex-radar/protocol';
 
 import * as logger from '../logger';
 

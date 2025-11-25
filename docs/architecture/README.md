@@ -10,16 +10,19 @@ Regex Radar is built on top of the Language Server Protocol (LSP), with a strict
 - The **shared protocol** (custom requests, configuration, capabilities - build on top of LSP)
 - The **Regex Radar features** (linter, ReDoS check, analysis, diagnostics)
 
-## Diagram
+## Structure
 
-| Package     | Question it answers                                                            |
-| ----------- | ------------------------------------------------------------------------------ |
-| parser      | _What is the syntactic structure?_                                             |
-| discovery   | _Where are the regexes?_                                                       |
-| analysis    | _What do these regexes mean?_                                                  |
-| diagnostics | _How do we report the meaning to the editor?_                                  |
-| server      | _When do we run which processes, and how do we deliver results to the client?_ |
-| client      | _How do we communicate with the server_                                        |
+| Package     | Responsibility                                       |
+| ----------- | ---------------------------------------------------- |
+| parsers     | Turn a source file into meaningful data              |
+| discovery   | Find regular expressions spread out over a workspace |
+| analysis    | Composition of the various analysis components       |
+| linter      |                                                      |
+| redos       |                                                      |
+| diagnostics | Convert analysis results into diagnostics            |
+| protocol    | Language Service Protocol (LSP)                      |
+| server      | LSP Server                                           |
+| client      | LSP Client                                           |
 
 ## Components
 

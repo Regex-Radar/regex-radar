@@ -13,6 +13,6 @@ const virtualPlugin: Plugin = {
 export default defineProject({
     plugins: [virtualPlugin],
     test: {
-        include: ['test/**/*.test.ts'],
+        include: ['src/test/**/*.test.ts'],
     },
 });

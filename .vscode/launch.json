@@ -52,20 +52,20 @@
             "cascadeTerminateToConfigurations": ["Attach to the Language Server"],
             "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
         },
-        {
-            "name": "Extension Tests",
-            "type": "extensionHost",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/apps/vscode-extension",
-            "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension",
-                "--extensionTestsPath=${workspaceFolder}/apps/vscode-extension/out/test/suite/index"
-            ],
-            // Enable this when (custom) webviews need to be availble through the debugger
-            // "debugWebviews": true,
-            "cascadeTerminateToConfigurations": ["Attach to the Language Server"],
-            "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
-        },
+        // {
+        //     "name": "Extension Tests",
+        //     "type": "extensionHost",
+        //     "request": "launch",
+        //     "cwd": "${workspaceFolder}/apps/vscode-extension",
+        //     "args": [
+        //         "--extensionDevelopmentPath=${workspaceFolder}/apps/vscode-extension",
+        //         "--extensionTestsPath=${workspaceFolder}/apps/vscode-extension/out/test/suite/index"
+        //     ],
+        //     // Enable this when (custom) webviews need to be availble through the debugger
+        //     // "debugWebviews": true,
+        //     "cascadeTerminateToConfigurations": ["Attach to the Language Server"],
+        //     "outFiles": ["${workspaceFolder}/**/dist/*.(m|c|)js", "!**/node_modules/**"]
+        // },
         {
             "presentation": {
                 "hidden": true
