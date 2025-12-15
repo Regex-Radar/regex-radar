@@ -16,7 +16,7 @@
         "clean": "rm -r dist/"
     },
     "devDependencies": {
-        "@types/node": "^22.19.1",
+        "@types/node": "^22.19.3",
         "@types/vscode": "~1.105.0",
         "@vscode/vsce": "^3.7.1",
         "esbuild": "^0.27.1"
