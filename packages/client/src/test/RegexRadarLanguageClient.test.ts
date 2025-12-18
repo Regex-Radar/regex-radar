@@ -21,7 +21,7 @@ describe('RegexRadarLanguageClient.ts', () => {
     });
     it('should implement the discovery message handlers', () => {
         const instance = new RegexRadarLanguageClient({ module: '' }, {});
-        expect(instance.discovery).toBeTypeOf('function');
-        expect(instance.onDiscoveryDidChange).toBeTypeOf('function');
+        expect(instance.regex.discovery).toBeTypeOf('function');
+        expect(instance.regex.onDiscoveryDidChange).toBeTypeOf('function');
     });
 });
