@@ -23,9 +23,8 @@ import {
     WorkspaceEntry,
 } from '@regex-radar/protocol';
 
-import * as logger from '../logger';
-
-import type { OnDidChangeTreeDataEventParams } from './OnDidChangeTreeDataEventParams';
+import * as logger from '../../logger';
+import type { OnDidChangeTreeDataEventParams } from '../OnDidChangeTreeDataEventParams';
 
 enum WorkspaceMode {
     None = 0,

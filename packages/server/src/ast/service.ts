@@ -22,16 +22,10 @@ export class AstService implements IAstService {
     ast(param: RegexEntry, _token?: CancellationToken): RegexAst {
         const entry = param.match;
         const rawFlags = entry.type !== RegexMatchType.String ? entry.flags : '';
-        const flags = this.parser.parseFlags(rawFlags);
-        const pattern = this.parser.parsePattern(entry.pattern, void 0, void 0, {
-            unicode: flags.unicode,
-            unicodeSets: flags.unicodeSets,
-        });
-        removeParentReferences(pattern);
-        return {
-            pattern,
-            flags,
-        };
+        const literal = `/${entry.pattern}/${rawFlags}`;
+        const parsed = this.parser.parseLiteral(literal);
+        removeParentReferences(parsed.pattern);
+        return parsed;
     }
 }
 
