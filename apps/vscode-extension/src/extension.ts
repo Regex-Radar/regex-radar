@@ -3,7 +3,7 @@ import type { ExtensionContext } from 'vscode';
 import * as logger from './logger';
 import { registerLanguageClient } from './client';
 import { registerOpenInExternalToolCommands } from './commands/open-in-external-tool';
-import { registerTreeView } from './regex-explorer';
+import { registerInspectorView, registerTreeView } from './regex-explorer';
 
 export async function activate(context: ExtensionContext) {
     context.subscriptions.push(logger);
@@ -11,6 +11,7 @@ export async function activate(context: ExtensionContext) {
 
     const client = await registerLanguageClient(context);
     registerTreeView(client, context);
+    registerInspectorView(client, context);
     registerOpenInExternalToolCommands(context);
 }
 
