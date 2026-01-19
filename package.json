@@ -33,9 +33,9 @@
         "eslint-plugin-package-json": "^0.88.1",
         "globals": "^17.0.0",
         "jiti": "^2.6.1",
-        "prettier": "^3.7.4",
-        "turbo": "^2.7.4",
+        "prettier": "^3.8.0",
+        "turbo": "^2.7.5",
         "typescript": "~5.9.3",
-        "typescript-eslint": "^8.52.0"
+        "typescript-eslint": "^8.53.0"
     }
 }
