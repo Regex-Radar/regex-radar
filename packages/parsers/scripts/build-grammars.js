@@ -96,12 +96,7 @@ async function buildGrammar(grammar) {
             console.log(`skipping ${grammar.name}, as ${grammar.packageName} is already build`);
         }
 
-        if (!(grammar.packageName in packageJson.devDependencies)) {
-            console.error(`${grammar.packageName} is not listed as a devDependency in the package.json`);
-            return null;
-        }
-
-        const packageName = /** @type {keyof typeof packageJson.devDependencies} */ (grammar.packageName);
+        const packageName = /** @type {keyof typeof packageJson.devDependencies} */ (grammar.packageName.split('/')[0]);
         const version = packageJson.devDependencies[packageName];
 
         const [wasmFile, size] = cache.get(grammar.packageName) || [wasmFileName, 0];

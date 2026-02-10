@@ -3,12 +3,13 @@
   ;; /** @regex */ const pattern = "pattern";
   ;; /** @regex */ let pattern = "pattern";
   ;; /** @regex */ var pattern = "pattern";
+  ;; TODO: this query breaks on '(variable_declarator' for 26.x.x, no idea why
   (
     (comment) @comment
     .
     (
       declaration
-        (variable_declarator
+      (variable_declarator
         value: (
           string
           (_)+ @regex.pattern

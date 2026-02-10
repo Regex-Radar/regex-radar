@@ -54,7 +54,7 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
     }
 
     constructor(private readonly client: RegexRadarLanguageClient) {
-        client.regex.onDiscoveryDidChange(async ({ uri }: { uri: string }) => {
+        client.regex.onDiscoveryDidChange(async ({ uri }) => {
             const entry = this.entries.get(uri);
             if (!entry) {
                 return;
