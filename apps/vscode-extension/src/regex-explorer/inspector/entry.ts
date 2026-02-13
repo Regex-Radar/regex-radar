@@ -4,7 +4,6 @@ export enum InspectorViewEntryType {
     UNKNOWN,
     AST_NODE,
     FLAG,
-    CHARACTER_SEQUENCE,
 }
 
 export type InspectorViewEntryFlag = {
@@ -178,7 +177,12 @@ export function getChildren(entry: InspectorViewEntry): InspectorViewEntry[] {
                 case 'Backreference':
                 case 'Character':
                 case 'CharacterSet': {
-                    return [];
+                    return getAstChildren(node).map((child) => {
+                        return {
+                            type: InspectorViewEntryType.AST_NODE,
+                            node: child,
+                        };
+                    });
                 }
                 case 'Flags':
                 case 'ModifierFlags': {

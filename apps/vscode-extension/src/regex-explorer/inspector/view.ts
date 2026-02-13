@@ -25,7 +25,9 @@ import {
     type InspectorViewEntry,
 } from './entry';
 
-const IconPath: Record<RegexAstNode['type'] | 'Flag', ThemeIcon> = {
+type IconPathKey = RegexAstNode['type'] | 'Flag';
+
+const IconPath: Partial<Record<IconPathKey, ThemeIcon>> = {
     Pattern: new ThemeIcon('regex'),
     Flags: new ThemeIcon('symbol-object'),
     Flag: new ThemeIcon('symbol-property'),
