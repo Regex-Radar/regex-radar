@@ -3,7 +3,7 @@ import { type TreeView, type ExtensionContext, window, commands } from 'vscode';
 import { RegexRadarLanguageClient } from '@regex-radar/client';
 import { Entry, RegexEntry } from '@regex-radar/protocol';
 
-import { RegexRadarTreeDataProvider } from './tree-data-provider';
+import { RegexRadarTreeDataProvider } from './data-provider';
 
 // TODO: this should reveal + open a quickpick with the commands a user can invoke on a RegexEntry
 // - open in external tool

@@ -29,9 +29,6 @@ export class TreeSitterParserProvider {
                 return parser;
             },
         );
-
-        parserPromise.catch((error) => console.error(error));
-
         this.cache.set(languageName, parserPromise);
         return await parserPromise;
     }
@@ -43,11 +40,11 @@ export class TreeSitterParserProvider {
                  * @see https://www.npmjs.com/package/web-tree-sitter/v/0.25.10#user-content-loading-the-wasm-file
                  */
                 locateFile() {
+                    // TODO: 26.x.x => web-tree-sitter/web-tree-sitter.wasm
                     const fileUrl = import.meta.resolve('web-tree-sitter/tree-sitter.wasm');
                     return fileURLToPath(fileUrl);
                 },
             });
-            this.treeSitterParserInitializePromise.catch((error) => console.error(error));
         }
         await this.treeSitterParserInitializePromise;
         return TreeSitterParser;
@@ -60,7 +57,7 @@ export class TreeSitterParserProvider {
         const fileUrl = import.meta.resolve(`@regex-radar/parsers/grammars/tree-sitter-${languageName}.wasm`);
         const filePath = fileURLToPath(fileUrl);
         const languagePromise = Language.load(filePath);
-        languagePromise.catch((error) => console.error(error));
+        const a: { b: 2; a: string } = { b: 2 };
         return languagePromise;
     }
 }

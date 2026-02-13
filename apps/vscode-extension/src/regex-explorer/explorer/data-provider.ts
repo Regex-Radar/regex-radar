@@ -23,9 +23,8 @@ import {
     WorkspaceEntry,
 } from '@regex-radar/protocol';
 
-import * as logger from '../logger';
-
-type OnDidChangeTreeDataEventParams = Entry | undefined | null | void;
+import * as logger from '../../logger';
+import type { OnDidChangeTreeDataEventParams } from '../OnDidChangeTreeDataEventParams';
 
 enum WorkspaceMode {
     None = 0,
@@ -38,8 +37,9 @@ enum WorkspaceMode {
  * @see https://code.visualstudio.com/api/extension-guides/tree-view
  */
 export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
-    private _onDidChangeTreeData = new EventEmitter<OnDidChangeTreeDataEventParams>();
-    readonly onDidChangeTreeData: Event<OnDidChangeTreeDataEventParams> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData = new EventEmitter<OnDidChangeTreeDataEventParams<Entry>>();
+    readonly onDidChangeTreeData: Event<OnDidChangeTreeDataEventParams<Entry>> =
+        this._onDidChangeTreeData.event;
 
     private entries = new Map<string, Exclude<Entry, RegexEntry>>();
     /**
@@ -54,13 +54,13 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
     }
 
     constructor(private readonly client: RegexRadarLanguageClient) {
-        client.onDiscoveryDidChange(async ({ uri }: { uri: string }) => {
+        client.regex.onDiscoveryDidChange(async ({ uri }) => {
             const entry = this.entries.get(uri);
             if (!entry) {
                 return;
             }
             this.clearEntryRecursively(entry);
-            const serverEntry = await this.client.discovery({ uri: entry.uri, hint: entry.type });
+            const serverEntry = await this.client.regex.discovery({ uri: entry.uri, hint: entry.type });
             if (serverEntry) {
                 this.setEntryRecursively(serverEntry);
             }
@@ -104,7 +104,7 @@ export class RegexRadarTreeDataProvider implements TreeDataProvider<Entry> {
         if (cachedEntry?.children.length) {
             return cachedEntry.children;
         }
-        const serverEntry = await this.client.discovery({ uri: entry.uri, hint: entry.type });
+        const serverEntry = await this.client.regex.discovery({ uri: entry.uri, hint: entry.type });
         switch (serverEntry?.type) {
             case EntryType.Workspace:
             case EntryType.Directory:
