@@ -24,7 +24,7 @@ export class AstService implements IAstService {
         const rawFlags = entry.type !== RegexMatchType.String ? entry.flags : '';
         const literal = `/${entry.pattern}/${rawFlags}`;
         const parsed = this.parser.parseLiteral(literal);
-        removeParentReferences(parsed.pattern);
+        removeParentReferences(parsed);
         return parsed;
     }
 }
@@ -58,6 +58,7 @@ const handlers: RegExpVisitor.Handlers = {
     onRegExpLiteralEnter: deleteParentProperty,
     onStringAlternativeEnter: deleteParentProperty,
 };
+
 function deleteParentProperty(object: { parent?: unknown | null }) {
     delete object.parent;
 }
