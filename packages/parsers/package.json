@@ -38,6 +38,6 @@
         "vscode-languageserver-textdocument": "^1.0.12"
     },
     "dependencies": {
-        "web-tree-sitter": "^0.26.6"
+        "web-tree-sitter": "^0.26.7"
     }
 }
