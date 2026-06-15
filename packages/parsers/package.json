@@ -29,7 +29,7 @@
     },
     "devDependencies": {
         "@regex-radar/protocol": "*",
-        "esbuild": "^0.28.0",
+        "esbuild": "^0.28.1",
         "tree-sitter-cli": "^0.26.9",
         "tree-sitter-javascript": "^0.25.0",
         "tree-sitter-json": "^0.24.8",
