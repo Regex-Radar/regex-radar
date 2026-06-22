@@ -41,7 +41,7 @@ export class TreeSitterParserProvider {
                  */
                 locateFile() {
                     // TODO: 26.x.x => web-tree-sitter/web-tree-sitter.wasm
-                    const fileUrl = import.meta.resolve('web-tree-sitter/tree-sitter.wasm');
+                    const fileUrl = import.meta.resolve('web-tree-sitter/web-tree-sitter.wasm');
                     return fileURLToPath(fileUrl);
                 },
             });
@@ -57,7 +57,6 @@ export class TreeSitterParserProvider {
         const fileUrl = import.meta.resolve(`@regex-radar/parsers/grammars/tree-sitter-${languageName}.wasm`);
         const filePath = fileURLToPath(fileUrl);
         const languagePromise = Language.load(filePath);
-        const a: { b: 2; a: string } = { b: 2 };
         return languagePromise;
     }
 }
