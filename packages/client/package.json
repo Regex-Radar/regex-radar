@@ -33,6 +33,6 @@
     },
     "devDependencies": {
         "esbuild": "^0.28.1",
-        "vitest": "^4.1.8"
+        "vitest": "^4.1.9"
     }
 }
