@@ -40,7 +40,6 @@ export class TreeSitterParserProvider {
                  * @see https://www.npmjs.com/package/web-tree-sitter/v/0.25.10#user-content-loading-the-wasm-file
                  */
                 locateFile() {
-                    // TODO: 26.x.x => web-tree-sitter/web-tree-sitter.wasm
                     const fileUrl = import.meta.resolve('web-tree-sitter/web-tree-sitter.wasm');
                     return fileURLToPath(fileUrl);
                 },
