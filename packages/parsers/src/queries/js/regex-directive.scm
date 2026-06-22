@@ -6,15 +6,16 @@
   (
     (comment) @comment
     .
-    (
-      declaration
+    [
+      (lexical_declaration
         (variable_declarator
-        value: (
-          string
-          (_)+ @regex.pattern
-        ) @regex @regex.string
-      )
-    )
+          value: (string (_)*) @regex @regex.string
+        ))
+      (variable_declaration
+        (variable_declarator
+          value: (string (_)*) @regex @regex.string
+        ))
+    ]
     (#match? @comment "^/\\*\\*")
     (#match? @comment "(:?\\s|\\/\\*\\*)@regex(:?\\s|\\*\\/)")
   )
