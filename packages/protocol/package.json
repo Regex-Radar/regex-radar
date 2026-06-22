@@ -26,9 +26,9 @@
         "clean": "rm -r dist/"
     },
     "dependencies": {
-        "vscode-languageserver-types": "^3.17.5"
+        "vscode-languageserver-types": "^3.18.0"
     },
     "devDependencies": {
-        "esbuild": "^0.27.3"
+        "esbuild": "^0.28.1"
     }
 }
