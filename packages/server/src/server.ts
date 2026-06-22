@@ -1,6 +1,7 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ProposedFeatures, TextDocuments, createConnection } from 'vscode-languageserver/node';
 
+import { AstRequestMessageHandler, AstService } from './ast';
 import { CodeActionMessageHandler, onCodeActionHandlers } from './code-actions';
 import { CodeLensMessageHandler, onCodeLensHandlers } from './code-lens';
 import { Configuration } from './configuration';
@@ -30,6 +31,8 @@ const provider = buildServiceProvider(collection, [
     Logger,
     DiscoveryRequestMessageHandler,
     DiscoveryService,
+    AstRequestMessageHandler,
+    AstService,
     DocumentsService,
     DiagnosticService,
     ParserProvider,

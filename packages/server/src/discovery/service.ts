@@ -274,17 +274,24 @@ export class DiscoveryService
 
         const document = await this.documentService.getOrCreate(uri.toString());
         const parser = await this.parsers.get(document.languageId);
-        const parseResult = await parser.parse(document);
-        const result: FileEntry = {
-            uri: uri.toString(),
-            parentUri: ensureParentUri(uri, parentUri),
-            type: EntryType.File,
-            children: parseResult.matches
-                .map((match) => this.createRegexEntry(match, uri.toString()))
-                .sort((a, b) => compare(a, b)),
-        };
-        this.cache.set(uri.toString(), result);
-        return result;
+        try {
+            const parseResult = await parser.parse(document);
+            const result: FileEntry = {
+                uri: uri.toString(),
+                parentUri: ensureParentUri(uri, parentUri),
+                type: EntryType.File,
+                children: parseResult.matches
+                    .map((match) => this.createRegexEntry(match, uri.toString()))
+                    .sort((a, b) => compare(a, b)),
+            };
+            this.cache.set(uri.toString(), result);
+            return result;
+        } catch (e) {
+            // this catch helps to set a breakpoint, without it it easily gets swallowed in some higher level catch making it really hard to debug
+            // as there are a lot of random async throws happening making the catch on caught errors very noisy
+            console.error(e);
+            throw e;
+        }
     }
 
     private createRegexEntry(match: RegexMatch, uri: URI): RegexEntry {
@@ -307,12 +314,19 @@ function ensureParentUri(uri: _URI, parentUri?: _URI): string {
     return _URI.file(parentPath).toString();
 }
 
-const isPruned = Symbol('isPruned');
-type IsPruned<T> = T & { [isPruned]: boolean };
-type IsPrunedEntry = IsPruned<Entry>;
+const isPrunedPropertyKey = Symbol('isPruned');
+type IsPruned<T> = T & { [isPrunedPropertyKey]: boolean };
+
+function isPruned<T>(value: T): boolean {
+    return (value as IsPruned<T>)[isPrunedPropertyKey];
+}
+
+function setIsPruned<T>(object: T, value: boolean) {
+    (object as IsPruned<T>)[isPrunedPropertyKey] = value;
+}
 
 function prune<T extends Entry>(tree: T): T {
-    if ((tree as IsPrunedEntry)[isPruned]) {
+    if (isPruned(tree)) {
         return tree;
     }
     switch (tree.type) {
@@ -328,7 +342,7 @@ function prune<T extends Entry>(tree: T): T {
             break;
         }
     }
-    (tree as IsPrunedEntry)[isPruned] = true;
+    setIsPruned(tree, true);
     return tree;
 }
 
