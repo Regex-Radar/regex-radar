@@ -26,17 +26,17 @@
         "version": "npm version %npm_package_version% --workspaces && npm run build:production && git add **/package.json"
     },
     "devDependencies": {
-        "@eslint/js": "^9.39.4",
+        "@eslint/js": "^9.39.5",
         "@trivago/prettier-plugin-sort-imports": "^6.0.2",
         "@tsconfig/recommended": "^1.0.13",
-        "eslint": "^9.39.4",
+        "eslint": "^9.39.5",
         "eslint-plugin-package-json": "^0.91.2",
-        "globals": "^17.7.0",
+        "globals": "^17.8.0",
         "jiti": "^2.7.0",
-        "prettier": "^3.9.4",
-        "turbo": "^2.10.3",
+        "prettier": "^3.9.6",
+        "turbo": "^2.10.7",
         "typescript": "~5.9.3",
-        "typescript-eslint": "^8.62.1"
+        "typescript-eslint": "^8.65.0"
     },
     "overrides": {
         "@trivago/prettier-plugin-sort-imports": {
