@@ -90,15 +90,6 @@
         "onLanguage:typescriptreact"
     ],
     "contributes": {
-        "viewsContainers": {
-            "activitybar": [
-                {
-                    "id": "regex-radar__regex-explorer",
-                    "title": "Regex Explorer",
-                    "icon": "$(regex)"
-                }
-            ]
-        },
         "configuration": {
             "type": "object",
             "title": "Regex Radar",
@@ -204,6 +195,15 @@
                 }
             }
         },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "regex-radar",
+                    "title": "Regex Radar",
+                    "icon": "$(regex)"
+                }
+            ]
+        },
         "views": {
             "explorer": [
                 {
@@ -213,7 +213,13 @@
                     "visibility": "collapsed"
                 }
             ],
-            "regex-radar__regex-explorer": [
+            "regex-radar": [
+                {
+                    "id": "regex-radar.regex-explorer.inspector-view",
+                    "name": "Regex Inspector",
+                    "icon": "regex",
+                    "visibility": "visible"
+                },
                 {
                     "id": "regex-radar.regex-explorer.tree-view",
                     "name": "Regex Explorer",

@@ -29,9 +29,6 @@ export class TreeSitterParserProvider {
                 return parser;
             },
         );
-
-        parserPromise.catch((error) => console.error(error));
-
         this.cache.set(languageName, parserPromise);
         return await parserPromise;
     }
@@ -47,7 +44,6 @@ export class TreeSitterParserProvider {
                     return fileURLToPath(fileUrl);
                 },
             });
-            this.treeSitterParserInitializePromise.catch((error) => console.error(error));
         }
         await this.treeSitterParserInitializePromise;
         return TreeSitterParser;
@@ -60,7 +56,6 @@ export class TreeSitterParserProvider {
         const fileUrl = import.meta.resolve(`@regex-radar/parsers/grammars/tree-sitter-${languageName}.wasm`);
         const filePath = fileURLToPath(fileUrl);
         const languagePromise = Language.load(filePath);
-        languagePromise.catch((error) => console.error(error));
         return languagePromise;
     }
 }

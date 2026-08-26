@@ -6,22 +6,48 @@ import {
     type ServerOptions,
 } from 'vscode-languageclient/node';
 
-import type { DiscoveryDidChangeParams, DiscoveryParams, DiscoveryResult } from '@regex-radar/protocol';
+import type {
+    DiscoveryDidChangeParams,
+    DiscoveryParams,
+    DiscoveryResult,
+    RegexAst,
+    RegexEntry,
+} from '@regex-radar/protocol';
 
 import { displayName, name } from '../package.json';
 
-export class RegexRadarLanguageClient extends LanguageClient implements Disposable {
+export class RegexRadarLanguageClientNamespace implements Disposable {
     private disposables: Disposable[] = [];
+    constructor(private readonly client: RegexRadarLanguageClient) {}
+
+    discovery(param: DiscoveryParams, token?: CancellationToken): Promise<DiscoveryResult> {
+        return this.client.sendRequest('regexRadar/discovery', param, token);
+    }
+
+    onDiscoveryDidChange(handler: (param: DiscoveryDidChangeParams) => void | Promise<void>) {
+        const disposable = this.client.onNotification('regexRadar/discovery/didChange', handler);
+        this.disposables.push(disposable);
+        return disposable;
+    }
+
+    ast(param: RegexEntry, token?: CancellationToken): Promise<RegexAst> {
+        return this.client.sendRequest('regexRadar/ast', param, token);
+    }
+
+    dispose(): void {
+        this.disposables.forEach((disposable) => disposable.dispose());
+    }
+}
+
+export class RegexRadarLanguageClient extends LanguageClient implements Disposable {
+    readonly regex = new RegexRadarLanguageClientNamespace(this);
 
     constructor(serverOptions: ServerOptions, clientOptions: LanguageClientOptions) {
         super(name, displayName, serverOptions, clientOptions);
     }
 
-    async discovery(param: DiscoveryParams, token?: CancellationToken): Promise<DiscoveryResult> {
-        return await this.sendRequest('regexRadar/discovery', param, token);
-    }
-
-    async onDiscoveryDidChange(handler: (param: DiscoveryDidChangeParams) => void | Promise<void>) {
-        this.disposables.push(this.onNotification('regexRadar/discovery/didChange', handler));
+    dispose(...args: Parameters<LanguageClient['dispose']>) {
+        this.regex.dispose();
+        return super.dispose(...args);
     }
 }
