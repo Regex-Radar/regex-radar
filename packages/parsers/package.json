@@ -35,9 +35,9 @@
         "tree-sitter-json": "^0.24.8",
         "tree-sitter-typescript": "^0.23.2",
         "vscode-languageserver": "^9.0.1",
-        "vscode-languageserver-textdocument": "^1.0.12"
+        "vscode-languageserver-textdocument": "^1.0.14"
     },
     "dependencies": {
-        "web-tree-sitter": "^0.26.12"
+        "web-tree-sitter": "^0.26.13"
     }
 }
