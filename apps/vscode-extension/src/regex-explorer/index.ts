@@ -1,1 +1,2 @@
-export { registerTreeView } from './tree-view';
+export { registerTreeView } from './explorer';
+export { registerInspectorView } from './inspector';
