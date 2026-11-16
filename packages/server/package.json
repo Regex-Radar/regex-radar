@@ -26,14 +26,14 @@
         "clean": "rm -r dist/"
     },
     "dependencies": {
-        "@eslint-community/regexpp": "^4.12.2",
+        "@eslint-community/regexpp": "^4.12.3",
         "@gitlab/needle": "^1.5.1",
         "@regex-radar/protocol": "*",
         "@regex-radar/recheck-esm": "^4.5.7",
         "@regex-radar/parsers": "*",
         "vscode-languageserver": "^9.0.1",
-        "vscode-languageserver-textdocument": "^1.0.12",
-        "vscode-uri": "^3.1.0"
+        "vscode-languageserver-textdocument": "^1.0.16",
+        "vscode-uri": "^3.2.0"
     },
     "devDependencies": {
         "esbuild": "^0.28.2"
